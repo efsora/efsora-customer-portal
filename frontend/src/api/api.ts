@@ -1,5 +1,6 @@
-import { axios } from './axios';
 import type { AxiosResponse } from 'axios';
+
+import { axios } from './axios';
 
 export const get = async <T>(
     location: string,

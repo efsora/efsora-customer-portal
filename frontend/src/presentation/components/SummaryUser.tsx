@@ -1,6 +1,7 @@
-import { useGetUserSummaryById } from '../../hooks/useGetUserById.ts';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+
+import { useGetUserSummaryById } from '../../hooks/useGetUserById.ts';
 
 export default function SummaryUser() {
     const navigate = useNavigate();

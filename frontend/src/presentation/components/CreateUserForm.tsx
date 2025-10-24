@@ -1,10 +1,11 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { z } from 'zod';
+
+import { TextInput } from './common/TextInput.tsx';
 import { useCreateUser } from '../../hooks/useCreateUser.ts';
 import { useToastMutation } from '../../hooks/useToastQuery.ts';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { TextInput } from './common/TextInput.tsx';
-import { useForm } from 'react-hook-form';
 
 const userSchema = z.object({
     user_name: z.string().min(1, 'Name is required'),

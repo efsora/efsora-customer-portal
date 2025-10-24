@@ -1,8 +1,9 @@
 import { Outlet } from 'react-router-dom';
+
 import styles from './Layout.module.css';
-import LeftBar from '../LeftBar.tsx';
-import Header from '../Header.tsx';
 import Footer from '../Footer.tsx';
+import Header from '../Header.tsx';
+import LeftBar from '../LeftBar.tsx';
 import RightBar from '../RightBar.tsx';
 
 export default function Layout() {

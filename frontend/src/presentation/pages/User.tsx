@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom';
+
 import DetailedUser from '../components/DetailedUser.tsx';
 
 export default function User() {

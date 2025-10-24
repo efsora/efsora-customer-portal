@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { LANGUAGES } from '../../config/constants.ts';
 
 export default function LanguageSelect() {

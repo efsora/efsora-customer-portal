@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
+
 import type { SummaryUser, UserSummaryResponse_ } from '../api/models.ts';
 import { getUserById } from '../api/userApi.ts';
-import QUERY_KEYS from '../config/queryKeys.ts';
 import { FIVE_MINUTES_IN_MS } from '../config/constants.ts';
+import QUERY_KEYS from '../config/queryKeys.ts';
 
 export function useGetUserDetailedById(userId: number) {
     return useQuery({

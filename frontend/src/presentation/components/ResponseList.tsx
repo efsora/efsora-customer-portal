@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+
 import { useGetHello } from '../../hooks/useGetHello';
 
 export function ResponseList() {

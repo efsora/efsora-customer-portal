@@ -1,8 +1,8 @@
+import * as api from './api';
 import type {
     AppResponse_CreateUserResponse_,
     CreateUserRequest,
 } from './models.ts';
-import * as api from './api';
 
 export const getUserById = async (
     userId: number,
