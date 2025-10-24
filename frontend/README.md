@@ -8,13 +8,13 @@ Runs in http://localhost:5173
 
 The `Makefile` contains scripts to simplify common development tasks:
 
-* `make dev`: Starts the development server using Vite.
-* `make build`: Builds the project by compiling TypeScript and bundling assets.
-* `make lint`: Runs ESLint to check for code quality issues.
-* `make format`: Formats the codebase using Prettier and fixes linting issues.
-* `make generate:types`: Generates TypeScript types from the OpenAPI schema.
-* `make prepare`: Sets up Husky for managing Git hooks.
-* `make preview`: Serves the production build locally for testing.
+- `make dev`: Starts the development server using Vite.
+- `make build`: Builds the project by compiling TypeScript and bundling assets.
+- `make lint`: Runs ESLint to check for code quality issues.
+- `make format`: Formats the codebase using Prettier and fixes linting issues.
+- `make generate:types`: Generates TypeScript types from the OpenAPI schema.
+- `make prepare`: Sets up Husky for managing Git hooks.
+- `make preview`: Serves the production build locally for testing.
 
 ### OpenAPI Type Generation
 

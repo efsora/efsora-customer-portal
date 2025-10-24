@@ -33,9 +33,9 @@ format:
 # ----------------------------------------
 commit-check:
 	@echo "Running pre-commit checks..."
-	$(NPM) run format
+	$(NPM) run type-check
 	$(NPM) run lint
-	$(NPM) run pre-commit
+	$(NPM) run format
 	@echo "All checks passed"
 
 # ----------------------------------------

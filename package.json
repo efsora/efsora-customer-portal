@@ -23,8 +23,7 @@
       "cd backend && npm run type-check"
     ],
     "frontend/**/*.{ts,tsx,js,jsx}": [
-      "cd frontend && npm run lint",
-      "cd frontend && npm run type-check"
+      "make -C frontend -f Makefile commit-check"
     ],
     "ai-service/**/*.py": [
       "cd ai-service && uv run ruff check .",

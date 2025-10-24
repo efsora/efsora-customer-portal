@@ -5,9 +5,7 @@
         { "path": "./tsconfig.node.json" }
     ],
     "compilerOptions": {
-        "types": [
-            "node"
-        ],
+        "types": ["node"],
         "target": "ES2022",
         "module": "ES2022",
         "moduleResolution": "Node",

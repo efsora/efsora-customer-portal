@@ -8,9 +8,9 @@
         "build": "tsc -b && vite build",
         "lint": "eslint .",
         "preview": "vite preview",
-        "type-check": "tsc -b --noEmit",
         "generate:types": "openapi-typescript http://localhost:8000/openapi.json --output schema.d.ts",
-        "format": "prettier --write ."
+        "format": "prettier --write .",
+        "type-check": "npx tsc -b --noEmit --verbose"
     },
     "dependencies": {
         "@tanstack/react-query": "^5.90.2",
