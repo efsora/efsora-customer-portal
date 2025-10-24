@@ -17,7 +17,15 @@ class Settings(BaseSettings):
     ENV: str = Field(default="dev")
     APP_NAME: str = Field(default="fastapi-backend")
     LOG_LEVEL: str = Field(default="INFO")
-    DATABASE_URL: str = Field(default="postgresql+asyncpg://app:app@localhost:5432/app")
+    POSTGRES_HOST: str = Field(default="localhost")
+    POSTGRES_PORT: int = Field(default=5432)
+    POSTGRES_DB: str = Field(default="app_db")
+    POSTGRES_USER: str = Field(default="postgres")
+    POSTGRES_PASSWORD: str = Field(default="postgres")
+
+    @property
+    def DATABASE_URL(self) -> str:
+        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
     model_config = SettingsConfigDict(
         env_file_encoding="utf-8",

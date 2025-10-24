@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/sh
+. "$(dirname -- "$0")/_/husky.sh"
 
-# Run lint-staged to check only modified files
 npx lint-staged
