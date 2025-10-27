@@ -17,3 +17,14 @@ class CreateUserRequest(BaseModel):
             return "medium"
         else:
             return "strong"
+
+
+class EmbedRequest(BaseModel):
+    text: str = Field(..., min_length=1, max_length=10000)
+    collection: str = Field(..., min_length=1, max_length=100)
+
+
+class SearchRequest(BaseModel):
+    query: str = Field(..., min_length=1, max_length=10000)
+    collection: str = Field(..., min_length=1, max_length=100)
+    limit: int = Field(default=10, ge=1, le=100)

@@ -23,7 +23,7 @@ services:
       - app-network
 
   weaviate:
-    image: semitechnologies/weaviate:1.24.1
+    image: semitechnologies/weaviate:1.27.0
     container_name: full-stack-weaviate
     restart: unless-stopped
     environment:
