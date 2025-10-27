@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:18-alpine
     container_name: full-stack-postgres
     restart: unless-stopped
     environment:
@@ -23,7 +23,7 @@ services:
       - app-network
 
   weaviate:
-    image: semitechnologies/weaviate:1.24.1
+    image: semitechnologies/weaviate:1.33.2
     container_name: full-stack-weaviate
     restart: unless-stopped
     environment:

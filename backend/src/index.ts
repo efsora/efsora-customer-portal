@@ -1,7 +1,7 @@
 import express, { RequestHandler } from "express";
 import { middleware } from "#middlewares/middlewares";
 const app = express();
-const port = process.env.PORT ?? 9001;
+const port = process.env.PORT ?? 3000;
 
 app.get("/", middleware as RequestHandler, (req, res) => {
     const requestBody = req.body as { message: string };
