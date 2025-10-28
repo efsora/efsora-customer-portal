@@ -1,19 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { z } from 'zod';
 
+import { userSchema, type UserFormData } from '#api/schemas/user.schemas';
 import { useToastMutation } from '#hooks/useToastQuery';
 import { useCreateUser } from '#hooks/useUser';
 
 import { TextInput } from '../common/TextInput.tsx';
-
-const userSchema = z.object({
-    user_name: z.string().min(1, 'Name is required'),
-    user_surname: z.string().min(1, 'Surname is required'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
-});
-type UserFormData = z.infer<typeof userSchema>;
 
 export default function CreateUserForm() {
     const { t } = useTranslation();
