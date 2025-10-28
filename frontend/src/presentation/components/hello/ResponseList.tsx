@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
-import { useGetHello } from '#hooks/helloHook/useGetHello';
+import { useGetHello } from '#hooks/useHello';
 
 export function ResponseList() {
     const { t } = useTranslation();

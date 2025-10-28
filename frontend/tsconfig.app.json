@@ -36,10 +36,12 @@
             "#pages/*": ["src/presentation/pages/*"],
             "#layout/*": ["src/presentation/view/layout/*"],
             "#api/*": ["src/api/*"],
-            "#hooks/*": ["src/hooks/*"],
+            "#hooks/*": ["src/api/hooks/*"],
             "#config/*": ["src/constants/*"],
             "#utils/*": ["src/utils/*"],
-            "#models/*": ["src/api/models/*"]
+            "#types/*": ["src/api/types/*"],
+            "#constants/*": ["src/constants/*"],
+            "#models/*": ["src/presentation/models/*"]
         }
     },
     "include": ["src"],

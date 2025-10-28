@@ -1,7 +1,7 @@
-import Counter from '#components/Counter.tsx';
-import CreateUserForm from '#components/CreateUserForm.tsx';
-import DisplayCount from '#components/DisplayCount.tsx';
-import SummaryUser from '#components/SummaryUser.tsx';
+import Counter from '#components/hello/Counter';
+import DisplayCount from '#components/hello/DisplayCount';
+import CreateUserForm from '#components/user/CreateUserForm';
+import SummaryUser from '#components/user/SummaryUser';
 
 export default function Home() {
     return (

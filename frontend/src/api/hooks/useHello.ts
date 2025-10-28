@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { getHello } from '#api/helloApi/getHello.api.ts';
+import { getHello } from '#api/methods/hello.api';
 import { MINUTES_IN_MS } from '#config/time';
-import QUERY_KEYS from 'src/constants/queryKeys';
+import { QUERY_KEYS } from '#constants/queryKeys';
 
 export function useGetHello() {
     return useQuery({

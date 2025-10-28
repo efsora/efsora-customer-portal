@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
-import { useGetUserDetailedById } from '#hooks/userHook/useGetUserDetailedById';
+import { useGetUserDetailedById } from '#hooks/useUser';
 
 interface DetailedUserProps {
     id: string;

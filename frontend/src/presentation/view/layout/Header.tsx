@@ -1,4 +1,4 @@
-import LanguageSelect from '#components/LanguageSelect.tsx';
+import LanguageSelect from '#components/common/LanguageSelect';
 
 export default function Header() {
     return (
