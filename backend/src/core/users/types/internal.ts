@@ -1,0 +1,31 @@
+import type { Email } from "#shared/value-objects/Email.js";
+import type { Password } from "#shared/value-objects/Password.js";
+
+/**
+ * Internal types for Users domain
+ *
+ * These types are used only within the domain for intermediate processing.
+ * They are not exposed outside the users module.
+ */
+
+/**
+ * User data with password for update operations
+ * Used internally for operations that need access to password hash
+ */
+export interface UserDataWithPassword {
+  createdAt: Date;
+  email: string;
+  id: number;
+  name: null | string;
+  password: string;
+  updatedAt: Date;
+}
+
+/**
+ * Validated registration data with Value Objects
+ */
+export interface ValidatedRegistrationData {
+  email: Email;
+  name?: string;
+  password: Password;
+}
