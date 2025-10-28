@@ -11,7 +11,6 @@ AsyncSessionMaker: TypeAlias = async_sessionmaker[AsyncSession]
 
 
 class Container(containers.DeclarativeContainer):
-
     settings: providers.Singleton[Settings] = providers.Singleton(get_settings)
 
     # --- DB ---

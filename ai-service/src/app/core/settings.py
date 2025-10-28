@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     ENV: str = Field(default="dev")
     APP_NAME: str = Field(default="fastapi-backend")
     LOG_LEVEL: str = Field(default="INFO")
+    LOG_FORMAT: str = Field(default="json")
     POSTGRES_HOST: str = Field(default="localhost")
     POSTGRES_PORT: int = Field(default=5432)
     POSTGRES_DB: str = Field(default="app_db")

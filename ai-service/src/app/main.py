@@ -15,10 +15,14 @@ from app.api.schemas.base_response import AppResponse, FieldError
 from app.api.schemas.errors import ErrorCode
 from app.api.v1.routes import router as v1_router
 from app.core.exceptions import AppException
+from app.core.logging import get_logger, setup_logging
 from app.core.settings import Settings
 from app.core.version import APP_NAME, APP_VERSION
 from app.dependency_injection.container import Container
 from app.infrastructure.db.schema import metadata
+from app.middleware.logging import RequestLoggingMiddleware
+
+logger = get_logger(__name__)
 
 
 class TraceIdMiddleware(BaseHTTPMiddleware):
@@ -40,12 +44,20 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     cast(Any, app.state).container = container
 
     settings: Settings = container.settings()
+
+    # Initialize logging
+    setup_logging(settings)
+    logger.info(
+        "application_starting", app_name=APP_NAME, app_version=APP_VERSION, env=settings.ENV
+    )
+
     engine = container.engine()
 
     # Auto-create tables in dev/test
     if settings.ENV in {"dev", "test"}:
         async with engine.begin() as conn:
             await conn.run_sync(metadata.create_all)
+        logger.debug("database_tables_created", env=settings.ENV)
 
     # Wire at runtime
     container.wire(
@@ -56,9 +68,12 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         ]
     )
 
+    logger.info("container_wired")
+
     try:
         yield
     finally:
+        logger.info("application_shutdown")
         await engine.dispose()
         container.unwire()
 
@@ -74,6 +89,7 @@ def create_app() -> FastAPI:
     )
     register_exception_handlers(app)
     app.include_router(v1_router)
+    app.add_middleware(RequestLoggingMiddleware)
     app.add_middleware(TraceIdMiddleware)
     app.add_middleware(
         CORSMiddleware,
@@ -113,12 +129,19 @@ async def request_validation_error_handler(
         )
         for err in exc.errors()
     ]
+    trace_id = getattr(request.state, "trace_id", None)
+    logger.warning(
+        "validation_error",
+        trace_id=trace_id,
+        path=request.url.path,
+        errors_count=len(errors),
+    )
     body = AppResponse.fail(
         code=ErrorCode.VALIDATION_ERROR,
         message="Request validation failed",
         detail="Please inspect the `errors` array for field-level details.",
         errors=errors,
-        trace_id=getattr(request.state, "trace_id", None),
+        trace_id=trace_id,
     )
     return JSONResponse(status_code=422, content=body.model_dump(mode="json"))
 
@@ -143,11 +166,19 @@ async def http_exception_handler(
     else:
         message = "HTTP Error"
         detail_payload = None
+    trace_id = getattr(request.state, "trace_id", None)
+    logger.warning(
+        "http_exception",
+        trace_id=trace_id,
+        status_code=exc.status_code,
+        path=request.url.path,
+        message=message,
+    )
     body = AppResponse.fail(
         code=ErrorCode.HTTP_ERROR,
         message=message,
         detail=detail_payload,
-        trace_id=getattr(request.state, "trace_id", None),
+        trace_id=trace_id,
     )
     return JSONResponse(status_code=exc.status_code, content=body.model_dump(mode="json"))
 
@@ -159,12 +190,21 @@ async def app_exception_handler(
     if not isinstance(exc, AppException):
         raise exc
     errors = [FieldError(field=field, reason=reason) for field, reason in exc.errors]
+    trace_id = getattr(request.state, "trace_id", None)
+    logger.error(
+        "app_exception",
+        trace_id=trace_id,
+        status_code=exc.status_code,
+        path=request.url.path,
+        error_code=exc.code.value,
+        message=exc.message,
+    )
     body = AppResponse.fail(
         code=exc.code,
         message=exc.message,
         detail=exc.detail,
         errors=errors,
-        trace_id=getattr(request.state, "trace_id", None),
+        trace_id=trace_id,
     )
     return JSONResponse(status_code=exc.status_code, content=body.model_dump(mode="json"))
 

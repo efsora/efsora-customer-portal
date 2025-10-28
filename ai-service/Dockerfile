@@ -17,6 +17,7 @@ COPY requirements-dev.txt requirements.txt /app/
 # 2) Copy project metadata & code BEFORE installing
 COPY pyproject.toml README.md /app/
 COPY src/ /app/src/
+COPY tests/ /app/tests/
 
 # 3) Install dev deps
 RUN pip install --upgrade pip && pip install -r /app/requirements-dev.txt

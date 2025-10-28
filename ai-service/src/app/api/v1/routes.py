@@ -1,8 +1,10 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Request, status
+import structlog
 
 from app.api.schemas.base_response import AppResponse
+from app.api.schemas.errors import ErrorCode
 from app.api.schemas.request import (
     CreateUserRequest,
     EmbedRequest,
@@ -16,6 +18,8 @@ from app.api.schemas.response import (
 )
 from app.services.user_service import UserService
 from app.services.weaviate_service import WeaviateService
+
+logger = structlog.get_logger(__name__)
 
 router = APIRouter(prefix="/api/v1", tags=["v1"])
 
@@ -33,6 +37,7 @@ WeaviateServiceDep = Annotated[WeaviateService, Depends(get_weaviate_service)]
 @router.get("/hello", response_model=AppResponse[HelloResponse])
 async def hello(request: Request) -> AppResponse[HelloResponse]:
     trace_id = getattr(request.state, "trace_id", None)
+    logger.info("hello_endpoint_called", trace_id=trace_id)
     return AppResponse.ok(HelloResponse(message="Hello, World!"), trace_id=trace_id)
 
 
@@ -45,16 +50,35 @@ async def create_user(
     user_service: UserServiceDep,
 ) -> AppResponse[CreateUserResponse]:
     trace_id = getattr(request.state, "trace_id", None)
-
-    user_entity = await user_service.create_user(payload.user_name, payload.user_surname)
-
-    user = CreateUserResponse(
-        user_name=user_entity.user_name,
+    logger.info(
+        "create_user_endpoint_called",
+        trace_id=trace_id,
+        user_name=payload.user_name,
         user_surname=payload.user_surname,
-        email=user_entity.email.value,
     )
 
-    return AppResponse.ok(user, message="User created", trace_id=trace_id)
+    try:
+        user_entity = await user_service.create_user(payload.user_name, payload.user_surname)
+
+        user = CreateUserResponse(
+            user_name=user_entity.user_name,
+            user_surname=payload.user_surname,
+            email=user_entity.email.value,
+        )
+
+        logger.info(
+            "create_user_endpoint_success",
+            trace_id=trace_id,
+            user_id=user_entity.id,
+        )
+        return AppResponse.ok(user, message="User created", trace_id=trace_id)
+    except Exception as exc:
+        logger.exception(
+            "create_user_endpoint_failed",
+            trace_id=trace_id,
+            exception_type=type(exc).__name__,
+        )
+        raise
 
 
 @router.post(
@@ -69,6 +93,12 @@ async def embed_text(
 ) -> AppResponse[EmbedResponse]:
     """Embed text into Weaviate vector database."""
     trace_id = getattr(request.state, "trace_id", None)
+    logger.info(
+        "embed_text_endpoint_called",
+        trace_id=trace_id,
+        collection=payload.collection,
+        text_length=len(payload.text),
+    )
 
     try:
         result = await weaviate_service.embed_text(payload.text, payload.collection)
@@ -77,12 +107,24 @@ async def embed_text(
             collection=result["collection"],
             uuid=result["uuid"],
         )
+        logger.info(
+            "embed_text_endpoint_success",
+            trace_id=trace_id,
+            collection=payload.collection,
+            uuid=result["uuid"],
+        )
         return AppResponse.ok(
             embed_response, message="Text embedded successfully", trace_id=trace_id
         )
     except ValueError as e:
+        logger.error(
+            "embed_text_endpoint_failed",
+            trace_id=trace_id,
+            collection=payload.collection,
+            error=str(e),
+        )
         return AppResponse.fail(
-            code="WEAVIATE_ERROR",
+            code=ErrorCode.WEAVIATE_ERROR,
             message="Failed to embed text",
             detail=str(e),
             trace_id=trace_id,
@@ -97,6 +139,13 @@ async def search_weaviate(
 ) -> AppResponse[SearchResponse]:
     """Search for similar objects in Weaviate using BM25 search."""
     trace_id = getattr(request.state, "trace_id", None)
+    logger.info(
+        "search_weaviate_endpoint_called",
+        trace_id=trace_id,
+        collection=payload.collection,
+        query=payload.query,
+        limit=payload.limit,
+    )
 
     try:
         result = await weaviate_service.search(payload.query, payload.collection, payload.limit)
@@ -106,10 +155,23 @@ async def search_weaviate(
             results=result["results"],
             count=result["count"],
         )
+        logger.info(
+            "search_weaviate_endpoint_success",
+            trace_id=trace_id,
+            collection=payload.collection,
+            results_count=result["count"],
+        )
         return AppResponse.ok(search_response, message="Search completed", trace_id=trace_id)
     except ValueError as e:
+        logger.error(
+            "search_weaviate_endpoint_failed",
+            trace_id=trace_id,
+            collection=payload.collection,
+            query=payload.query,
+            error=str(e),
+        )
         return AppResponse.fail(
-            code="WEAVIATE_ERROR",
+            code=ErrorCode.WEAVIATE_ERROR,
             message="Failed to search",
             detail=str(e),
             trace_id=trace_id,
