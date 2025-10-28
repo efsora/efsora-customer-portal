@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { getUserById } from '#api/userApi/getUserById.api';
-import { MINUTES_IN_MS } from '#config/constants';
-import QUERY_KEYS from '#config/queryKeys';
+import { MINUTES_IN_MS } from '#config/time';
+import QUERY_KEYS from 'src/constants/queryKeys';
 
 export function useGetUserDetailedById(userId: number) {
     return useQuery({

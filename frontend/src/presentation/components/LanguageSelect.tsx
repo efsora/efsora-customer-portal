@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { LANGUAGES } from '#config/languages';
+import { LANGUAGES } from 'src/constants/languages';
 
 export default function LanguageSelect() {
     const { i18n } = useTranslation();

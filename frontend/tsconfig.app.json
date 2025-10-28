@@ -37,7 +37,7 @@
             "#layout/*": ["src/presentation/view/layout/*"],
             "#api/*": ["src/api/*"],
             "#hooks/*": ["src/hooks/*"],
-            "#config/*": ["src/config/*"],
+            "#config/*": ["src/constants/*"],
             "#utils/*": ["src/utils/*"],
             "#models/*": ["src/api/models/*"]
         }

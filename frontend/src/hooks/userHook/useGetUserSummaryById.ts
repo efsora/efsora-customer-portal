@@ -3,8 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import type { SummaryUser } from '#api/models/user/custom.types';
 import type { UserSummaryResponse_ } from '#api/models/user/response.types';
 import { getUserById } from '#api/userApi/getUserById.api';
-import { MINUTES_IN_MS } from '#config/constants';
-import QUERY_KEYS from '#config/queryKeys';
+import { MINUTES_IN_MS } from '#config/time';
+import QUERY_KEYS from 'src/constants/queryKeys';
 
 export function useGetUserSummaryById(userId: number) {
     return useQuery({
