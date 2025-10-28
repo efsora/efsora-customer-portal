@@ -60,8 +60,3 @@ shared/types/*.ts
 
 # OS
 Thumbs.db
-
-# Claude
-*CLAUDE.md
-.claude/
-.specify/
