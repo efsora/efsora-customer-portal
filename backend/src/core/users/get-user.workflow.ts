@@ -21,5 +21,8 @@ export function getUserById(userId: number, requestUserId?: number): Effect<User
     });
   }
 
-  return pipe(findUserById(userId), checkUserOwnership(requestUserId));
+  return pipe(
+    findUserById(userId),
+    checkUserOwnership(requestUserId),
+  );
 }

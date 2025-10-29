@@ -84,6 +84,12 @@ services:
       NODE_ENV: development
       PORT: 3000
       DATABASE_URL: postgresql://backend_user:backend_password@postgres:5432/backend_db
+      # Database connection for wait script
+      DB_HOST: postgres
+      DB_USER: backend_user
+      DB_NAME: backend_db
+      PGPASSWORD: backend_password
+      # Other services
       REDIS_URL: redis://redis:6379
       JWT_SECRET: docker-dev-secret-key-32chars-minimum-length-required
       ENABLE_TRACING: "true"

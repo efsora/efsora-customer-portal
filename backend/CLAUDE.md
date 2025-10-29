@@ -10,7 +10,7 @@ npm run dev              # Start dev server with file watching and .env file
 npm run dev:docker       # Start dev server for Docker (no .env file)
 
 # Building
-npm run build            # Compile TypeScript to dist/
+npm run build            # Compile TypeScript and generate OpenAPI spec
 npm run type-check       # Type check without emitting files
 
 # Code Quality
@@ -29,7 +29,38 @@ npx drizzle-kit generate # Generate migrations from schema changes
 npx drizzle-kit migrate  # Apply migrations to database
 npx drizzle-kit push     # Push schema directly to database (dev only)
 npx drizzle-kit studio   # Open Drizzle Studio database GUI
+
+# OpenAPI Documentation
+npm run generate:openapi # Generate OpenAPI spec from Zod schemas (auto-runs with dev/build)
 ```
+
+## Docker Deployment
+
+The backend has **fully automated setup** when using Docker Compose:
+
+1. **Database Initialization** (`/scripts/init-db.sql`):
+   - Creates `backend_db` database
+   - Creates `backend_user` with password
+   - Grants all necessary permissions
+   - Runs automatically on first PostgreSQL startup
+
+2. **Migration on Startup** (`scripts/docker-entrypoint.sh`):
+   - Waits for PostgreSQL to be healthy
+   - Runs `drizzle-kit push` to apply schema
+   - Starts the backend server
+   - Runs on every backend container startup
+
+3. **Zero Manual Setup**:
+   ```bash
+   docker-compose up -d  # Everything is automatic!
+   ```
+
+The entrypoint script logs each step with emojis for easy debugging:
+- 🔍 Waiting for database
+- ✅ Database ready
+- 🔄 Running migrations
+- ✅ Migrations completed
+- 🚀 Starting backend
 
 ## Architecture Overview
 
@@ -382,6 +413,22 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces
 OTEL_SERVICE_NAME=backend
 ```
 
+## CORS Configuration
+
+CORS is enabled for all origins in development mode to support Swagger UI and frontend development:
+
+```typescript
+// src/index.ts
+app.use(
+  cors({
+    origin: true, // Allow all origins in development
+    credentials: true,
+  }),
+);
+```
+
+For production, configure specific allowed origins in the environment or CORS middleware.
+
 ## Environment Configuration
 
 Configuration is validated at startup using Zod in `src/infrastructure/config/env.ts`.
@@ -412,6 +459,8 @@ Usage:
 import { logger } from "#infrastructure/logger";
 import { userRepository } from "#infrastructure/repositories/drizzle";
 import { Email } from "#core/users/value-objects/Email";
+import { success, failure } from "#lib/effect/factories";
+import { runEffect } from "#lib/effect/index";
 ```
 
 ## Authentication
@@ -592,8 +641,77 @@ Tests are written using Vitest and should follow these patterns:
 
 ## API Documentation
 
-- OpenAPI spec: `_docs/openapi.json`
-- Swagger UI: `http://localhost:3000/swagger`
-- OpenAPI endpoint: `http://localhost:3000/docs/openapi.json`
+### Auto-Generated OpenAPI Specification
 
-Schemas are defined using `@asteasolutions/zod-to-openapi` to auto-generate OpenAPI specs from Zod schemas.
+The OpenAPI spec is **automatically generated** from Zod schemas using `@asteasolutions/zod-to-openapi`. This ensures the documentation always stays in sync with the code.
+
+**Generation script**: `src/scripts/generate-openapi.ts`
+
+The script:
+1. Imports all route schemas (from `routes/*/schemas.ts`)
+2. Registers endpoints with the OpenAPI registry
+3. Generates `_docs/openapi.json`
+4. Runs automatically before `npm run dev` and `npm run build`
+
+**Accessing Documentation**:
+- OpenAPI JSON: `http://localhost:3000/docs/openapi.json`
+- Swagger UI: `http://localhost:3000/swagger` (interactive documentation)
+- Health Check: `http://localhost:3000/health`
+
+### Adding Endpoints to OpenAPI
+
+When adding new routes:
+
+1. **Define schemas with OpenAPI metadata** in `routes/domain/schemas.ts`:
+```typescript
+import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
+import { z } from "zod";
+
+extendZodWithOpenApi(z);
+
+export const createBodySchema = z.object({
+  email: z.string().email().openapi({ example: "user@example.com" }),
+  name: z.string().min(1).openapi({ example: "John Doe" }),
+}).openapi("CreateBody");
+```
+
+2. **Register endpoint in generation script** (`src/scripts/generate-openapi.ts`):
+```typescript
+// Import schemas
+import { createBodySchema } from "../routes/domain/schemas.js";
+
+// Register path
+registry.registerPath({
+  method: "post",
+  path: "/api/v1/domain",
+  summary: "Create entity",
+  description: "Description of the endpoint",
+  tags: ["Domain"],
+  request: {
+    body: {
+      content: {
+        "application/json": {
+          schema: createBodySchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "Success",
+      content: {
+        "application/json": {
+          schema: successResponseSchema(responseSchema),
+        },
+      },
+    },
+  },
+});
+```
+
+3. **Regenerate spec**:
+```bash
+npm run generate:openapi
+```
+
+The OpenAPI spec is automatically served and used by Swagger UI.
