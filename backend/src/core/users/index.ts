@@ -4,20 +4,19 @@
  */
 
 // Workflows
-export { login } from "./login.workflow";
-export { register } from "./register.workflow";
+export { createUser } from "./create-user.workflow";
 export { getUserById } from "./get-user.workflow";
 
 // Public types - Inputs
-export type { LoginInput, RegisterInput, UpdateUserInput } from "./types/inputs";
+export type { UpdateUserInput } from "./types/inputs";
+export type { CreateUserInput } from "./types/create-user";
 
 // Public types - Outputs
-export type { LoginResult, RegisterResult, UserData } from "./types/outputs";
+export type { UserData } from "./types/outputs";
+export type { CreateUserResult } from "./types/create-user";
 
 // Public types - Errors
 export type {
-  UserEmailConflictError,
-  UserInvalidCredentialsError,
   UserNotFoundError,
   UserForbiddenError,
   UserValidationError,

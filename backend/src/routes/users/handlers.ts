@@ -1,7 +1,7 @@
 import type { Request } from "express";
 
 import { runEffect } from "#lib/effect/index";
-import { getUserById, register } from "#core/users/index";
+import { createUser, getUserById } from "#core/users/index";
 
 import { CreateUserBody, GetUserParams } from "./schemas";
 
@@ -11,7 +11,7 @@ import { CreateUserBody, GetUserParams } from "./schemas";
  */
 export async function handleCreateUser(req: Request) {
   const body = req.body as CreateUserBody;
-  return await runEffect(register(body));
+  return await runEffect(createUser(body));
 }
 
 /**

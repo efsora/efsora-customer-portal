@@ -1,0 +1,109 @@
+import type { NewUser } from "#db/schema";
+import { userRepository } from "#infrastructure/repositories/drizzle";
+import { commandEffect, type Effect, failure, success } from "#lib/effect/index";
+import { allNamed, chain } from "#lib/effect/combinators";
+import first from "lodash/fp/first";
+
+import type {
+  CreateUserInput,
+  CreateUserResult,
+  ValidatedCreationData,
+} from "./types/create-user";
+import { Email } from "./value-objects/Email";
+import { HashedPassword, Password } from "./value-objects/Password";
+import { findByEmail } from "./find.operations";
+
+/**
+ * Validates user creation input
+ * Creates Email and Password value objects
+ */
+export function validateUserCreation(input: CreateUserInput): Effect<ValidatedCreationData> {
+  return chain(
+    allNamed({
+      email: Email.create(input.email),
+      password: Password.create(input.password),
+    }),
+    (result) =>
+      success({
+        email: result.email,
+        name: input.name,
+        password: result.password,
+      }),
+  );
+}
+
+/**
+ * Checks if email is already registered
+ */
+export function checkEmailAvailability(
+  data: ValidatedCreationData,
+): Effect<ValidatedCreationData> {
+  return chain(findByEmail(data.email), (existingUser) => {
+    if (existingUser) {
+      return failure({
+        code: "CONFLICT",
+        conflictType: "email",
+        email: Email.toString(data.email),
+        message: "Email already in use",
+      });
+    }
+    return success(data);
+  });
+}
+
+/**
+ * Hashes password using Password Value Object
+ */
+export function hashPasswordForCreation(data: ValidatedCreationData): Effect<{
+  email: Email;
+  hashedPassword: HashedPassword;
+  name?: string;
+}> {
+  return chain(Password.hash(data.password), (hashedPassword) =>
+    success({
+      email: data.email,
+      hashedPassword,
+      name: data.name,
+    }),
+  );
+}
+
+/**
+ * Saves new user to database
+ */
+export function saveNewUser(data: {
+  email: Email;
+  hashedPassword: HashedPassword;
+  name?: string;
+}): Effect<CreateUserResult> {
+  return commandEffect(
+    async () => {
+      const userData: NewUser = {
+        email: Email.toString(data.email),
+        name: data.name ?? null,
+        password: HashedPassword.toString(data.hashedPassword),
+      };
+
+      const users = await userRepository.create(userData);
+      return first(users);
+    },
+    (user) => {
+      if (!user) {
+        return failure({
+          code: "INTERNAL_ERROR",
+          message: "Failed to create user",
+        });
+      }
+
+      return success({
+        email: user.email,
+        id: user.id,
+        name: user.name,
+      });
+    },
+    {
+      operation: "saveNewUser",
+      tags: { action: "create", domain: "users" },
+    },
+  );
+}

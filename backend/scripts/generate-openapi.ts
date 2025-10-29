@@ -5,11 +5,6 @@ import { fileURLToPath } from "node:url";
 import { z } from "zod";
 
 // Import all route schemas
-import {
-  authResponseSchema,
-  loginBodySchema,
-  registerBodySchema,
-} from "../src/routes/auth/schemas";
 import { helloResponseSchema } from "../src/routes/hello/schemas";
 import {
   createUserBodySchema,
@@ -178,77 +173,6 @@ registry.registerPath({
   },
 });
 
-// Register auth endpoints
-registry.registerPath({
-  method: "post",
-  path: "/api/auth/register",
-  summary: "Register user",
-  description: "Register a new user account (auth endpoint)",
-  tags: ["Auth"],
-  request: {
-    body: {
-      content: {
-        "application/json": {
-          schema: registerBodySchema,
-        },
-      },
-    },
-  },
-  responses: {
-    200: {
-      description: "Registration successful",
-      content: {
-        "application/json": {
-          schema: successResponseSchema(authResponseSchema),
-        },
-      },
-    },
-    400: {
-      description: "Validation error",
-      content: {
-        "application/json": {
-          schema: errorResponseSchema,
-        },
-      },
-    },
-  },
-});
-
-registry.registerPath({
-  method: "post",
-  path: "/api/auth/login",
-  summary: "Login",
-  description: "Authenticate with email and password",
-  tags: ["Auth"],
-  request: {
-    body: {
-      content: {
-        "application/json": {
-          schema: loginBodySchema,
-        },
-      },
-    },
-  },
-  responses: {
-    200: {
-      description: "Login successful",
-      content: {
-        "application/json": {
-          schema: successResponseSchema(authResponseSchema),
-        },
-      },
-    },
-    401: {
-      description: "Invalid credentials",
-      content: {
-        "application/json": {
-          schema: errorResponseSchema,
-        },
-      },
-    },
-  },
-});
-
 // Generate OpenAPI document
 const generator = new OpenApiGeneratorV31(registry.definitions);
 const document = generator.generateDocument({
@@ -277,15 +201,11 @@ const document = generator.generateDocument({
       name: "Users",
       description: "User management endpoints",
     },
-    {
-      name: "Auth",
-      description: "Authentication endpoints",
-    },
   ],
 });
 
-// Write to file
-const outputPath = path.join(__dirname, "../../_docs/openapi.json");
+// Write to file (backend/_docs for Docker, also copy to root for documentation)
+const outputPath = path.join(__dirname, "../_docs/openapi.json");
 const outputDir = path.dirname(outputPath);
 
 // Ensure the directory exists

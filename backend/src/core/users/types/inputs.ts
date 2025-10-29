@@ -6,27 +6,10 @@
  */
 
 /**
- * Login input data
+ * Update user input data
  */
-export interface LoginInput {
-    email: string;
-    password: string;
-  }
-  
-  /**
-   * Registration input data (from HTTP layer)
-   */
-  export interface RegisterInput {
-    email: string;
-    name?: string;
-    password: string;
-  }
-  
-  /**
-   * Update user input data
-   */
-  export interface UpdateUserInput {
-    email?: string;
-    name?: string;
-    password?: string;
-  }
+export interface UpdateUserInput {
+  email?: string;
+  name?: string;
+  password?: string;
+}
