@@ -1,8 +1,7 @@
 import type { Request } from "express";
 
 import { runEffect } from "#lib/effect/index.js";
-import { login } from "#core/users/login.workflow.js";
-import { register } from "#core/users/register.workflow.js";
+import { login, register } from "#core/users/index.js";
 
 import { LoginBody, RegisterBody } from "./schemas.js";
 

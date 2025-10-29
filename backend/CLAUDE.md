@@ -457,7 +457,119 @@ The middleware:
    - Implement handlers in `handlers.ts`
    - Define routes in `routes.ts`
 6. **Register routes** in `src/routes/index.ts`
-7. **Update OpenAPI spec** in `_docs/openapi.json`
+7. **Create barrel export** in `src/core/entity/index.ts` (see Barrel Export Enforcement section)
+8. **Update OpenAPI spec** in `_docs/openapi.json`
+
+## Barrel Export Enforcement
+
+This project enforces **barrel exports** using a custom ESLint rule to maintain clean architectural boundaries between the imperative shell (handlers) and functional core (domain logic).
+
+### The Rule
+
+**Rule**: `local/no-direct-core-imports`
+
+Handlers in `src/routes/**/*.ts` **must** import workflows only from domain barrel files (`#core/domain/index.ts`). Direct imports from workflow files, operations, or internal types are **forbidden**.
+
+### Correct vs Incorrect Imports
+
+**✅ Correct** - Import from barrel:
+```typescript
+// src/routes/auth/handlers.ts
+import { login, register } from "#core/users/index.js";
+import type { LoginResult } from "#core/users/index.js";
+```
+
+**❌ Incorrect** - Direct imports (will fail ESLint):
+```typescript
+// Direct workflow import
+import { login } from "#core/users/login.workflow.js";
+
+// Operation import (operations should never be in handlers)
+import { validateLogin } from "#core/users/login.operations.js";
+
+// Internal type import
+import type { ValidatedUser } from "#core/users/types/internal.js";
+```
+
+### Barrel File Structure
+
+Each domain must have an `index.ts` barrel file that **only exports public APIs**:
+
+```typescript
+// src/core/users/index.ts
+/**
+ * Users Module
+ * Public API for user operations
+ */
+
+// Workflows (main entry points)
+export { login } from "./login.workflow.js";
+export { register } from "./register.workflow.js";
+export { getUserById } from "./get-user.workflow.js";
+
+// Public types
+export type { LoginBody, RegisterBody } from "./types/inputs.js";
+export type { LoginResult, RegisterResult, UserData } from "./types/outputs.js";
+export type { EmailAlreadyExistsError, InvalidCredentialsError } from "./types/errors.js";
+
+// Value objects (if used in workflow signatures)
+export { Email } from "./value-objects/Email.js";
+export { Password } from "./value-objects/Password.js";
+
+// NOT exported (intentionally hidden):
+// - *.operations.ts - Database operations
+// - types/internal.ts - Internal types
+```
+
+### What to Export
+
+**✅ Export from barrel**:
+- Workflows (`*.workflow.ts`) - Main entry points for handlers
+- Public input types (`types/inputs.ts`) - Request data structures
+- Public output types (`types/outputs.ts`) - Response data structures
+- Error types (`types/errors.ts`) - Domain-specific errors
+- Value objects - If used in workflow signatures
+
+**❌ DO NOT export from barrel**:
+- Operations (`*.operations.ts`) - Implementation details
+- Compositions (`*.compositions.ts`) - Internal orchestration
+- Rules (`*.rules.ts`) - Validation logic
+- Helpers (`*.helpers.ts`) - Utility functions
+- Internal types (`types/internal.ts`) - Implementation-only types
+
+### Error Messages
+
+If you violate the rule, ESLint will show:
+
+```
+Import workflows from domain barrel instead: #core/users (not #core/users/login.workflow.js)
+Handlers cannot import operations. Import workflows from domain barrel: #core/users
+Handlers cannot import internal types. Import public types from domain barrel: #core/users
+```
+
+### Why This Matters (FCIS Architecture)
+
+This enforcement maintains the **Functional Core, Imperative Shell** pattern:
+
+1. **Encapsulation**: Internal operations are hidden from handlers
+2. **Single Responsibility**: Workflows orchestrate, handlers delegate
+3. **Testability**: Test workflows as black boxes without mocking handlers
+4. **Maintainability**: Change internal operations without affecting handlers
+5. **Clear Contracts**: Workflow signatures define the domain API
+6. **Separation of Concerns**: Functional core remains pure, shell remains imperative
+
+### Checking for Violations
+
+Run ESLint to detect violations:
+```bash
+npm run lint
+```
+
+The rule runs automatically:
+- In your editor (if ESLint extension is installed)
+- During `npm run lint`
+- In pre-commit hooks (via lint-staged)
+- In CI/CD pipelines
 
 ## Testing Strategy
 

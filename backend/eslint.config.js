@@ -3,9 +3,11 @@
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
 
+import { noDirectCoreImports } from "./eslint-local-rules.js";
+
 export default tseslint.config(
     {
-        ignores: ["**/*.js"],
+        ignores: ["**/*.js", "dist/**"],
     },
     eslint.configs.recommended,
     tseslint.configs.strictTypeChecked,
@@ -16,6 +18,19 @@ export default tseslint.config(
                 projectService: true,
                 tsconfigRootDir: import.meta.dirname,
             },
+        },
+    },
+    {
+        files: ["src/routes/**/*.ts"],
+        plugins: {
+            local: {
+                rules: {
+                    "no-direct-core-imports": noDirectCoreImports,
+                },
+            },
+        },
+        rules: {
+            "local/no-direct-core-imports": "error",
         },
     },
 );
