@@ -19,6 +19,7 @@ import { metricsRegistry } from "#infrastructure/metrics/index";
 import { errorHandler } from "#middlewares/errorHandler";
 import { metricsMiddleware } from "#middlewares/metrics";
 import { requestLogger } from "#middlewares/requestLogger";
+import cors from "cors";
 import express from "express";
 import fs from "node:fs";
 import path from "node:path";
@@ -31,6 +32,14 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
+
+// CORS middleware (must be early in the chain)
+app.use(
+  cors({
+    origin: true, // Allow all origins in development
+    credentials: true,
+  }),
+);
 
 // Observability middleware (early in the chain)
 app.use(requestLogger);
