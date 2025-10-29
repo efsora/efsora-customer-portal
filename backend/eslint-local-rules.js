@@ -52,38 +52,38 @@ export const noDirectCoreImports = {
 
         const [, domain, file] = match;
 
-        // Check for forbidden file types
-        if (file.endsWith(".workflow.js")) {
+        // Check for forbidden file types (with or without .js extension)
+        if (file.endsWith(".workflow.js") || file.endsWith(".workflow")) {
           context.report({
             node: node.source,
             messageId: "workflow",
             data: { domain, file },
           });
-        } else if (file.endsWith(".operations.js")) {
+        } else if (file.endsWith(".operations.js") || file.endsWith(".operations")) {
           context.report({
             node: node.source,
             messageId: "operation",
             data: { domain, file },
           });
-        } else if (file.endsWith(".compositions.js")) {
+        } else if (file.endsWith(".compositions.js") || file.endsWith(".compositions")) {
           context.report({
             node: node.source,
             messageId: "composition",
             data: { domain, file },
           });
-        } else if (file.endsWith(".rules.js")) {
+        } else if (file.endsWith(".rules.js") || file.endsWith(".rules")) {
           context.report({
             node: node.source,
             messageId: "rule",
             data: { domain, file },
           });
-        } else if (file.endsWith(".helpers.js")) {
+        } else if (file.endsWith(".helpers.js") || file.endsWith(".helpers")) {
           context.report({
             node: node.source,
             messageId: "helper",
             data: { domain, file },
           });
-        } else if (file.includes("/types/internal.js")) {
+        } else if (file.includes("/types/internal.js") || file.includes("/types/internal")) {
           context.report({
             node: node.source,
             messageId: "internalType",

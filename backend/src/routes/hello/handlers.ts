@@ -1,13 +1,14 @@
-import type { HelloResponse } from "./schemas.js";
+import { success } from "#lib/effect/factories";
+import { runEffect } from "#lib/effect/index.js";
 
 /**
  * GET /hello
  * Simple health/test endpoint
  */
 export async function handleGetHello() {
-  const response: HelloResponse = {
-    message: "Hello from API",
-  };
-
-  return response;
+  return await runEffect(success({
+      message: "Hello from API",
+      timestamp: new Date().toISOString(),
+    }),
+  );
 }
