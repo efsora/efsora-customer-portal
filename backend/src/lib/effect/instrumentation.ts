@@ -2,7 +2,7 @@
  * Effect System Instrumentation (Imperative Shell)
  *
  * Observability integration for the effect system.
- * Handles logging, metrics, and distributed tracing for effect executions.
+ * Handles logging, metrics, and distributed tracing for Command executions.
  *
  * This module is in the infrastructure layer (imperative shell) because it:
  * - Performs side effects (logging, metrics, tracing)

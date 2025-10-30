@@ -3,16 +3,16 @@ import type { User } from "#db/schema";
 import { userRepository } from "#infrastructure/repositories/drizzle";
 import first from "lodash/fp/first";
 
-import { commandEffect, Effect, failure, success } from "#lib/effect/index";
+import { command, Effect, failure, success } from "#lib/effect/index";
 import { UserData } from "./types/outputs";
 import { Email } from "./value-objects/Email";
 
 /**
  * Finds all users
- * Returns CommandEffect that queries the database via repository
+ * Returns Command that queries the database via repository
  */
 export function findAllUsers(): Effect<UserData[]> {
-  return commandEffect(
+  return command(
     async () => {
       const allUsers = await userRepository.findAll();
       return allUsers;
@@ -27,7 +27,7 @@ export function findAllUsers(): Effect<UserData[]> {
 
 /**
  * Finds user by email using Email Value Object
- * Returns CommandEffect that queries the database via repository
+ * Returns Command that queries the database via repository
  *
  * Returns the full User entity (including password) for authentication/validation purposes.
  * Use this for:
@@ -37,7 +37,7 @@ export function findAllUsers(): Effect<UserData[]> {
  * For public user data (without password), use findUserById instead.
  */
 export function findByEmail(email: Email): Effect<undefined | User> {
-  return commandEffect(
+  return command(
     async () => {
       const emailStr = Email.toString(email);
       const users = await userRepository.findByEmail(emailStr);
@@ -49,10 +49,10 @@ export function findByEmail(email: Email): Effect<undefined | User> {
 
 /**
  * Finds user by ID
- * Returns CommandEffect that queries the database via repository
+ * Returns Command that queries the database via repository
  */
 export function findUserById(userId: number): Effect<UserData> {
-  return commandEffect(
+  return command(
     async () => {
       const users = await userRepository.findById(userId);
       return users;

@@ -37,7 +37,7 @@ export type AppError =
 
 /**
  * Command execution error - effect execution failure.
- * Used when a CommandEffect throws an exception during execution.
+ * Used when a Command throws an exception during execution.
  *
  * @property code - Always "COMMAND_EXECUTION_ERROR"
  *

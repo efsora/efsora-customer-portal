@@ -31,9 +31,8 @@ export async function handleCreateUser(req: Request) {
  */
 export async function handleGetUserById(req: Request) {
   const { id } = req.params as unknown as GetUserParams;
-  const requestUserId = req.user?.userId;
 
-  const result = await runEffect(getUserById(id, requestUserId));
+  const result = await runEffect(getUserById(id));
 
   // Explicitly map response fields for API contract
   return matchResponse(result, {

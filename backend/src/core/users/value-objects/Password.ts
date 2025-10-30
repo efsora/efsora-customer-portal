@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 
-import { commandEffect, Effect, failure, success } from "#lib/effect/index";
+import { command, Effect, failure, success } from "#lib/effect/index";
 
 /**
  * HashedPassword Value Object (opaque branded type)
@@ -61,7 +61,7 @@ export const Password = {
    * Hashes a password using bcrypt
    *
    * @param password - Valid Password Value Object
-   * @returns Effect<HashedPassword> - CommandEffect that performs hashing
+   * @returns Effect<HashedPassword> - Command that performs hashing
    *
    * @example
    * ```ts
@@ -73,7 +73,7 @@ export const Password = {
    * ```
    */
   hash: (password: Password): Effect<HashedPassword> => {
-    return commandEffect(
+    return command(
       async () => {
         const hashedValue = await bcrypt.hash(password as string, 10);
         return hashedValue;
@@ -182,7 +182,7 @@ export const HashedPassword = {
    *
    * @param hashed - The HashedPassword to verify against
    * @param plain - The plain-text password to check
-   * @returns Effect<boolean> - CommandEffect that performs bcrypt comparison
+   * @returns Effect<boolean> - Command that performs bcrypt comparison
    *
    * @example
    * ```ts
@@ -194,7 +194,7 @@ export const HashedPassword = {
    * ```
    */
   verify: (hashed: HashedPassword, plain: string): Effect<boolean> => {
-    return commandEffect(
+    return command(
       async () => {
         const isValid = await bcrypt.compare(plain, hashed as string);
         return isValid;

@@ -5,9 +5,9 @@
  * These combinators allow building complex workflows from simpler effects.
  */
 
-import type { CommandEffect, Effect, Failure } from "./types";
+import type { Command, Effect, Failure } from "./types";
 
-import { commandEffect, failure, success } from "./factories";
+import { command, failure, success } from "./factories";
 import { runEffect } from "./interpreter";
 import { AppError } from "./types/errors";
 
@@ -90,8 +90,8 @@ export function allConcurrent<T extends readonly Effect<unknown>[]>(
     return success([]) as Effect<{ [K in keyof T]: T[K] extends Effect<infer U> ? U : never }>;
   }
 
-  // Return a CommandEffect that executes all effects concurrently
-  return commandEffect<
+  // Return a Command that executes all effects concurrently
+  return command<
     Effect<unknown>[],
     { [K in keyof T]: T[K] extends Effect<infer U> ? U : never }
   >(
@@ -248,17 +248,17 @@ export function allNamedConcurrent<T extends Record<string, Effect<unknown>>>(
  */
 export function chain<T, U>(effect: Effect<T>, fn: (value: T) => Effect<U>): Effect<U> {
   switch (effect.status) {
-    case "CommandEffect":
+    case "Command":
       // If the first effect is a command, compose the continuations
       return {
         command: effect.command,
-        continuation: (commandResult: unknown) => {
-          const result = effect.continuation(commandResult);
+        cont: (commandResult: unknown) => {
+          const result = effect.cont(commandResult);
           return chain(result, fn);
         },
         metadata: effect.metadata, // Preserve metadata through chain
-        status: "CommandEffect",
-      } as CommandEffect<U>;
+        status: "Command",
+      } as Command<U>;
 
     case "Failure":
       // If the first effect is a failure, short-circuit the chain
@@ -479,7 +479,7 @@ export function map<T, U>(mapper: (value: T) => U): (value: T) => Effect<U> {
  * Key behaviors:
  * - Success: Applies onSuccess mapper and returns plain data
  * - Failure: Applies onFailure handler (typically throws the error)
- * - CommandEffect: Chains handlers into the continuation (enables composition)
+ * - Command: Chains handlers into the continuation (enables composition)
  *
  * The onFailure handler must have a `never` return type, enforcing that it
  * throws the error rather than returning a value.
@@ -537,12 +537,12 @@ export function match<T, U>(
       // Success case: apply mapper and return plain data
       return handlers.onSuccess(effect.value);
 
-    case "CommandEffect": {
-      // CommandEffect case: we need to execute the effect first
+    case "Command": {
+      // Command case: we need to execute the effect first
       // This shouldn't happen in practice since handlers call runEffect() first,
       // but we handle it for composability
       throw new Error(
-        "match() called on unexecuted CommandEffect. Call runEffect() first, or use match() in a chain.",
+        "match() called on unexecuted Command. Call runEffect() first, or use match() in a chain.",
       );
     }
   }
@@ -630,9 +630,9 @@ export function matchResponse<T, U>(
       return handlers.onSuccess(effect.value);
     }
 
-    case "CommandEffect": {
+    case "Command": {
       throw new Error(
-        "matchResponse() called on unexecuted CommandEffect. Call runEffect() first.",
+        "matchResponse() called on unexecuted Command. Call runEffect() first.",
       );
     }
   }

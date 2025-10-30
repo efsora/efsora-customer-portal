@@ -113,7 +113,7 @@ export function handleEffect(handler: EffectHandler) {
 }
 
 /**
- * Process an Effect result (Success, Failure, or CommandEffect)
+ * Process an Effect result (Success, Failure, or Command)
  *
  * This handles both:
  * - Old style handlers returning Effect<T> from runEffect()
@@ -122,7 +122,7 @@ export function handleEffect(handler: EffectHandler) {
  * @param res - Express response object
  * @param result - Effect to process
  * @param method - HTTP request method
- * @throws Error if CommandEffect is detected (programming error)
+ * @throws Error if Command is detected (programming error)
  */
 function handleEffectResult(res: Response, result: Effect<unknown>, method: string): void {
   // Defensive check - should not happen but prevents double-sends
@@ -131,11 +131,11 @@ function handleEffectResult(res: Response, result: Effect<unknown>, method: stri
   }
 
   switch (result.status) {
-    case "CommandEffect":
+    case "Command":
       // This should never happen - handlers must call runEffect() before returning
       // If we reach here, it's a programming error
       throw new Error(
-        "Unexecuted CommandEffect detected in effectHandler. " +
+        "Unexecuted Command detected in effectHandler. " +
           "Handlers must call runEffect() to execute effects before returning them. " +
           "Ensure all handler functions await runEffect(effect) before returning.",
       );

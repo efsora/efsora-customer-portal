@@ -2,7 +2,7 @@
  * Effect Metadata Auto-Generation Utilities
  *
  * Pure functions for extracting metadata from runtime context.
- * Used by commandEffect() when metadata parameter is omitted.
+ * Used by command() when metadata parameter is omitted.
  */
 
 import StackTrace from "stacktrace-js";
@@ -34,10 +34,10 @@ export function extractCallerInfo(): { filePath: null | string; functionName: nu
       return { filePath: null, functionName: null };
     }
 
-    // Look for the first non-internal frame after extractCallerInfo and commandEffect
+    // Look for the first non-internal frame after extractCallerInfo and command
     // Stack typically looks like:
     // 0: extractCallerInfo
-    // 1: commandEffect (when metadata is omitted)
+    // 1: command (when metadata is omitted)
     // 2+: actual caller frames
     for (let i = 2; i < stackFrames.length; i++) {
       const frame = stackFrames[i];

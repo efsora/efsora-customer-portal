@@ -37,7 +37,7 @@ export function isAppError(error: unknown): error is AppError {
 
 /**
  * Type guard to check if a value is an Effect object
- * Effects have a status property that is one of: "Success", "Failure", or "CommandEffect"
+ * Effects have a status property that is one of: "Success", "Failure", or "Command"
  *
  * This is used by the effectHandler middleware to distinguish Effect objects
  * from raw data returned by handlers using the match() or matchResponse() combinators.
@@ -59,6 +59,6 @@ export function isEffect(value: unknown): value is Effect<unknown> {
     value !== undefined &&
     typeof value === "object" &&
     "status" in value &&
-    (value.status === "Success" || value.status === "Failure" || value.status === "CommandEffect")
+    (value.status === "Success" || value.status === "Failure" || value.status === "Command")
   );
 }

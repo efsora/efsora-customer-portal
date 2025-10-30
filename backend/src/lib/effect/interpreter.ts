@@ -1,7 +1,7 @@
 /**
  * Effect Interpreter
  *
- * Executes Effect values, running CommandEffects and returning Success/Failure results.
+ * Executes Effect values, running Commands and returning Success/Failure results.
  * This is the bridge between the functional core (Effect descriptions) and the imperative shell.
  *
  * The interpreter:
@@ -26,7 +26,7 @@ import {
   withSpanContext,
 } from "#lib/effect/instrumentation";
 
-import type { CommandEffect, Effect, Failure } from "./types";
+import type { Command, Effect, Failure } from "./types";
 
 import { failure } from "#lib/effect/factories";
 
@@ -48,7 +48,7 @@ interface ExecutionContext {
 
 /**
  * Recursive effect interpreter using tail-call style recursion.
- * Executes CommandEffects and returns final Success or Failure values.
+ * Executes Commands and returns final Success or Failure values.
  * Automatically instruments effects with logging, metrics, and tracing for observability.
  *
  * @param effect - Effect to execute
@@ -58,7 +58,7 @@ interface ExecutionContext {
  * ```ts
  * // In functional core (pure)
  * export function findUser(id: number): Effect<User> {
- *   return commandEffect(
+ *   return command(
  *     async () => db.select().from(users).where(eq(users.id, id)),
  *     (result) => result ? success(result) : failure({
  *       code: "NOT_FOUND",
@@ -81,9 +81,9 @@ interface ExecutionContext {
 export async function runEffect<T>(effect: Effect<T>): Promise<Effect<T>> {
   // Pattern match on effect type
   switch (effect.status) {
-    case "CommandEffect":
-      // Execute CommandEffect with full instrumentation
-      return executeCommandEffect(effect);
+    case "Command":
+      // Execute Command with full instrumentation
+      return executeCommand(effect);
 
     case "Failure":
     case "Success":
@@ -106,21 +106,21 @@ function calculateDuration(execCtx: ExecutionContext): ExecutionContext {
 }
 
 /**
- * Executes a CommandEffect's command and handles the result
+ * Executes a Command's command and handles the result
  *
- * @param effect - CommandEffect to execute
+ * @param effect - Command to execute
  * @param execCtx - Execution context
  * @returns Promise resolving to final Effect result
  */
 async function executeCommandAndContinue<T>(
-  effect: CommandEffect<T>,
+  effect: Command<T>,
   execCtx: ExecutionContext,
 ): Promise<Effect<T>> {
   // Execute the command (e.g., database query, API call)
   const commandResult: unknown = await effect.command();
 
   // Apply continuation to transform command result into next Effect
-  const nextEffect = effect.continuation(commandResult);
+  const nextEffect = effect.cont(commandResult);
 
   // Recursively execute the next effect (tail-call style)
   const finalEffect = await runEffect(nextEffect);
@@ -135,14 +135,14 @@ async function executeCommandAndContinue<T>(
 }
 
 /**
- * Executes a CommandEffect with full instrumentation and span context propagation.
+ * Executes a Command with full instrumentation and span context propagation.
  * Wraps the entire execution (command + continuation + recursive runEffect) in the span's
  * active context, ensuring all child operations inherit this span as their parent.
  *
- * @param effect - CommandEffect to execute
+ * @param effect - Command to execute
  * @returns Promise resolving to final Effect result
  */
-async function executeCommandEffect<T>(effect: CommandEffect<T>): Promise<Effect<T>> {
+async function executeCommand<T>(effect: Command<T>): Promise<Effect<T>> {
   // Initialize instrumentation context (creates span)
   const execCtx = await initializeExecutionContext(effect);
 
@@ -161,12 +161,12 @@ async function executeCommandEffect<T>(effect: CommandEffect<T>): Promise<Effect
 }
 
 /**
- * Extracts metadata (operation name and tags) from CommandEffect
+ * Extracts metadata (operation name and tags) from Command
  *
- * @param effect - CommandEffect to extract metadata from
+ * @param effect - Command to extract metadata from
  * @returns Object containing operation name and tags
  */
-function extractMetadata(effect: CommandEffect): {
+function extractMetadata(effect: Command): {
   operation: string;
   tags: Record<string, string>;
 } {
@@ -206,10 +206,10 @@ function handleCommandException(error: unknown, execCtx: ExecutionContext): Fail
 /**
  * Initializes execution context with instrumentation
  *
- * @param effect - CommandEffect being executed
+ * @param effect - Command being executed
  * @returns Promise resolving to execution context
  */
-async function initializeExecutionContext(effect: CommandEffect): Promise<ExecutionContext> {
+async function initializeExecutionContext(effect: Command): Promise<ExecutionContext> {
   const startTime = Date.now();
   const { operation, tags } = extractMetadata(effect);
 

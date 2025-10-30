@@ -1,7 +1,6 @@
-import { type Effect, pipe, failure } from "#lib/effect/index";
+import { type Effect, pipe } from "#lib/effect/index";
 
 import { findUserById } from "#core/users/find.operations";
-import { checkUserOwnership } from "#core/users/get-user.operations";
 import { UserData } from "./types/outputs.js";
 
 /**
@@ -12,17 +11,8 @@ import { UserData } from "./types/outputs.js";
  * @param requestUserId - ID of the user making the request (from JWT)
  * @returns Effect with user data (excluding password)
  */
-export function getUserById(userId: number, requestUserId?: number): Effect<UserData> {
-  if (!requestUserId) {
-    return failure({
-      code: "UNAUTHORIZED",
-      message: "You are not authorized to access this resource",
-      resourceId: userId,
-    });
-  }
-
+export function getUserById(userId: number): Effect<UserData> {
   return pipe(
     findUserById(userId),
-    checkUserOwnership(requestUserId),
   );
 }

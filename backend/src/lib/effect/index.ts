@@ -5,8 +5,8 @@
  * Existing code can continue to import from `#core/effect.js` without breaking.
  *
  * Module Organization:
- * - types.ts: Core type definitions (CommandEffect, Effect, Success, Failure, EffectMetadata)
- * - factories.ts: Effect factory functions (success, failure, commandEffect)
+ * - types.ts: Core type definitions (Command, Effect, Success, Failure, EffectMetadata)
+ * - factories.ts: Effect factory functions (success, failure, command)
  * - combinators.ts: Composition utilities (chain, pipe, all, allNamed, allConcurrent, allNamedConcurrent, flow, tap, map, filter, match, matchResponse)
  * - interpreter.ts: Effect executor (runEffect)
  * - metadata.ts: Auto-metadata generation utilities (extractCallerInfo, etc.)
@@ -30,13 +30,13 @@ export {
     pipe,
     tap,
   } from "#lib/effect/combinators";
-  
+
   // --- Factories ---
-  export { commandEffect, failure, success } from "#lib/effect/factories";
-  
+  export { command, failure, success } from "#lib/effect/factories";
+
   // --- Interpreter ---
   export { runEffect } from "#lib/effect/interpreter";
-  
+
   // --- Metadata Utilities (Advanced Usage) ---
   export {
     extractCallerInfo,
@@ -44,6 +44,6 @@ export {
     extractFilenameStem,
     inferActionFromFunctionName,
   } from "#lib/effect/metadata";
-  
+
   // --- Types ---
-  export type { CommandEffect, Effect, EffectMetadata, Failure, Success } from "#lib/effect/types";
+  export type { Command, Effect, EffectMetadata, Failure, Success } from "#lib/effect/types";

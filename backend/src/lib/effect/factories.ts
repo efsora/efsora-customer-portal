@@ -2,10 +2,10 @@
  * Effect Factory Functions
  *
  * Pure functions for creating Effect values.
- * These factories construct Success, Failure, and CommandEffect types.
+ * These factories construct Success, Failure, and Command types.
  */
 
-import type { CommandEffect, Effect, EffectMetadata, Failure, Success } from "#lib/effect/types";
+import type { Command, Effect, EffectMetadata, Failure, Success } from "#lib/effect/types";
 import type { AppError } from "#lib/effect/types/errors";
 
 import {
@@ -16,7 +16,7 @@ import {
 } from "#lib/effect/metadata";
 
 /**
- * Creates a CommandEffect - a deferred side-effectful computation.
+ * Creates a Command - a deferred side-effectful computation.
  *
  * Supports two modes:
  * 1. **Auto Mode** (metadata omitted): Automatically generates metadata from stack trace
@@ -28,15 +28,15 @@ import {
  * - action: Inferred from function name prefix (find → "read", create → "create", etc.)
  *
  * @param command - Async operation to perform
- * @param continuation - Function to convert command result to next Effect
+ * @param cont - Function to convert command result to next Effect
  * @param metadata - Optional metadata for observability (auto-generated if omitted)
- * @returns A CommandEffect that will be executed by runEffect()
+ * @returns A Command that will be executed by runEffect()
  *
  * @example
  * ```ts
  * // Auto mode - metadata auto-generated from stack trace
  * export function findUserById(userId: number): Effect<User> {
- *   return commandEffect(
+ *   return command(
  *     async () => db.select().from(users).where(eq(users.id, userId)),
  *     (result) => result ? success(result) : failure("Not found", "NOT_FOUND")
  *     // Metadata omitted → auto-generates: { operation: "findUserById", tags: { domain: "users", action: "read" } }
@@ -45,7 +45,7 @@ import {
  *
  * // Manual mode - explicit metadata
  * export function customOperation(): Effect<Data> {
- *   return commandEffect(
+ *   return command(
  *     async () => { ... },
  *     (result) => success(result),
  *     { operation: "customName", tags: { domain: "custom", action: "special" } }
@@ -53,24 +53,24 @@ import {
  * }
  * ```
  */
-export function commandEffect<TCommand, TResult>(
+export function command<TCommand, TResult>(
   command: () => Promise<TCommand>,
-  continuation: (result: TCommand) => Effect<TResult>,
+  cont: (result: TCommand) => Effect<TResult>,
   metadata?: EffectMetadata,
-): CommandEffect<TResult>;
+): Command<TResult>;
 
-export function commandEffect(
+export function command(
   command: () => Promise<unknown>,
-  continuation: (result: unknown) => Effect<unknown>,
+  cont: (result: unknown) => Effect<unknown>,
   metadata?: EffectMetadata,
-): CommandEffect {
+): Command {
   // If metadata explicitly provided, use it directly (manual mode)
   if (metadata) {
     return {
       command,
-      continuation,
+      cont,
       metadata,
-      status: "CommandEffect",
+      status: "Command",
     };
   }
 
@@ -104,9 +104,9 @@ export function commandEffect(
 
   return {
     command,
-    continuation,
+    cont,
     metadata: autoMetadata,
-    status: "CommandEffect",
+    status: "Command",
   };
 }
 

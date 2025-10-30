@@ -1,6 +1,6 @@
 import type { NewUser } from "#db/schema";
 import { userRepository } from "#infrastructure/repositories/drizzle";
-import { commandEffect, type Effect, failure, success } from "#lib/effect/index";
+import { command, type Effect, failure, success } from "#lib/effect/index";
 import { allNamed, chain } from "#lib/effect/combinators";
 import first from "lodash/fp/first";
 
@@ -76,7 +76,7 @@ export function saveNewUser(data: {
   hashedPassword: HashedPassword;
   name?: string;
 }): Effect<CreateUserResult> {
-  return commandEffect(
+  return command(
     async () => {
       const userData: NewUser = {
         email: Email.toString(data.email),

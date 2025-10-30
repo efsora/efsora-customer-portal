@@ -108,12 +108,12 @@ The codebase uses a **custom Effect system** (inspired by Effect-TS/fp-ts) for m
 ### Effect Type
 
 ```typescript
-type Effect<T> = Success<T> | Failure | CommandEffect<T>
+type Effect<T> = Success<T> | Failure | Command<T>
 ```
 
 - **Success**: Contains a successful result value
 - **Failure**: Contains a typed error (AppError)
-- **CommandEffect**: Represents a side effect (async operation) with continuation
+- **Command**: Represents a side effect (async operation) with continuation
 
 ### Effect Patterns
 
@@ -134,13 +134,13 @@ export function login(body: LoginBody): Effect<LoginResult> {
 
 Each step receives the previous step's output. If any step returns `Failure`, execution stops and the failure propagates.
 
-#### 2. CommandEffect for Side Effects
+#### 2. Command for Side Effects
 
-Operations in `*.operations.ts` use `commandEffect()` for async operations:
+Operations in `*.operations.ts` use `command()` for async operations:
 
 ```typescript
 export function findUserByEmail(input: LoginInput): Effect<{ input, user }> {
-  return commandEffect(
+  return command(
     async () => {
       const users = await userRepository.findByEmail(input.email);
       return first(users);
@@ -157,7 +157,7 @@ export function findUserByEmail(input: LoginInput): Effect<{ input, user }> {
 }
 ```
 
-**CommandEffect automatically provides**:
+**Command automatically provides**:
 - OpenTelemetry span creation
 - Prometheus metrics recording
 - Pino logging with correlation IDs
@@ -404,7 +404,7 @@ Access metrics: `GET /metrics`
 Distributed tracing is automatically enabled for:
 - HTTP requests (via auto-instrumentation)
 - Database queries (via Drizzle instrumentation)
-- Effect operations (via CommandEffect metadata)
+- Effect operations (via Command metadata)
 
 Configure via environment variables:
 ```
