@@ -39,6 +39,25 @@ commit-check:
 	@echo "All checks passed"
 
 # ----------------------------------------
+# Docker commands
+# ----------------------------------------
+docker-dev:
+	@echo "Starting frontend container in development mode..."
+	docker-compose up
+
+docker-dev-build:
+	@echo "Building and starting frontend container..."
+	docker-compose up --build
+
+docker-dev-down:
+	@echo "Stopping frontend container..."
+	docker-compose down
+
+docker-dev-logs:
+	@echo "Showing frontend container logs..."
+	docker-compose logs -f
+
+# ----------------------------------------
 # Shortcut for all
 # ----------------------------------------
 all: format lint build
