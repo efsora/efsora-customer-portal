@@ -4,6 +4,7 @@ from typing import Annotated, Any, cast
 from dependency_injector.wiring import Provide, inject
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+import weaviate
 
 from app.core.context import Context
 from app.dependency_injection.container import Container
@@ -23,3 +24,12 @@ async def get_context(
     context: Annotated[Context, Depends(Provide[Container.context])],
 ) -> Context:
     return context
+
+
+@inject
+async def get_weaviate_client(
+    weaviate_client: Annotated[
+        weaviate.WeaviateClient, Depends(Provide[Container.weaviate_client])
+    ],
+) -> weaviate.WeaviateClient:
+    return weaviate_client

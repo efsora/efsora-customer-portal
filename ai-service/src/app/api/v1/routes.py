@@ -24,14 +24,7 @@ logger = structlog.get_logger(__name__)
 router = APIRouter(prefix="/api/v1", tags=["v1"])
 
 UserServiceDep = Annotated[UserService, Depends()]
-
-
-def get_weaviate_service() -> WeaviateService:
-    """Dependency to get Weaviate service instance."""
-    return WeaviateService(host="weaviate", port=8080)
-
-
-WeaviateServiceDep = Annotated[WeaviateService, Depends(get_weaviate_service)]
+WeaviateServiceDep = Annotated[WeaviateService, Depends()]
 
 
 @router.get("/hello", response_model=AppResponse[HelloResponse])

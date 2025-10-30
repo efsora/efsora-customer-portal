@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     POSTGRES_DB: str = Field(default="app_db")
     POSTGRES_USER: str = Field(default="postgres")
     POSTGRES_PASSWORD: str = Field(default="postgres")
+    WEAVIATE_HOST: str = Field(default="weaviate")
+    WEAVIATE_PORT: int = Field(default=8080)
+    WEAVIATE_GRPC_PORT: int = Field(default=50051)
 
     @property
     def DATABASE_URL(self) -> str:

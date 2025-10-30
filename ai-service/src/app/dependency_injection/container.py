@@ -2,10 +2,12 @@ from typing import TypeAlias
 
 from dependency_injector import containers, providers
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
+import weaviate
 
 from app.core.context import Context
 from app.core.settings import Settings, get_settings
 from app.infrastructure.db.engine import create_engine
+from app.infrastructure.weaviate.client import create_weaviate_client
 
 AsyncSessionMaker: TypeAlias = async_sessionmaker[AsyncSession]
 
@@ -29,4 +31,10 @@ class Container(containers.DeclarativeContainer):
     context: providers.Factory[Context] = providers.Factory(
         Context,
         session_factory=session_factory,
+    )
+
+    # --- Weaviate ---
+    weaviate_client: providers.Singleton[weaviate.WeaviateClient] = providers.Singleton(
+        create_weaviate_client,
+        settings=settings,
     )

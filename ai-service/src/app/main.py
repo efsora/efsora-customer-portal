@@ -65,6 +65,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             "app.api.v1.routes",
             "app.api.dependencies",
             "app.services.user_service",
+            "app.services.weaviate_service",
         ]
     )
 
@@ -74,6 +75,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         yield
     finally:
         logger.info("application_shutdown")
+        # Close Weaviate client
+        weaviate_client = container.weaviate_client()
+        weaviate_client.close()
+        # Dispose database engine
         await engine.dispose()
         container.unwire()
 
