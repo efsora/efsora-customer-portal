@@ -2,7 +2,10 @@ import type { Request } from "express";
 
 import { matchResponse } from "#lib/result/combinators";
 import { run } from "#lib/result/index";
-import { createUser, getUserById } from "#core/users/index";
+import {
+  createUser,
+  getUserById,
+} from "#core/users/index";
 
 import { CreateUserBody, GetUserParams } from "./schemas";
 

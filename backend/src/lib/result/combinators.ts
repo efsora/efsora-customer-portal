@@ -554,68 +554,72 @@ export function match<T, U>(
  * that the middleware can handle automatically.
  *
  * Key differences from match():
- * - Returns U | Failure (discriminated union) instead of U
+ * - Returns T | Failure (discriminated union) instead of transformed value
  * - Success: Returns inlined data directly (no wrapping)
  * - Failure: Returns original Failure result (middleware converts to HTTP error)
  * - Optional onFailure handler for custom error handling
+ * - Enforces exhaustive type safety: onSuccess must return exactly type T
  *
  * The middleware (resultHandler) detects the discriminated union and:
- * - Wraps success data U in successResponse()
+ * - Wraps success data T in successResponse()
  * - Converts Failure to errorResponse()
  *
  * @param result - The executed Result (must call run() first)
- * @param handlers - Object with onSuccess mapper and optional onFailure handler
- * @returns Inlined data U on success, or Failure result on failure
+ * @param handlers - Object with onSuccess mapper (must return type T) and optional onFailure handler
+ * @returns Inlined data T on success, or Failure result on failure
  *
  * @example
  * ```ts
- * // Simple usage - automatic error handling
+ * // Simple usage - pass through value as-is
  * export async function handleGetUser(req: Request) {
  *   const result = await run(getUser(userId));
  *
  *   return matchResponse(result, {
- *     onSuccess: (user) => ({
- *       id: user.id,
- *       email: user.email,
- *       name: user.name
- *     })
+ *     onSuccess: (user) => user  // Type-safe: must return exact UserData type
  *   });
  * }
- * // Success → returns { id, email, name } (middleware wraps in successResponse)
+ * // Success → returns UserData (middleware wraps in successResponse)
  * // Failure → returns Failure effect (middleware converts to errorResponse)
  * ```
  *
  * @example
  * ```ts
- * // Custom error handling
+ * // Explicit field mapping - TypeScript enforces ALL fields must be present
  * return matchResponse(result, {
- *   onSuccess: (user) => ({ id: user.id }),
- *   onFailure: (error) => {
- *     logger.error({ userId, error }, "Failed to fetch user");
- *     return fail({ code: "INTERNAL_ERROR", message: "Custom message" });
- *   }
+ *   onSuccess: (user) => ({
+ *     id: user.id,
+ *     email: user.email,
+ *     name: user.name,
+ *     createdAt: user.createdAt,
+ *     updatedAt: user.updatedAt
+ *     // Missing any field? TypeScript error!
+ *     // Extra field? TypeScript error!
+ *   })
  * });
  * ```
  *
  * @example
  * ```ts
- * // Array mapping
+ * // Array mapping with exhaustive type safety
  * return matchResponse(result, {
  *   onSuccess: (users) => users.map(user => ({
  *     id: user.id,
  *     email: user.email,
- *     name: user.name
+ *     name: user.name,
+ *     createdAt: user.createdAt,
+ *     updatedAt: user.updatedAt
+ *     // Must map ALL fields to match UserData[] type
  *   }))
  * });
  * ```
  */
-export function matchResponse<T, U>(
+export function matchResponse<T>(
   result: Result<T>,
   handlers: {
     onFailure?: (error: AppError) => unknown;
-    onSuccess: (value: T) => U;
+    onSuccess: (value: T) => T;
   },
-): Failure | U {
+): Failure | T {
   switch (result.status) {
     case "Failure": {
       // Use custom error handler if provided, otherwise return original Failure
