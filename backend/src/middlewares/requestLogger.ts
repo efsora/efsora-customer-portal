@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 
 import { requestContext } from "#infrastructure/logger/context";
 import { logger } from "#infrastructure/logger/index";
+import { trace } from "@opentelemetry/api";
 import { randomUUID } from "node:crypto";
 
 /**
@@ -12,8 +13,14 @@ export function requestLogger(req: Request, res: Response, next: NextFunction): 
   const requestId = randomUUID();
   const startTime = Date.now();
 
-  // Create request context with correlation ID
-  requestContext.run({ requestId }, () => {
+  // Extract trace ID from OpenTelemetry span context (if available)
+  const activeSpan = trace.getActiveSpan();
+  const spanContext = activeSpan?.spanContext();
+  const traceId = spanContext?.traceId ?? requestId; // Fall back to requestId if no span
+  const spanId = spanContext?.spanId;
+
+  // Create request context with correlation IDs
+  requestContext.run({ requestId, spanId, traceId }, () => {
     // Log request start
     logger.info(
       {
@@ -23,6 +30,8 @@ export function requestLogger(req: Request, res: Response, next: NextFunction): 
         path: req.path,
         query: req.query,
         requestId,
+        spanId,
+        traceId,
       },
       "Incoming request",
     );
@@ -37,7 +46,9 @@ export function requestLogger(req: Request, res: Response, next: NextFunction): 
           method: req.method,
           path: req.path,
           requestId,
+          spanId,
           status: res.statusCode,
+          traceId,
         },
         "Request completed",
       );
