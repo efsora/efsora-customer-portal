@@ -1,18 +1,9 @@
-// Initialize tracing FIRST, before any other imports
-import { initializeTracing } from "#infrastructure/tracing/index";
-
-console.log("[INDEX] Tracing module imported, calling initializeTracing()...");
-console.log(
-  "[INDEX] process.env.OTEL_EXPORTER_OTLP_ENDPOINT:",
-  process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
-);
-console.log("[INDEX] process.env.ENABLE_TRACING:", process.env.ENABLE_TRACING);
-try {
-  initializeTracing();
-  console.log("[INDEX] initializeTracing() completed successfully");
-} catch (error) {
-  console.error("[INDEX] Error in initializeTracing():", error);
-}
+/**
+ * Backend API Server
+ *
+ * OpenTelemetry instrumentation is loaded via --import flag (see package.json scripts).
+ * This ensures HTTP/Express modules are patched BEFORE they are imported here.
+ */
 
 import { env } from "#infrastructure/config/env";
 import { metricsRegistry } from "#infrastructure/metrics/index";
