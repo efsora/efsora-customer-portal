@@ -11,14 +11,15 @@ const envSchema = z.object({
             return false;
         }
     }, { message: "DATABASE_URL must be a valid URL" }),
-    OTEL_EXPORTER_OTLP_ENDPOINT: z.string().min(1, "OTEL_EXPORTER_OTLP_ENDPOINT is required").refine((val) => {
+    OTEL_EXPORTER_OTLP_ENDPOINT: z.string().optional().refine((val) => {
+        if (!val) return true; // Optional - no validation needed if not provided
         try {
             new URL(val);
             return true;
         } catch {
             return false;
         }
-    }, { message: "OTEL_EXPORTER_OTLP_ENDPOINT must be a valid URL" }),
+    }, { message: "OTEL_EXPORTER_OTLP_ENDPOINT must be a valid URL when provided" }),
     OTEL_SERVICE_NAME: z.string().min(1, "OTEL_SERVICE_NAME is required"),
     ENABLE_TRACING: z.string().default("false").transform((val) => val === "true"),
     METRICS_ENABLED: z.string().default("false").transform((val) => val === "true"),

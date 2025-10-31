@@ -15,7 +15,7 @@ Express + TypeScript backend service implementing a Functional Core, Imperative 
 From the **root of the monorepo**, run:
 
 ```bash
-# Start all services (backend, postgres, weaviate, otel-collector)
+# Start all services (backend, postgres, weaviate)
 docker-compose up -d
 ```
 
@@ -90,7 +90,9 @@ JWT_SECRET=your-32-character-secret-key-change-in-production-please
 # Observability
 ENABLE_TRACING=true
 OTEL_SERVICE_NAME=backend
-OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces
+# OTEL_EXPORTER_OTLP_ENDPOINT is optional - if not set, traces log to console
+# Uncomment to send traces to an external collector (Jaeger, Tempo, etc.)
+# OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces
 METRICS_ENABLED=true
 LOG_LEVEL=debug
 LOGGER_PRETTY=true
@@ -237,7 +239,7 @@ npm run generate:openapi
 | `JWT_SECRET` | Secret for JWT tokens (min 32 chars) | - | Yes |
 | `ENABLE_TRACING` | Enable OpenTelemetry tracing | `false` | No |
 | `OTEL_SERVICE_NAME` | Service name for tracing | `backend` | No |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | OTLP endpoint URL | - | No |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | OTLP endpoint URL (if not set, traces log to console) | - | No |
 | `METRICS_ENABLED` | Enable Prometheus metrics | `false` | No |
 | `LOG_LEVEL` | Logging level | `info` | No |
 | `LOGGER_PRETTY` | Pretty print logs | `false` | No |
@@ -381,7 +383,8 @@ OpenTelemetry distributed tracing:
 - HTTP request spans
 - Database query spans
 - Effect operation spans
-- Export to OTLP collectors
+- Traces log to console by default (ConsoleSpanExporter)
+- Optional export to OTLP collectors (set `OTEL_EXPORTER_OTLP_ENDPOINT`)
 
 ## License
 

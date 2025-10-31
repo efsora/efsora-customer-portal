@@ -192,7 +192,46 @@ match(result, {
 })
 ```
 
-#### 4. Result Execution
+#### 4. Invariant Assertions
+
+The Result system provides `invariant()` for asserting programming contracts. Use this to distinguish between:
+- **Business errors** (user not found, validation failures) → Use `fail()` with Failure
+- **Programming errors** (API misuse, "should never happen" cases) → Use `invariant()`
+
+```typescript
+import { invariant } from "#lib/result";
+
+// ✅ Correct: Programming error (API contract violation)
+invariant(
+  result.status !== "Command",
+  "matchResponse() must be called after run()"
+);
+
+// ❌ Incorrect: Business error (use Failure instead)
+invariant(user !== null, "User not found"); // NO! Use fail()
+
+// ✅ Correct: Business error
+return user ? success(user) : fail({
+  code: "NOT_FOUND",
+  message: "User not found",
+  resourceType: "user",
+  resourceId: userId
+});
+```
+
+**When to use `invariant()`:**
+- API misuse: Calling functions with invalid preconditions
+- Type system gaps: Exhaustiveness checking in switch statements
+- Internal consistency: "This should never happen" scenarios
+
+**When NOT to use `invariant()`:**
+- Expected runtime failures → Return `Failure` result
+- User input validation → Use `fail()` with VALIDATION_ERROR
+- Business rule violations → Use `fail()` with appropriate error code
+
+All invariant violations throw with `[Invariant Violation]` prefix for easy debugging.
+
+#### 5. Result Execution
 
 Handlers execute results using `run()`:
 
@@ -409,9 +448,21 @@ Distributed tracing is automatically enabled for:
 Configure via environment variables:
 ```
 ENABLE_TRACING=true
-OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces
 OTEL_SERVICE_NAME=backend
+# OTEL_EXPORTER_OTLP_ENDPOINT is optional
+# If not set, traces are logged to console via ConsoleSpanExporter
+# Set this to send traces to an external collector (Jaeger, Tempo, etc.)
+# OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces
 ```
+
+**Tracing Behavior:**
+- When `OTEL_EXPORTER_OTLP_ENDPOINT` is **not set**: Traces are logged to the backend console using `ConsoleSpanExporter`
+- When `OTEL_EXPORTER_OTLP_ENDPOINT` is **set**: Traces are exported to the specified OTLP endpoint (e.g., otel-collector, Jaeger, Tempo)
+
+To add an external trace collector:
+1. Add otel-collector service to docker-compose.yml
+2. Configure exporters (Jaeger, Tempo, Zipkin, or cloud providers)
+3. Set `OTEL_EXPORTER_OTLP_ENDPOINT` to the collector's endpoint
 
 ## CORS Configuration
 
@@ -441,6 +492,10 @@ Required variables (see `.env.example`):
 - `LOG_LEVEL` - "debug", "info", "warn", or "error"
 - `ENABLE_TRACING` - "true" or "false"
 - `METRICS_ENABLED` - "true" or "false"
+
+Optional variables:
+- `OTEL_EXPORTER_OTLP_ENDPOINT` - OTLP endpoint URL (if not set, traces log to console)
+- `OTEL_SERVICE_NAME` - Service name for tracing (default: "backend")
 
 ## Import Aliases
 
