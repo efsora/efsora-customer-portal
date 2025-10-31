@@ -27,27 +27,13 @@ const OTEL_EXPORTER_OTLP_ENDPOINT = process.env.OTEL_EXPORTER_OTLP_ENDPOINT;
 if (!ENABLE_TRACING) {
   console.log("[INSTRUMENTATION] Tracing disabled - skipping SDK initialization");
 } else {
-  // Configure HTTP and Express instrumentations with debug hooks
+  // Configure HTTP and Express instrumentations
   const httpInstrumentation = new HttpInstrumentation({
     enabled: true,
-    requestHook: (span, _request) => {
-      const spanContext = span.spanContext();
-      console.log("[HTTP Instrumentation] HTTP span created:", {
-        spanId: spanContext.spanId,
-        traceId: spanContext.traceId,
-      });
-    },
   });
 
   const expressInstrumentation = new ExpressInstrumentation({
     enabled: true,
-    requestHook: (span, _request) => {
-      const spanContext = span.spanContext();
-      console.log("[Express Instrumentation] Express span created:", {
-        spanId: spanContext.spanId,
-        traceId: spanContext.traceId,
-      });
-    },
   });
 
   // Choose exporter based on configuration
