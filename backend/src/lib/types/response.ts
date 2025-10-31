@@ -5,10 +5,7 @@
  * Uses discriminated unions for type-safe success/failure handling.
  */
 
-import {
-  getRequestContext,
-  getTraceId as getTraceIdFromContext,
-} from "#infrastructure/logger/context";
+import { getTraceId as getTraceIdFromContext } from "#infrastructure/logger/context";
 import type { AppError } from "#lib/result/types/errors";
 
 /**
@@ -95,15 +92,7 @@ export type AppResponse<T> = FailureResponse | SuccessResponse<T>;
  * @returns Trace ID string or 'unknown'
  */
 export function getTraceId(): string {
-  const traceId = getTraceIdFromContext();
-
-  // Debug logging to understand context availability
-  if (!traceId) {
-    console.warn("[getTraceId] No traceId in AsyncLocalStorage context");
-    console.warn("[getTraceId] Context:", JSON.stringify(getRequestContext()));
-  }
-
-  return traceId ?? "unknown";
+  return getTraceIdFromContext() ?? "unknown";
 }
 
 /**

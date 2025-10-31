@@ -19,11 +19,8 @@ export function requestLogger(req: Request, res: Response, next: NextFunction): 
   const traceId = spanContext?.traceId ?? requestId; // Fall back to requestId if no span
   const spanId = spanContext?.spanId;
 
-  console.log("[requestLogger] Setting context:", { requestId, spanId, traceId });
-
   // Create request context with correlation IDs
   requestContext.run({ requestId, spanId, traceId }, () => {
-    console.log("[requestLogger] Inside run() - context should be active");
     // Log request start
     logger.info(
       {
