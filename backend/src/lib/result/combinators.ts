@@ -11,10 +11,11 @@ import { command, fail, success } from "./factories";
 import { run } from "./interpreter";
 import { invariant } from "#lib/result/invariant";
 import { AppError } from "./types/errors";
-import type {
-  AppResponse,
-  FailureResponse,
-  SuccessResponse,
+import {
+  createFailureResponse,
+  type AppResponse,
+  type FailureResponse,
+  type SuccessResponse,
 } from "#lib/types/response";
 
 /**
@@ -586,7 +587,7 @@ export function match<T, U>(
  *         createdAt: user.createdAt,
  *         updatedAt: user.updatedAt
  *       },
- *       trace_id: getTraceId(),
+ *       traceId: getTraceId(),
  *       message: null,
  *       meta: null,
  *       error: null,
@@ -595,7 +596,7 @@ export function match<T, U>(
  *       success: false,
  *       error: error,
  *       message: error.message,
- *       trace_id: getTraceId(),
+ *       traceId: getTraceId(),
  *       data: null,
  *       meta: null,
  *     }),
@@ -621,14 +622,17 @@ export function match<T, U>(
 export function matchResponse<T>(
   result: Result<T>,
   handlers: {
-    onFailure: (error: AppError) => FailureResponse;
+    onFailure?: (error: AppError) => FailureResponse;
     onSuccess: (value: T) => SuccessResponse<T>;
   },
 ): AppResponse<T> {
   switch (result.status) {
     case "Failure": {
+      if (handlers.onFailure) {
       // Return failure response constructed by handler
-      return handlers.onFailure(result.error);
+        return handlers.onFailure(result.error);
+      }
+      return createFailureResponse(result.error);
     }
 
     case "Success": {

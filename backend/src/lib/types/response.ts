@@ -57,7 +57,7 @@ export interface SuccessResponse<T> {
   /** Always true for success */
   success: true;
   /** Trace ID for request correlation */
-  trace_id: string;
+  traceId: string;
 }
 
 /**
@@ -76,7 +76,7 @@ export interface FailureResponse {
   /** Always false for failure */
   success: false;
   /** Trace ID for request correlation */
-  trace_id: string;
+  traceId: string;
 }
 
 /**
@@ -114,7 +114,7 @@ export function createSuccessResponse<T>(data: T, meta?: Meta): SuccessResponse<
     message: null,
     meta: meta ?? null,
     success: true,
-    trace_id: getTraceId(),
+    traceId: getTraceId(),
   };
 }
 
@@ -141,7 +141,7 @@ export function createFailureResponse(error: AppError): FailureResponse {
     message: error.message,
     meta: null,
     success: false,
-    trace_id: getTraceId(),
+    traceId: getTraceId(),
   };
 }
 
@@ -170,6 +170,6 @@ export function createPaginatedSuccessResponse<T>(
     message: null,
     meta: { cursor: null, pagination },
     success: true,
-    trace_id: getTraceId(),
+    traceId: getTraceId(),
   };
 }

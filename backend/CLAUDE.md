@@ -358,7 +358,7 @@ All API endpoints return responses in a standardized `AppResponse<T>` format usi
 {
   success: true,
   data: T,
-  trace_id: string,
+  traceId: string,
   message?: null,
   meta?: Meta | null,
   error?: null
@@ -369,7 +369,7 @@ All API endpoints return responses in a standardized `AppResponse<T>` format usi
   success: false,
   error: AppError,
   message: string,
-  trace_id: string,
+  traceId: string,
   data?: null,
   meta?: null
 }
@@ -423,7 +423,7 @@ getTraceId(): string
 
 The `AppResponse<T>` system enforces:
 - Exhaustive field mapping via TypeScript
-- Required `trace_id` in all responses
+- Required `traceId` in all responses
 - Discriminated union (success: true/false)
 - Proper error structure with AppError type
 

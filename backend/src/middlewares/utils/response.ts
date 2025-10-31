@@ -38,7 +38,7 @@ export function errorResponse(
     success: false,
     error,
     message,
-    trace_id: getTraceId() ?? "unknown",
+    traceId: getTraceId() ?? "unknown",
     data: null,
     meta: null,
   };

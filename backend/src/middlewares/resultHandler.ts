@@ -41,7 +41,7 @@ export type ResultHandler = (
  *     onSuccess: (user) => ({
  *       success: true,
  *       data: { id: user.id, email: user.email },
- *       trace_id: getTraceId(),
+ *       traceId: getTraceId(),
  *       message: null,
  *       meta: null,
  *       error: null,
@@ -50,7 +50,7 @@ export type ResultHandler = (
  *       success: false,
  *       error: error,
  *       message: error.message,
- *       trace_id: getTraceId(),
+ *       traceId: getTraceId(),
  *       data: null,
  *       meta: null,
  *     }),
