@@ -6,7 +6,7 @@ import weaviate
 from app.api.dependencies import get_weaviate_client
 from app.db_ops.weaviate_db_ops import embed_text_in_weaviate, search_in_weaviate
 
-WeaviateClientDep = Annotated[weaviate.WeaviateClient, Depends(get_weaviate_client)]
+WeaviateClientDep = Annotated[weaviate.WeaviateAsyncClient, Depends(get_weaviate_client)]
 
 
 class WeaviateService:

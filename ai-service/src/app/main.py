@@ -76,13 +76,25 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
     logger.info("Dependency injection container wired successfully")
 
+    # Connect Weaviate client
+    weaviate_client = container.weaviate_client()
+    try:
+        await weaviate_client.connect()
+        logger.debug("Weaviate async client connected successfully")
+    except Exception as e:
+        logger.error(f"Failed to connect to Weaviate: {str(e)}", error=str(e))
+        raise
+
     try:
         yield
     finally:
         logger.info("Shutting down application")
         # Close Weaviate client
-        weaviate_client = container.weaviate_client()
-        weaviate_client.close()
+        try:
+            await weaviate_client.close()
+            logger.debug("Weaviate async client closed successfully")
+        except Exception as e:
+            logger.error(f"Error closing Weaviate client: {str(e)}", error=str(e))
         # Dispose database engine
         await engine.dispose()
         container.unwire()

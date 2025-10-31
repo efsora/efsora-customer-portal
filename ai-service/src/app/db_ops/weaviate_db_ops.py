@@ -5,7 +5,7 @@ from weaviate.classes.query import MetadataQuery
 
 
 async def embed_text_in_weaviate(
-    client: weaviate.WeaviateClient, text: str, collection: str
+    client: weaviate.WeaviateAsyncClient, text: str, collection: str
 ) -> dict[str, Any]:
     """
     Embed text in Weaviate without using a vectorizer.
@@ -13,10 +13,10 @@ async def embed_text_in_weaviate(
     This example stores the text as a property.
     """
     try:
-        col = client.collections.get(collection)
+        col = await client.collections.get(collection)
 
         # Create object with text property
-        uuid = col.data.insert(
+        uuid = await col.data.insert(
             properties={"text": text},
         )
 
@@ -30,17 +30,17 @@ async def embed_text_in_weaviate(
 
 
 async def search_in_weaviate(
-    client: weaviate.WeaviateClient, query: str, collection: str, limit: int = 10
+    client: weaviate.WeaviateAsyncClient, query: str, collection: str, limit: int = 10
 ) -> dict[str, Any]:
     """
     Search for similar objects in Weaviate using BM25.
     Falls back to BM25 since no vectorizer is configured.
     """
     try:
-        col = client.collections.get(collection)
+        col = await client.collections.get(collection)
 
         # Use BM25 search since no vectorizer is configured
-        response = col.query.bm25(
+        response = await col.query.bm25(
             query=query,
             limit=limit,
             return_metadata=MetadataQuery(distance=True),

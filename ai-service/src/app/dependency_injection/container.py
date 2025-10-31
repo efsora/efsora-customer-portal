@@ -34,7 +34,7 @@ class Container(containers.DeclarativeContainer):
     )
 
     # --- Weaviate ---
-    weaviate_client: providers.Singleton[weaviate.WeaviateClient] = providers.Singleton(
+    weaviate_client: providers.Singleton[weaviate.WeaviateAsyncClient] = providers.Singleton(
         create_weaviate_client,
         settings=settings,
     )

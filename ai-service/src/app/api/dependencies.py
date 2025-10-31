@@ -29,7 +29,7 @@ async def get_context(
 @inject
 async def get_weaviate_client(
     weaviate_client: Annotated[
-        weaviate.WeaviateClient, Depends(Provide[Container.weaviate_client])
+        weaviate.WeaviateAsyncClient, Depends(Provide[Container.weaviate_client])
     ],
-) -> weaviate.WeaviateClient:
+) -> weaviate.WeaviateAsyncClient:
     return weaviate_client
