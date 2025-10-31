@@ -16,6 +16,18 @@ export function requestLogger(req: Request, res: Response, next: NextFunction): 
   // Extract trace ID from OpenTelemetry span context (if available)
   const activeSpan = trace.getActiveSpan();
   const spanContext = activeSpan?.spanContext();
+
+  // Debug: Log span information
+  if (!activeSpan) {
+    console.log("[requestLogger] No active span found - OTEL HTTP instrumentation may not be working");
+  } else {
+    console.log("[requestLogger] Active span found:", {
+      name: (activeSpan as any).name,
+      traceId: spanContext?.traceId,
+      spanId: spanContext?.spanId,
+    });
+  }
+
   const traceId = spanContext?.traceId ?? requestId; // Fall back to requestId if no span
   const spanId = spanContext?.spanId;
 
