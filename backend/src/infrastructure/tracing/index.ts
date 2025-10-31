@@ -2,6 +2,8 @@ import { env } from "#infrastructure/config/env";
 import { context, type Span, SpanStatusCode, trace } from "@opentelemetry/api";
 import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
+import { ExpressInstrumentation } from "@opentelemetry/instrumentation-express";
+import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
 import { resourceFromAttributes } from "@opentelemetry/resources";
 import { NodeSDK } from "@opentelemetry/sdk-node";
 import { ConsoleSpanExporter } from "@opentelemetry/sdk-trace-node";
@@ -87,11 +89,44 @@ export function initializeTracing(): void {
   console.log(
     `Tracing initialized with ${env.OTEL_EXPORTER_OTLP_ENDPOINT ? `OTLP exporter (${env.OTEL_EXPORTER_OTLP_ENDPOINT})` : "Console exporter"}`,
   );
+
+  // Explicitly configure HTTP and Express instrumentations
+  const httpInstrumentation = new HttpInstrumentation({
+    enabled: true,
+    requestHook: (span, _request) => {
+      const spanContext = span.spanContext();
+      console.log("[HTTP Instrumentation] HTTP span created:", {
+        traceId: spanContext.traceId,
+        spanId: spanContext.spanId,
+      });
+    },
+  });
+
+  const expressInstrumentation = new ExpressInstrumentation({
+    enabled: true,
+    requestHook: (span, _request) => {
+      const spanContext = span.spanContext();
+      console.log("[Express Instrumentation] Express span created:", {
+        traceId: spanContext.traceId,
+        spanId: spanContext.spanId,
+      });
+    },
+  });
+
   sdk = new NodeSDK({
     instrumentations: [
+      httpInstrumentation,
+      expressInstrumentation,
+      // Keep other auto-instrumentations but disable problematic ones
       getNodeAutoInstrumentations({
         "@opentelemetry/instrumentation-fs": {
           enabled: false,
+        },
+        "@opentelemetry/instrumentation-http": {
+          enabled: false, // Disabled because we use explicit config above
+        },
+        "@opentelemetry/instrumentation-express": {
+          enabled: false, // Disabled because we use explicit config above
         },
       }),
     ],
@@ -101,7 +136,10 @@ export function initializeTracing(): void {
     }),
     traceExporter,
   });
+
+  console.log("[TRACING] Starting OpenTelemetry SDK with explicit HTTP/Express instrumentation...");
   sdk.start();
+  console.log("[TRACING] OpenTelemetry SDK started successfully");
 }
 /**
  * Shutdown tracing SDK gracefully
