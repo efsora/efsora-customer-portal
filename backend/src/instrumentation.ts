@@ -83,10 +83,18 @@ if (!ENABLE_TRACING) {
   // Handle graceful shutdown
   process.on("SIGTERM", () => {
     console.log("[INSTRUMENTATION] Shutting down OpenTelemetry SDK...");
-    sdk.shutdown().then(() => {
-      console.log("[INSTRUMENTATION] OpenTelemetry SDK shut down successfully");
-    }).catch((err: unknown) => {
-      console.error("[INSTRUMENTATION] Error shutting down OpenTelemetry SDK", err);
-    });
+    sdk
+      .shutdown()
+      .then(() => {
+        console.log(
+          "[INSTRUMENTATION] OpenTelemetry SDK shut down successfully",
+        );
+      })
+      .catch((err: unknown) => {
+        console.error(
+          "[INSTRUMENTATION] Error shutting down OpenTelemetry SDK",
+          err,
+        );
+      });
   });
 }

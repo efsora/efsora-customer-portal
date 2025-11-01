@@ -6,11 +6,7 @@ import { Request, Response } from "express";
  * Global error handler middleware
  * Catches any unhandled errors and returns a standard error response
  */
-export function errorHandler(
-  error: Error,
-  req: Request,
-  res: Response,
-): void {
+export function errorHandler(error: Error, req: Request, res: Response): void {
   // Log error with observability context
   logger.error(
     {
