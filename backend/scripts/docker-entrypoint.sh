@@ -14,7 +14,7 @@ echo "✅ Database is ready!"
 echo "🔄 Running database migrations..."
 
 # Run migrations (push schema to database)
-cd /app/backend
+# Working directory is already /app from Dockerfile
 npx drizzle-kit push --config=drizzle.config.ts
 
 if [ $? -eq 0 ]; then
