@@ -22,7 +22,6 @@ import {
 
 console.log("[INSTRUMENTATION] Loading instrumentation BEFORE app code...");
 
-// Check environment
 const ENABLE_TRACING = process.env.ENABLE_TRACING === "true";
 const OTEL_SERVICE_NAME = process.env.OTEL_SERVICE_NAME ?? "backend-api";
 const OTEL_EXPORTER_OTLP_ENDPOINT = process.env.OTEL_EXPORTER_OTLP_ENDPOINT;
@@ -32,7 +31,6 @@ if (!ENABLE_TRACING) {
     "[INSTRUMENTATION] Tracing disabled - skipping SDK initialization",
   );
 } else {
-  // Configure HTTP and Express instrumentations
   const httpInstrumentation = new HttpInstrumentation({
     enabled: true,
   });
@@ -41,7 +39,6 @@ if (!ENABLE_TRACING) {
     enabled: true,
   });
 
-  // Choose exporter based on configuration
   const traceExporter = OTEL_EXPORTER_OTLP_ENDPOINT
     ? new OTLPTraceExporter({ url: OTEL_EXPORTER_OTLP_ENDPOINT })
     : new ConsoleSpanExporter();
@@ -50,7 +47,6 @@ if (!ENABLE_TRACING) {
     `[INSTRUMENTATION] Initializing with ${OTEL_EXPORTER_OTLP_ENDPOINT ? `OTLP exporter (${OTEL_EXPORTER_OTLP_ENDPOINT})` : "Console exporter"}`,
   );
 
-  // Initialize SDK
   const sdk = new NodeSDK({
     instrumentations: [
       httpInstrumentation,
@@ -80,7 +76,6 @@ if (!ENABLE_TRACING) {
     "[INSTRUMENTATION] OpenTelemetry SDK started - HTTP/Express modules are now instrumented",
   );
 
-  // Handle graceful shutdown
   process.on("SIGTERM", () => {
     console.log("[INSTRUMENTATION] Shutting down OpenTelemetry SDK...");
     sdk

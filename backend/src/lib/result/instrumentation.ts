@@ -121,7 +121,6 @@ export function logError(
   const errorMessage = error instanceof Error ? error.message : "Unknown error";
   const errorStack = error instanceof Error ? error.stack : undefined;
 
-  // Log error with stack trace
   if (ctx.logger) {
     ctx.logger.error(
       {
@@ -136,7 +135,6 @@ export function logError(
     );
   }
 
-  // Record error metrics
   if (ctx.recordEffectMetrics && ctx.recordEffectError) {
     ctx.recordEffectMetrics(
       operation,
@@ -144,7 +142,6 @@ export function logError(
       duration,
       "failure",
     );
-    // Extract error code if available from the error
     const errorCode =
       error && typeof error === "object" && "code" in error
         ? String(error.code)
@@ -152,7 +149,6 @@ export function logError(
     ctx.recordEffectError(operation, tags.domain || "unknown", errorCode);
   }
 
-  // End span with error
   if (span && ctx.endSpanWithError) {
     ctx.endSpanWithError(
       span,
@@ -174,7 +170,6 @@ export function logStart(
   operation: string,
   tags: Record<string, string>,
 ): null | Span {
-  // Create tracing span
   let span: null | Span = null;
   if (ctx.createSpan) {
     span = ctx.createSpan(`effect.${operation}`, {
@@ -183,7 +178,6 @@ export function logStart(
     });
   }
 
-  // Log effect execution start
   if (ctx.logger) {
     ctx.logger.debug(
       {
@@ -214,7 +208,6 @@ export function logSuccess(
   tags: Record<string, string>,
   duration: number,
 ): void {
-  // Log effect execution success
   if (ctx.logger) {
     ctx.logger.debug(
       {
@@ -228,7 +221,6 @@ export function logSuccess(
     );
   }
 
-  // Record metrics
   if (ctx.recordEffectMetrics) {
     ctx.recordEffectMetrics(
       operation,
@@ -238,7 +230,6 @@ export function logSuccess(
     );
   }
 
-  // End span with success
   if (span && ctx.endSpan) {
     ctx.endSpan(span);
   }

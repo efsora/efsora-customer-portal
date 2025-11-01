@@ -79,7 +79,6 @@ interface ExecutionContext {
  * ```
  */
 export async function run<T>(result: Result<T>): Promise<Result<T>> {
-  // Pattern match on effect type
   switch (result.status) {
     case "Command":
       // Execute Command with full instrumentation
@@ -116,19 +115,14 @@ async function executeCommandAndContinue<T>(
   effect: Command<T>,
   execCtx: ExecutionContext,
 ): Promise<Result<T>> {
-  // Execute the command (e.g., database query, API call)
   const commandResult: unknown = await effect.command();
 
-  // Apply continuation to transform command result into next Effect
   const nextResult = effect.continuation(commandResult);
 
-  // Recursively execute the next effect (tail-call style)
   const finalResult = await run(nextResult);
 
-  // Update duration after full execution
   const updatedExecCtx = calculateDuration(execCtx);
 
-  // Log and record metrics based on final result
   processResultExecution(updatedExecCtx, finalResult);
 
   return finalResult;
@@ -221,7 +215,6 @@ async function initializeExecutionContext(
   // Load instrumentation context (lazy loading via dynamic imports)
   const ctx = await loadInstrumentationContext();
 
-  // Log start and create distributed tracing span
   const span = logStart(ctx, operation, tags);
 
   return {
@@ -262,7 +255,6 @@ function logAndRecordFailure(
     );
   }
 
-  // Record failure metrics in Prometheus
   if (ctx.recordEffectMetrics && ctx.recordEffectError) {
     const domain = tags.domain || "unknown";
     ctx.recordEffectMetrics(operation, domain, duration, "failure");

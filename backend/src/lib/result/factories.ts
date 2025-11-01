@@ -83,7 +83,6 @@ export function command(
   // Auto mode: generate metadata from stack trace using stacktrace-js
   const { filePath, functionName } = extractCallerInfo();
 
-  // Determine operation name: function name or filename stem or "unknown"
   let operation: string;
   if (functionName) {
     operation = functionName;
@@ -93,13 +92,10 @@ export function command(
     operation = "unknown";
   }
 
-  // Extract domain from file path
   const domain = filePath ? extractDomainFromFilePath(filePath) : "unknown";
 
-  // Infer action from operation name
   const action = inferActionFromFunctionName(operation);
 
-  // Build auto-generated metadata
   const autoMetadata: ResultMetadata = {
     operation,
     tags: {
@@ -153,7 +149,6 @@ export function command(
  * ```
  */
 export function fail(error: AppError): Failure {
-  // Auto-generate timestamp if not provided
   const errorWithTimestamp: AppError = {
     ...error,
     timestamp: error.timestamp ?? new Date().toISOString(),

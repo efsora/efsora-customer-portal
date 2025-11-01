@@ -25,7 +25,6 @@ export async function handleCreateUser(
   const body = req.validated.body;
   const result = await run(createUser(body));
 
-  // Explicitly map response fields for API contract
   return matchResponse(result, {
     onSuccess: (user) =>
       createSuccessResponse({
@@ -49,7 +48,6 @@ export async function handleGetUserById(
 
   const result = await run(getUserById(id));
 
-  // Explicitly map response fields for API contract
   return matchResponse(result, {
     onSuccess: (user) =>
       createSuccessResponse({

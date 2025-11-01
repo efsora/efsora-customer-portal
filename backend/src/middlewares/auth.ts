@@ -32,7 +32,6 @@ declare global {
  */
 export function auth(req: Request, res: Response, next: NextFunction): void {
   try {
-    // Get token from Authorization header
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
@@ -54,10 +53,8 @@ export function auth(req: Request, res: Response, next: NextFunction): void {
       return;
     }
 
-    // Verify token
     const decoded = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
 
-    // Attach user to request
     req.user = decoded;
 
     next();

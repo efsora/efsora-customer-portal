@@ -24,7 +24,6 @@ export async function handleGetHello(): Promise<
     }),
   );
 
-  // Explicitly map response fields for API contract
   return matchResponse(result, {
     onSuccess: (data) =>
       createSuccessResponse({

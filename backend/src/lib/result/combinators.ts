@@ -116,7 +116,6 @@ export function allConcurrent<T extends readonly Result<unknown>[]>(
     (
       resultValues: Result<unknown>[],
     ): Result<{ [K in keyof T]: T[K] extends Result<infer U> ? U : never }> => {
-      // Check if any result failed
       const firstFailure = resultValues.find(
         (result) => result.status === "Failure",
       );
@@ -128,7 +127,6 @@ export function allConcurrent<T extends readonly Result<unknown>[]>(
         }>;
       }
 
-      // All succeeded - extract values
       const values = resultValues.map((result) => {
         if (result.status === "Success") {
           return result.value;
@@ -176,14 +174,11 @@ export function allNamed<T extends Record<string, Result<unknown>>>(
     }>;
   }
 
-  // Convert object to array of [key, result] pairs
   const entries = keys.map((key) => [key, results[key]] as const);
 
-  // Process all results using the all() function
   const resultsArray = entries.map(([, result]) => result);
 
   return chain(all(resultsArray), (values) => {
-    // Reconstruct object from keys and values
     const result = {} as {
       [K in keyof T]: T[K] extends Result<infer U> ? U : never;
     };
@@ -233,11 +228,9 @@ export function allNamedConcurrent<T extends Record<string, Result<unknown>>>(
     }>;
   }
 
-  // Convert object to array of results
   const entries = keys.map((key) => [key, results[key]] as const);
   const resultsArray = entries.map(([, result]) => result);
 
-  // Use allConcurrent to execute in parallel, then reconstruct object
   return chain(allConcurrent(resultsArray), (values) => {
     const result = {} as {
       [K in keyof T]: T[K] extends Result<infer U> ? U : never;
