@@ -59,6 +59,7 @@ This creates `backend/node_modules/` with all backend dependencies (both product
 If you need to use shared workspace packages (`@full-stack-template/common` or `@full-stack-template/shared`) in the backend:
 
 1. Add to `backend/package.json` dependencies:
+
    ```json
    {
      "dependencies": {
@@ -69,6 +70,7 @@ If you need to use shared workspace packages (`@full-stack-template/common` or `
    ```
 
 2. Rebuild the shared package (if needed):
+
    ```bash
    cd ../packages/common
    npm run build
@@ -523,6 +525,8 @@ The `AppResponse<T>` system enforces:
 
 ```typescript
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
+import { z } from "zod";
+
 extendZodWithOpenApi(z);
 
 export const createBodySchema = z
@@ -530,6 +534,9 @@ export const createBodySchema = z
     field: z.string().openapi({ example: "value" }),
   })
   .openapi("CreateBody");
+
+// Export inferred type for handlers
+export type CreateBody = z.infer<typeof createBodySchema>;
 ```
 
 3. **Create handlers** (`handlers.ts`):
@@ -540,11 +547,13 @@ import {
   createFailureResponse,
   type AppResponse,
 } from "#lib/types/response";
+import type { ValidatedRequest } from "#middlewares/validate";
+import type { CreateBody } from "./schemas";
 
 export async function handleCreate(
-  req: Request,
+  req: ValidatedRequest<{ body: CreateBody }>,
 ): Promise<AppResponse<CreateResult>> {
-  const body = req.body as CreateBody;
+  const body = req.validated.body; // Type-safe validated data
   const result = await run(createWorkflow(body));
 
   return matchResponse(result, {
@@ -553,6 +562,13 @@ export async function handleCreate(
   });
 }
 ```
+
+**Handler Type Safety**:
+
+- Import `ValidatedRequest` from `#middlewares/validate`
+- Import inferred types (not schema objects) from schemas
+- Use `req.validated.body/params/query` for type-safe access
+- No unsafe type casting needed
 
 4. **Define routes** (`routes.ts`):
 
@@ -580,10 +596,15 @@ Middleware (logging, metrics, body parsing)
 Route Handler
   ↓
 validate() middleware (Zod schema)
+  ├─ Validates body/params/query
+  ├─ Returns 400 if validation fails
+  └─ Populates req.validated with type-safe data
   ↓
 handleResult() middleware
   ↓
-Handler Function (calls workflow)
+Handler Function (accesses req.validated.*)
+  ├─ Type-safe validated inputs
+  └─ Calls workflow
   ↓
 Workflow (orchestrates operations)
   ↓
@@ -592,6 +613,37 @@ Operations (business logic)
 Repository (database access)
   ↓
 Response (formatted by handleResult)
+```
+
+### Validated Request Pattern
+
+Handlers receive validated, type-safe inputs through `req.validated`:
+
+```typescript
+// Multiple validation sources (body + params)
+export async function handleUpdate(
+  req: ValidatedRequest<{ body: UpdateBody; params: IdParams }>,
+): Promise<AppResponse<UpdateResult>> {
+  const body = req.validated.body; // Type: UpdateBody
+  const { id } = req.validated.params; // Type: IdParams
+  // ...
+}
+
+// Single validation source (params only)
+export async function handleGet(
+  req: ValidatedRequest<{ params: IdParams }>,
+): Promise<AppResponse<GetResult>> {
+  const { id } = req.validated.params; // Type: IdParams
+  // ...
+}
+
+// No validation (no ValidatedRequest needed)
+export async function handleList(
+  req: Request,
+): Promise<AppResponse<ListResult>> {
+  // No validated data needed
+  // ...
+}
 ```
 
 ## Observability

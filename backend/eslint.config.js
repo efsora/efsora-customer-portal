@@ -21,6 +21,13 @@ export default tseslint.config(
     },
   },
   {
+    rules: {
+      // Disable unified-signatures rule due to ESLint plugin bug
+      // See: https://github.com/typescript-eslint/typescript-eslint/issues/9475
+      "@typescript-eslint/unified-signatures": "off",
+    },
+  },
+  {
     files: ["src/routes/**/*.ts"],
     plugins: {
       local: {

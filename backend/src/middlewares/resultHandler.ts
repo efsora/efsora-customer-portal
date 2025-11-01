@@ -19,9 +19,12 @@ import type { AppResponse } from "#lib/types/response";
  *
  * Handlers must return a Promise resolving to AppResponse<T>, which is a discriminated
  * union of SuccessResponse<T> and FailureResponse.
+ *
+ * Generic type R allows handlers to specify their request type (Request or ValidatedRequest).
+ * Defaults to Request for handlers that don't use validation.
  */
-export type ResultHandler = (
-  req: Request,
+export type ResultHandler<R extends Request = Request> = (
+  req: R,
   res: Response,
   next: NextFunction,
 ) => Promise<AppResponse<unknown>>;
@@ -37,26 +40,13 @@ export type ResultHandler = (
  *
  * Handler Style:
  * ```ts
- * export async function handleGetUser(req: Request) {
- *   const result = await run(getUser(userId));
+ * export async function handleGetUser(req: ValidatedRequest<{ params: IdParams }>) {
+ *   const { id } = req.validated.params;
+ *   const result = await run(getUser(id));
  *
  *   return matchResponse(result, {
- *     onSuccess: (user) => ({
- *       success: true,
- *       data: { id: user.id, email: user.email },
- *       traceId: getTraceId(),
- *       message: null,
- *       meta: null,
- *       error: null,
- *     }),
- *     onFailure: (error) => ({
- *       success: false,
- *       error: error,
- *       message: error.message,
- *       traceId: getTraceId(),
- *       data: null,
- *       meta: null,
- *     }),
+ *     onSuccess: (user) => createSuccessResponse({ id: user.id, email: user.email }),
+ *     onFailure: (error) => createFailureResponse(error),
  *   });
  * }
  * ```
@@ -74,10 +64,12 @@ export type ResultHandler = (
  * @param handler - Handler function returning AppResponse<T>
  * @returns Express middleware function
  */
-export function handleResult(handler: ResultHandler) {
+export function handleResult<R extends Request = Request>(
+  handler: ResultHandler<R>,
+) {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await handler(req, res, next);
+      const result = await handler(req as R, res, next);
 
       // If handler already sent response (e.g., early return), skip processing
       if (res.headersSent) {

@@ -1,29 +1,28 @@
-import type { Request } from "express";
-
 import { matchResponse } from "#lib/result/combinators";
 import { run } from "#lib/result/index";
-import { createUser, getUserById } from "#core/users/index";
+import {
+  CreateUserResult,
+  UserData,
+  createUser,
+  getUserById,
+} from "#core/users/index";
 import {
   createFailureResponse,
   createSuccessResponse,
   type AppResponse,
 } from "#lib/types/response";
+import type { ValidatedRequest } from "#middlewares/validate";
 
-import { CreateUserBody, GetUserParams } from "./schemas";
+import type { CreateUserBody, GetUserParams } from "./schemas";
 
 /**
  * POST /users
  * Create a new user
  */
-export async function handleCreateUser(req: Request): Promise<
-  AppResponse<{
-    email: string;
-    id: number;
-    name: null | string;
-    token?: string;
-  }>
-> {
-  const body = req.body as CreateUserBody;
+export async function handleCreateUser(
+  req: ValidatedRequest<{ body: CreateUserBody }>,
+): Promise<AppResponse<CreateUserResult>> {
+  const body = req.validated.body;
   const result = await run(createUser(body));
 
   // Explicitly map response fields for API contract
@@ -43,16 +42,10 @@ export async function handleCreateUser(req: Request): Promise<
  * GET /users/:id
  * Get user by ID (authenticated users only, can only access own data)
  */
-export async function handleGetUserById(req: Request): Promise<
-  AppResponse<{
-    createdAt: Date;
-    email: string;
-    id: number;
-    name: null | string;
-    updatedAt: Date;
-  }>
-> {
-  const { id } = req.params as unknown as GetUserParams;
+export async function handleGetUserById(
+  req: ValidatedRequest<{ params: GetUserParams }>,
+): Promise<AppResponse<UserData>> {
+  const { id } = req.validated.params;
 
   const result = await run(getUserById(id));
 
