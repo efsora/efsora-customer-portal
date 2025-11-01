@@ -7,20 +7,14 @@ RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/ap
 # Set working directory
 WORKDIR /app
 
-# Copy root package files for workspace setup
-COPY package*.json ./
+# Copy backend package files
+COPY backend/package*.json ./
 
-# Copy backend package.json
-COPY backend/package.json ./backend/
-
-# Install dependencies using workspace (skip prepare scripts like husky)
-RUN npm ci --workspace=backend --ignore-scripts
+# Install backend dependencies (standalone, not a workspace)
+RUN npm ci --omit=dev
 
 # Copy backend source code
-COPY backend/ ./backend/
-
-# Set working directory to backend
-WORKDIR /app/backend
+COPY backend/ ./
 
 # Copy and set permissions for entrypoint script
 COPY backend/scripts/docker-entrypoint.sh /usr/local/bin/
