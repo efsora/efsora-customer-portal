@@ -52,8 +52,14 @@ cd full-stack-template
 
 ### 2. Install dependencies
 
+The backend is a standalone service with its own `node_modules/` directory for deployment isolation.
+
 ```bash
+# Install workspace dependencies (frontend, shared, packages)
 npm install
+
+# Install backend dependencies separately
+cd backend && npm install && cd ..
 ```
 
 ### 3. Set up environment variables

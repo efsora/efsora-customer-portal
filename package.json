@@ -4,7 +4,6 @@
   "private": true,
   "description": "Full-stack + AI project template with monorepo architecture",
   "workspaces": [
-    "backend",
     "frontend",
     "shared",
     "packages/*"

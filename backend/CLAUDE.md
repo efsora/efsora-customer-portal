@@ -34,6 +34,54 @@ npx drizzle-kit studio   # Open Drizzle Studio database GUI
 npm run generate:openapi # Generate OpenAPI spec from Zod schemas (auto-runs with dev/build)
 ```
 
+## Standalone Backend Setup
+
+**Important**: The backend is a **standalone service** with its own isolated `node_modules/` directory. It is NOT part of the NPM workspaces (unlike frontend, shared, and packages).
+
+### Why Standalone?
+
+- **Deployment Isolation**: Clean separation of backend and frontend dependencies for containerization
+- **No Dependency Mixing**: Backend and frontend don't share `node_modules/`
+- **Independent Builds**: Backend can be built and deployed without workspace complexity
+
+### Installation
+
+```bash
+# From the backend directory
+cd backend
+npm install
+```
+
+This creates `backend/node_modules/` with all backend dependencies (both production and dev dependencies).
+
+### Using Workspace Packages (Future)
+
+If you need to use shared workspace packages (`@full-stack-template/common` or `@full-stack-template/shared`) in the backend:
+
+1. Add to `backend/package.json` dependencies:
+   ```json
+   {
+     "dependencies": {
+       "@full-stack-template/common": "file:../packages/common",
+       "@full-stack-template/shared": "file:../shared"
+     }
+   }
+   ```
+
+2. Rebuild the shared package (if needed):
+   ```bash
+   cd ../packages/common
+   npm run build
+   ```
+
+3. Install in backend:
+   ```bash
+   cd ../../backend
+   npm install
+   ```
+
+The `file:` protocol will copy/symlink the package into `backend/node_modules/@full-stack-template/`.
+
 ## Docker Deployment
 
 The backend has **fully automated setup** when using Docker Compose:
