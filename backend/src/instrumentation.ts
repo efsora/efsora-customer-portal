@@ -24,7 +24,7 @@ console.log("[INSTRUMENTATION] Loading instrumentation BEFORE app code...");
 
 // Check environment
 const ENABLE_TRACING = process.env.ENABLE_TRACING === "true";
-const OTEL_SERVICE_NAME = process.env.OTEL_SERVICE_NAME || "backend-api";
+const OTEL_SERVICE_NAME = process.env.OTEL_SERVICE_NAME ?? "backend-api";
 const OTEL_EXPORTER_OTLP_ENDPOINT = process.env.OTEL_EXPORTER_OTLP_ENDPOINT;
 
 if (!ENABLE_TRACING) {
@@ -81,9 +81,12 @@ if (!ENABLE_TRACING) {
   );
 
   // Handle graceful shutdown
-  process.on("SIGTERM", async () => {
+  process.on("SIGTERM", () => {
     console.log("[INSTRUMENTATION] Shutting down OpenTelemetry SDK...");
-    await sdk.shutdown();
-    console.log("[INSTRUMENTATION] OpenTelemetry SDK shut down successfully");
+    sdk.shutdown().then(() => {
+      console.log("[INSTRUMENTATION] OpenTelemetry SDK shut down successfully");
+    }).catch((err: unknown) => {
+      console.error("[INSTRUMENTATION] Error shutting down OpenTelemetry SDK", err);
+    });
   });
 }

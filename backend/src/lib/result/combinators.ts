@@ -433,7 +433,7 @@ export function flow<A, B, C, D, E, F>(
 ): (initial: A) => Result<F>;
 
 // Implementation
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 export function flow(
   ...fns: ((value: any) => Result<any>)[]
 ): (initial: any) => Result<any> {
@@ -740,7 +740,7 @@ export function pipe<A, B, C, D, E, F>(
   fn5: (e: E) => Result<F>,
 ): Result<F>;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 export function pipe(
   result: Result<any>,
   ...fns: ((value: any) => Result<any>)[]
@@ -749,7 +749,7 @@ export function pipe(
     return result;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   return fns.reduce(
     (acc: Result<any>, fn: (value: any) => Result<any>) => chain(acc, fn),
     result,

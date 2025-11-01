@@ -9,7 +9,6 @@ extendZodWithOpenApi(z);
 export const createUserBodySchema = z
   .object({
     email: z
-      .string()
       .email("Invalid email format")
       .openapi({ example: "jane.doe@example.com" }),
     name: z
@@ -38,7 +37,7 @@ export const getUserParamsSchema = z
 export const userDataSchema = z
   .object({
     createdAt: z.coerce.date().openapi({ example: "2025-10-29T10:30:00.000Z" }),
-    email: z.string().email().openapi({ example: "jane.doe@example.com" }),
+    email: z.email().openapi({ example: "jane.doe@example.com" }),
     id: z.number().int().positive().openapi({ example: 1 }),
     name: z.string().nullable().openapi({ example: "Jane Doe" }),
     updatedAt: z.coerce.date().openapi({ example: "2025-10-29T10:30:00.000Z" }),
@@ -50,7 +49,7 @@ export const userDataSchema = z
  */
 export const createUserResponseSchema = z
   .object({
-    email: z.string().email().openapi({ example: "jane.doe@example.com" }),
+    email: z.email().openapi({ example: "jane.doe@example.com" }),
     id: z.number().int().positive().openapi({ example: 1 }),
     name: z.string().nullable().openapi({ example: "Jane Doe" }),
     token: z
