@@ -236,7 +236,9 @@ export type ValidationError = ErrorBase & {
 /**
  * Type guard to check if an error is a command execution error.
  */
-export function isCommandExecutionError(error: AppError): error is CommandExecutionError {
+export function isCommandExecutionError(
+  error: AppError,
+): error is CommandExecutionError {
   return error.code === "COMMAND_EXECUTION_ERROR";
 }
 
@@ -271,7 +273,9 @@ export function isNotFoundError(error: AppError): error is NotFoundError {
 /**
  * Type guard to check if an error is an unauthorized error.
  */
-export function isUnauthorizedError(error: AppError): error is UnauthorizedError {
+export function isUnauthorizedError(
+  error: AppError,
+): error is UnauthorizedError {
   return error.code === "UNAUTHORIZED";
 }
 

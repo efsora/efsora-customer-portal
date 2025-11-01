@@ -23,8 +23,16 @@ export const paginationMetaSchema = z
  */
 export const cursorMetaSchema = z
   .object({
-    next_cursor: z.string().nullable().optional().openapi({ example: "abc123" }),
-    previous_cursor: z.string().nullable().optional().openapi({ example: "def456" }),
+    next_cursor: z
+      .string()
+      .nullable()
+      .optional()
+      .openapi({ example: "abc123" }),
+    previous_cursor: z
+      .string()
+      .nullable()
+      .optional()
+      .openapi({ example: "def456" }),
   })
   .openapi("CursorMeta");
 
@@ -47,7 +55,10 @@ const errorBaseSchema = z.object({
   context: z.record(z.string(), z.any()).optional(),
   message: z.string(),
   resourceId: z.number().optional(),
-  timestamp: z.string().optional().openapi({ example: "2025-10-31T10:30:00.000Z" }),
+  timestamp: z
+    .string()
+    .optional()
+    .openapi({ example: "2025-10-31T10:30:00.000Z" }),
   userId: z.number().optional(),
 });
 
@@ -107,7 +118,9 @@ export const successResponseSchema = <T extends z.ZodType>(dataSchema: T) =>
     message: z.null().optional(),
     meta: metaSchema.nullable().optional(),
     success: z.literal(true),
-    traceId: z.string().openapi({ example: "00-1234567890abcdef-1234567890abcdef-01" }),
+    traceId: z
+      .string()
+      .openapi({ example: "00-1234567890abcdef-1234567890abcdef-01" }),
   });
 
 /**
@@ -115,7 +128,9 @@ export const successResponseSchema = <T extends z.ZodType>(dataSchema: T) =>
  * Wraps array data with pagination metadata
  * Matches SuccessResponse<T> with pagination meta from lib/types/response.ts
  */
-export const paginatedSuccessResponseSchema = <T extends z.ZodType>(dataSchema: T) =>
+export const paginatedSuccessResponseSchema = <T extends z.ZodType>(
+  dataSchema: T,
+) =>
   z.object({
     data: z.array(dataSchema),
     error: z.null().optional(),
@@ -125,7 +140,9 @@ export const paginatedSuccessResponseSchema = <T extends z.ZodType>(dataSchema: 
       pagination: paginationMetaSchema,
     }),
     success: z.literal(true),
-    traceId: z.string().openapi({ example: "00-1234567890abcdef-1234567890abcdef-01" }),
+    traceId: z
+      .string()
+      .openapi({ example: "00-1234567890abcdef-1234567890abcdef-01" }),
   });
 
 /**
@@ -139,7 +156,9 @@ export const errorResponseSchema = z
     message: z.string().openapi({ example: "An error occurred" }),
     meta: z.null().optional(),
     success: z.literal(false),
-    traceId: z.string().openapi({ example: "00-1234567890abcdef-1234567890abcdef-01" }),
+    traceId: z
+      .string()
+      .openapi({ example: "00-1234567890abcdef-1234567890abcdef-01" }),
   })
   .openapi("ErrorResponse");
 

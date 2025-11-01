@@ -107,7 +107,10 @@ export function getTraceId(): string {
  * return createSuccessResponse({ id: 1, name: "John" });
  * ```
  */
-export function createSuccessResponse<T>(data: T, meta?: Meta): SuccessResponse<T> {
+export function createSuccessResponse<T>(
+  data: T,
+  meta?: Meta,
+): SuccessResponse<T> {
   return {
     data,
     error: null,

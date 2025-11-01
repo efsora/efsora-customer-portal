@@ -17,33 +17,39 @@
 
 // --- Combinators (Composition) ---
 export {
-    all,
-    allConcurrent,
-    allNamed,
-    allNamedConcurrent,
-    chain,
-    filter,
-    flow,
-    map,
-    match,
-    matchResponse,
-    pipe,
-    tap,
-  } from "#lib/result/combinators";
+  all,
+  allConcurrent,
+  allNamed,
+  allNamedConcurrent,
+  chain,
+  filter,
+  flow,
+  map,
+  match,
+  matchResponse,
+  pipe,
+  tap,
+} from "#lib/result/combinators";
 
-  // --- Factories ---
-  export { command, fail, success } from "#lib/result/factories";
+// --- Factories ---
+export { command, fail, success } from "#lib/result/factories";
 
-  // --- Interpreter ---
-  export { run } from "#lib/result/interpreter";
+// --- Interpreter ---
+export { run } from "#lib/result/interpreter";
 
-  // --- Metadata Utilities (Advanced Usage) ---
-  export {
-    extractCallerInfo,
-    extractDomainFromFilePath,
-    extractFilenameStem,
-    inferActionFromFunctionName,
-  } from "#lib/result/metadata";
+// --- Metadata Utilities (Advanced Usage) ---
+export {
+  extractCallerInfo,
+  extractDomainFromFilePath,
+  extractFilenameStem,
+  inferActionFromFunctionName,
+} from "#lib/result/metadata";
 
-  // --- Types ---
-  export type { Command, Failure, Result, ResultMetadata, Success } from "#lib/result/types";
+// --- Types ---
+export type {
+  Command,
+  Failure,
+  Result,
+  ResultMetadata,
+  Success,
+} from "#lib/result/types";

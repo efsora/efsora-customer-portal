@@ -5,7 +5,10 @@
 
 // Factory Functions (Production Implementations)
 import { createUserRepository } from "#infrastructure/repositories/drizzle/UserRepository";
-export { createUserRepository, type UserRepository } from "#infrastructure/repositories/drizzle/UserRepository";
+export {
+  createUserRepository,
+  type UserRepository,
+} from "#infrastructure/repositories/drizzle/UserRepository";
 
 // Singleton Instances
 import { db } from "#db/client";

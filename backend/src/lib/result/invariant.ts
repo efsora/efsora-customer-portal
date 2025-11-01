@@ -64,7 +64,10 @@
  * });
  * ```
  */
-export function invariant(condition: boolean, message: string): asserts condition {
+export function invariant(
+  condition: boolean,
+  message: string,
+): asserts condition {
   // In production, skip invariant checks for performance
   if (process.env.NODE_ENV === "production") {
     return;

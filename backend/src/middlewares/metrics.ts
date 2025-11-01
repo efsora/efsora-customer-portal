@@ -10,7 +10,11 @@ import {
 /**
  * Metrics middleware to collect HTTP request metrics
  */
-export function metricsMiddleware(req: Request, res: Response, next: NextFunction): void {
+export function metricsMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
   if (!env.METRICS_ENABLED) {
     next();
     return;

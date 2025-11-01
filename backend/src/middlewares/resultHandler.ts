@@ -8,7 +8,10 @@
 
 import type { NextFunction, Request, Response } from "express";
 
-import { getSuccessStatusCode, mapErrorCodeToStatus } from "#middlewares/utils/httpStatusMapper";
+import {
+  getSuccessStatusCode,
+  mapErrorCodeToStatus,
+} from "#middlewares/utils/httpStatusMapper";
 import type { AppResponse } from "#lib/types/response";
 
 /**

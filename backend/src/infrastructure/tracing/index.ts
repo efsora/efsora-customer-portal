@@ -16,7 +16,10 @@ import { context, type Span, SpanStatusCode, trace } from "@opentelemetry/api";
  * @param attributes - Optional span attributes (e.g., {"effect.domain": "users"})
  * @returns Span instance that should be ended via endSpan() or endSpanWithError()
  */
-export function createSpan(name: string, attributes?: Record<string, string>): Span {
+export function createSpan(
+  name: string,
+  attributes?: Record<string, string>,
+): Span {
   const tracer = getTracer();
   // Get current active context (may contain parent HTTP span from auto-instrumentation)
   const activeContext = context.active();

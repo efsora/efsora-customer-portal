@@ -1,31 +1,61 @@
 import { z } from "zod";
 
 const envSchema = z.object({
-    NODE_ENV: z.enum(["development", "production"]).default("development").transform((val) => val.toLowerCase()),
-    PORT: z.coerce.number().default(3000),
-    DATABASE_URL: z.string().min(1, "Database URL is required").refine((val) => {
+  NODE_ENV: z
+    .enum(["development", "production"])
+    .default("development")
+    .transform((val) => val.toLowerCase()),
+  PORT: z.coerce.number().default(3000),
+  DATABASE_URL: z
+    .string()
+    .min(1, "Database URL is required")
+    .refine(
+      (val) => {
         try {
-            new URL(val);
-            return true;
+          new URL(val);
+          return true;
         } catch {
-            return false;
+          return false;
         }
-    }, { message: "DATABASE_URL must be a valid URL" }),
-    OTEL_EXPORTER_OTLP_ENDPOINT: z.string().optional().refine((val) => {
+      },
+      { message: "DATABASE_URL must be a valid URL" },
+    ),
+  OTEL_EXPORTER_OTLP_ENDPOINT: z
+    .string()
+    .optional()
+    .refine(
+      (val) => {
         if (!val) return true; // Optional - no validation needed if not provided
         try {
-            new URL(val);
-            return true;
+          new URL(val);
+          return true;
         } catch {
-            return false;
+          return false;
         }
-    }, { message: "OTEL_EXPORTER_OTLP_ENDPOINT must be a valid URL when provided" }),
-    OTEL_SERVICE_NAME: z.string().min(1, "OTEL_SERVICE_NAME is required"),
-    ENABLE_TRACING: z.string().default("false").transform((val) => val === "true"),
-    METRICS_ENABLED: z.string().default("false").transform((val) => val === "true"),
-    LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
-    LOGGER_PRETTY: z.string().default("false").transform((val) => val === "true"),
-    JWT_SECRET: z.string().min(1, "JWT_SECRET is required").min(32, "JWT_SECRET must be at least 32 characters long"),
+      },
+      {
+        message:
+          "OTEL_EXPORTER_OTLP_ENDPOINT must be a valid URL when provided",
+      },
+    ),
+  OTEL_SERVICE_NAME: z.string().min(1, "OTEL_SERVICE_NAME is required"),
+  ENABLE_TRACING: z
+    .string()
+    .default("false")
+    .transform((val) => val === "true"),
+  METRICS_ENABLED: z
+    .string()
+    .default("false")
+    .transform((val) => val === "true"),
+  LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
+  LOGGER_PRETTY: z
+    .string()
+    .default("false")
+    .transform((val) => val === "true"),
+  JWT_SECRET: z
+    .string()
+    .min(1, "JWT_SECRET is required")
+    .min(32, "JWT_SECRET must be at least 32 characters long"),
 });
 
 export type Env = z.infer<typeof envSchema>;

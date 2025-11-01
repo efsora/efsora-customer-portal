@@ -184,7 +184,10 @@ function extractMetadata(effect: Command): {
  * @param execCtx - Execution context
  * @returns Failure effect with COMMAND_EXECUTION_ERROR
  */
-function handleCommandException(error: unknown, execCtx: ExecutionContext): Failure {
+function handleCommandException(
+  error: unknown,
+  execCtx: ExecutionContext,
+): Failure {
   const updatedExecCtx = calculateDuration(execCtx);
   const { ctx, duration, operation, span, tags } = updatedExecCtx;
 
@@ -209,7 +212,9 @@ function handleCommandException(error: unknown, execCtx: ExecutionContext): Fail
  * @param effect - Command being executed
  * @returns Promise resolving to execution context
  */
-async function initializeExecutionContext(effect: Command): Promise<ExecutionContext> {
+async function initializeExecutionContext(
+  effect: Command,
+): Promise<ExecutionContext> {
   const startTime = Date.now();
   const { operation, tags } = extractMetadata(effect);
 
@@ -235,7 +240,10 @@ async function initializeExecutionContext(effect: Command): Promise<ExecutionCon
  * @param execCtx - Execution context
  * @param failureEffect - The Failure effect to log
  */
-function logAndRecordFailure(execCtx: ExecutionContext, failureEffect: Failure): void {
+function logAndRecordFailure(
+  execCtx: ExecutionContext,
+  failureEffect: Failure,
+): void {
   const { ctx, duration, operation, span, tags } = execCtx;
 
   // Log failure details at WARN level (business failures, not system errors)
@@ -278,7 +286,10 @@ function logAndRecordFailure(execCtx: ExecutionContext, failureEffect: Failure):
  * @param execCtx - Execution context
  * @param finalResult - Final result value to process
  */
-function processResultExecution<T>(execCtx: ExecutionContext, finalResult: Result<T>): void {
+function processResultExecution<T>(
+  execCtx: ExecutionContext,
+  finalResult: Result<T>,
+): void {
   if (finalResult.status === "Failure") {
     logAndRecordFailure(execCtx, finalResult);
   } else if (finalResult.status === "Success") {

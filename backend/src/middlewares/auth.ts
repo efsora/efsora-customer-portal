@@ -36,15 +36,21 @@ export function auth(req: Request, res: Response, next: NextFunction): void {
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-      res.status(401).json(errorResponse("No authorization token provided", "UNAUTHORIZED"));
+      res
+        .status(401)
+        .json(errorResponse("No authorization token provided", "UNAUTHORIZED"));
       return;
     }
 
     // Extract token (format: "Bearer <token>")
-    const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : authHeader;
+    const token = authHeader.startsWith("Bearer ")
+      ? authHeader.slice(7)
+      : authHeader;
 
     if (!token) {
-      res.status(401).json(errorResponse("Invalid authorization format", "UNAUTHORIZED"));
+      res
+        .status(401)
+        .json(errorResponse("Invalid authorization format", "UNAUTHORIZED"));
       return;
     }
 
@@ -57,13 +63,20 @@ export function auth(req: Request, res: Response, next: NextFunction): void {
     next();
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {
-      res.status(401).json(errorResponse("Invalid or expired token", "UNAUTHORIZED"));
+      res
+        .status(401)
+        .json(errorResponse("Invalid or expired token", "UNAUTHORIZED"));
       return;
     }
 
     // Unexpected error
     res
       .status(500)
-      .json(errorResponse("Internal server error during authentication", "INTERNAL_ERROR"));
+      .json(
+        errorResponse(
+          "Internal server error during authentication",
+          "INTERNAL_ERROR",
+        ),
+      );
   }
 }

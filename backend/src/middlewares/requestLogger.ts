@@ -9,7 +9,11 @@ import { randomUUID } from "node:crypto";
  * Request logging middleware with correlation ID
  * Generates unique request ID and logs all HTTP requests/responses
  */
-export function requestLogger(req: Request, res: Response, next: NextFunction): void {
+export function requestLogger(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
   const requestId = randomUUID();
   const startTime = Date.now();
 

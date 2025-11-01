@@ -8,7 +8,8 @@ export const noDirectCoreImports = {
   meta: {
     type: "problem",
     docs: {
-      description: "Handlers must import workflows from domain barrels, not directly from files",
+      description:
+        "Handlers must import workflows from domain barrels, not directly from files",
       category: "Best Practices",
       recommended: true,
     },
@@ -59,13 +60,19 @@ export const noDirectCoreImports = {
             messageId: "workflow",
             data: { domain, file },
           });
-        } else if (file.endsWith(".operations.js") || file.endsWith(".operations")) {
+        } else if (
+          file.endsWith(".operations.js") ||
+          file.endsWith(".operations")
+        ) {
           context.report({
             node: node.source,
             messageId: "operation",
             data: { domain, file },
           });
-        } else if (file.endsWith(".compositions.js") || file.endsWith(".compositions")) {
+        } else if (
+          file.endsWith(".compositions.js") ||
+          file.endsWith(".compositions")
+        ) {
           context.report({
             node: node.source,
             messageId: "composition",
@@ -83,7 +90,10 @@ export const noDirectCoreImports = {
             messageId: "helper",
             data: { domain, file },
           });
-        } else if (file.includes("/types/internal.js") || file.includes("/types/internal")) {
+        } else if (
+          file.includes("/types/internal.js") ||
+          file.includes("/types/internal")
+        ) {
           context.report({
             node: node.source,
             messageId: "internalType",

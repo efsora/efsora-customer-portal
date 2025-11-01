@@ -20,7 +20,8 @@ function generateOpenApiSpec() {
 
   const openApiSpec = generator.generateDocument({
     info: {
-      description: "API documentation for the Full Stack Template backend service",
+      description:
+        "API documentation for the Full Stack Template backend service",
       title: "Full Stack Template API",
       version: "1.0.0",
     },

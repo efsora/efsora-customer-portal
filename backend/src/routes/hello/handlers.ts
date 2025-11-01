@@ -11,10 +11,12 @@ import {
  * GET /hello
  * Simple health/test endpoint
  */
-export async function handleGetHello(): Promise<AppResponse<{
-  message: string;
-  timestamp: string;
-}>> {
+export async function handleGetHello(): Promise<
+  AppResponse<{
+    message: string;
+    timestamp: string;
+  }>
+> {
   const result = await run(
     success({
       message: "Hello from API",
@@ -24,10 +26,11 @@ export async function handleGetHello(): Promise<AppResponse<{
 
   // Explicitly map response fields for API contract
   return matchResponse(result, {
-    onSuccess: (data) => createSuccessResponse({
-      message: data.message,
-      timestamp: data.timestamp,
-    }),
+    onSuccess: (data) =>
+      createSuccessResponse({
+        message: data.message,
+        timestamp: data.timestamp,
+      }),
     onFailure: (error) => createFailureResponse(error),
   });
 }

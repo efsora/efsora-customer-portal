@@ -28,7 +28,11 @@ export function createUserRepository(dbInstance: typeof db) {
     },
 
     findByEmail: (email: string): Promise<User[]> => {
-      return dbInstance.select().from(users).where(eq(users.email, email)).limit(1);
+      return dbInstance
+        .select()
+        .from(users)
+        .where(eq(users.email, email))
+        .limit(1);
     },
 
     findById: (id: number): Promise<User[]> => {
@@ -41,7 +45,11 @@ export function createUserRepository(dbInstance: typeof db) {
         updatedAt: new Date(),
       };
 
-      return dbInstance.update(users).set(updateData).where(eq(users.id, id)).returning();
+      return dbInstance
+        .update(users)
+        .set(updateData)
+        .where(eq(users.id, id))
+        .returning();
     },
 
     withTransaction: (tx: unknown) => createUserRepository(tx as typeof db),

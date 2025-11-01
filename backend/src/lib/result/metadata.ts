@@ -24,7 +24,10 @@ import StackTrace from "stacktrace-js";
  * }
  * ```
  */
-export function extractCallerInfo(): { filePath: null | string; functionName: null | string } {
+export function extractCallerInfo(): {
+  filePath: null | string;
+  functionName: null | string;
+} {
   try {
     // Use stacktrace-js to get structured stack frames (synchronous API)
     // Note: We use the synchronous getSync() which works in Node.js
@@ -52,7 +55,11 @@ export function extractCallerInfo(): { filePath: null | string; functionName: nu
 
       // Filter out internal/generic names
       if (functionName) {
-        if (functionName === "anonymous" || functionName === "<anonymous>" || functionName === "") {
+        if (
+          functionName === "anonymous" ||
+          functionName === "<anonymous>" ||
+          functionName === ""
+        ) {
           functionName = null;
         }
         // Skip test framework internal functions

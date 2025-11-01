@@ -49,7 +49,11 @@ app.get("/metrics", async (_req, res) => {
 
 // Health check endpoint
 app.get("/health", (_req, res) => {
-  res.json({ message: "Server is healthy", status: "ok", timestamp: new Date().toISOString() });
+  res.json({
+    message: "Server is healthy",
+    status: "ok",
+    timestamp: new Date().toISOString(),
+  });
 });
 
 // Serve OpenAPI spec
@@ -79,12 +83,18 @@ app.listen(env.PORT, () => {
   console.log(`Environment: ${env.NODE_ENV}`);
   console.log(`Observability:`);
   console.log(`  - Logging: ${env.LOG_LEVEL} (Pino)`);
-  console.log(`  - Metrics: ${env.METRICS_ENABLED ? "enabled" : "disabled"} (Prometheus)`);
-  console.log(`  - Tracing: ${env.ENABLE_TRACING ? "enabled" : "disabled"} (OpenTelemetry)`);
+  console.log(
+    `  - Metrics: ${env.METRICS_ENABLED ? "enabled" : "disabled"} (Prometheus)`,
+  );
+  console.log(
+    `  - Tracing: ${env.ENABLE_TRACING ? "enabled" : "disabled"} (OpenTelemetry)`,
+  );
   console.log(`Endpoints:`);
   console.log(`  - Health: http://localhost:${String(env.PORT)}/health`);
   console.log(`  - Metrics: http://localhost:${String(env.PORT)}/metrics`);
   console.log(`  - Swagger UI: http://localhost:${String(env.PORT)}/swagger`);
   console.log(`  - Redoc: http://localhost:${String(env.PORT)}/api-docs`);
-  console.log(`  - OpenAPI Spec: http://localhost:${String(env.PORT)}/_docs/openapi.json`);
+  console.log(
+    `  - OpenAPI Spec: http://localhost:${String(env.PORT)}/_docs/openapi.json`,
+  );
 });

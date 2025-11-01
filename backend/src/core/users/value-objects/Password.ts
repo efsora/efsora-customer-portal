@@ -200,7 +200,10 @@ export const HashedPassword = {
         return isValid;
       },
       (isValid: boolean) => success(isValid),
-      { operation: "verifyPassword", tags: { action: "validate", domain: "users" } },
+      {
+        operation: "verifyPassword",
+        tags: { action: "validate", domain: "users" },
+      },
     );
   },
 };

@@ -56,6 +56,7 @@ The backend has **fully automated setup** when using Docker Compose:
    ```
 
 The entrypoint script logs each step with emojis for easy debugging:
+
 - 🔍 Waiting for database
 - ✅ Database ready
 - 🔄 Running migrations
@@ -108,7 +109,7 @@ The codebase uses a **custom Effect system** (inspired by Effect-TS/fp-ts) for m
 ### Result Type
 
 ```typescript
-type Result<T> = Success<T> | Failure | Command<T>
+type Result<T> = Success<T> | Failure | Command<T>;
 ```
 
 - **Success**: Contains a successful result value
@@ -124,10 +125,10 @@ Workflows in `*.workflow.ts` compose operations using `pipe()`:
 ```typescript
 export function login(body: LoginBody): Effect<LoginResult> {
   return pipe(
-    validateLogin(body),    // Effect<LoginInput>
-    findUserByEmail,        // Effect<{ input, user }>
-    verifyPassword,         // Effect<LoginResult>
-    addAuthToken           // Effect<LoginResult>
+    validateLogin(body), // Effect<LoginInput>
+    findUserByEmail, // Effect<{ input, user }>
+    verifyPassword, // Effect<LoginResult>
+    addAuthToken, // Effect<LoginResult>
   );
 }
 ```
@@ -139,25 +140,29 @@ Each step receives the previous step's output. If any step returns `Failure`, ex
 Operations in `*.operations.ts` use `command()` for async operations:
 
 ```typescript
-export function findUserByEmail(input: LoginInput): Effect<{ input, user }> {
+export function findUserByEmail(input: LoginInput): Effect<{ input; user }> {
   return command(
     async () => {
       const users = await userRepository.findByEmail(input.email);
       return first(users);
     },
-    (user) => user ? success({ input, user }) : fail({
-      code: "UNAUTHORIZED",
-      message: "Invalid email or password"
-    }),
+    (user) =>
+      user
+        ? success({ input, user })
+        : fail({
+            code: "UNAUTHORIZED",
+            message: "Invalid email or password",
+          }),
     {
       operation: "findUserByEmail",
-      tags: { domain: "users", action: "read" }
-    }
+      tags: { domain: "users", action: "read" },
+    },
   );
 }
 ```
 
 **Command automatically provides**:
+
 - OpenTelemetry span creation
 - Prometheus metrics recording
 - Pino logging with correlation IDs
@@ -167,34 +172,41 @@ export function findUserByEmail(input: LoginInput): Effect<{ input, user }> {
 
 ```typescript
 // Sequential composition (output becomes input to next function)
-pipe(effect1, effect2, effect3)
+pipe(effect1, effect2, effect3);
 
 // Parallel composition
-allNamed({ email: Email.create(email), password: Password.create(password) })
-allConcurrent([query1, query2, query3])
+allNamed({ email: Email.create(email), password: Password.create(password) });
+allConcurrent([query1, query2, query3]);
 
 // Transformation
-map((user) => ({ id: user.id, email: user.email }))
+map((user) => ({ id: user.id, email: user.email }));
 
 // Conditional logic
-filter((user) => user.isActive, (user) => fail({
-  code: "FORBIDDEN",
-  message: `User ${user.id} is inactive`
-}))
+filter(
+  (user) => user.isActive,
+  (user) =>
+    fail({
+      code: "FORBIDDEN",
+      message: `User ${user.id} is inactive`,
+    }),
+);
 
 // Side results without transformation
-tap((post) => logger.info({ postId: post.id }, "Post created"))
+tap((post) => logger.info({ postId: post.id }, "Post created"));
 
 // Pattern matching
 match(result, {
   onSuccess: (value) => value,
-  onFailure: (error) => { throw error; }
-})
+  onFailure: (error) => {
+    throw error;
+  },
+});
 ```
 
 #### 4. Invariant Assertions
 
 The Result system provides `invariant()` for asserting programming contracts. Use this to distinguish between:
+
 - **Business errors** (user not found, validation failures) → Use `fail()` with Failure
 - **Programming errors** (API misuse, "should never happen" cases) → Use `invariant()`
 
@@ -204,27 +216,31 @@ import { invariant } from "#lib/result";
 // ✅ Correct: Programming error (API contract violation)
 invariant(
   result.status !== "Command",
-  "matchResponse() must be called after run()"
+  "matchResponse() must be called after run()",
 );
 
 // ❌ Incorrect: Business error (use Failure instead)
 invariant(user !== null, "User not found"); // NO! Use fail()
 
 // ✅ Correct: Business error
-return user ? success(user) : fail({
-  code: "NOT_FOUND",
-  message: "User not found",
-  resourceType: "user",
-  resourceId: userId
-});
+return user
+  ? success(user)
+  : fail({
+      code: "NOT_FOUND",
+      message: "User not found",
+      resourceType: "user",
+      resourceId: userId,
+    });
 ```
 
 **When to use `invariant()`:**
+
 - API misuse: Calling functions with invalid preconditions
 - Type system gaps: Exhaustiveness checking in switch statements
 - Internal consistency: "This should never happen" scenarios
 
 **When NOT to use `invariant()`:**
+
 - Expected runtime failures → Return `Failure` result
 - User input validation → Use `fail()` with VALIDATION_ERROR
 - Business rule violations → Use `fail()` with appropriate error code
@@ -243,6 +259,7 @@ export async function handleLogin(req: Request) {
 ```
 
 The `handleResult` middleware:
+
 - Processes handlers returning `AppResponse<T>` (universal response format)
 - Maps success responses to 200/201 HTTP status codes
 - Maps failure responses to appropriate HTTP error status codes
@@ -257,9 +274,13 @@ Domain primitives are implemented as opaque branded types in `value-objects/`:
 export type Email = string & { readonly __brand: unique symbol };
 
 export const Email = {
-  create: (value: string): Effect<Email> => { /* validation */ },
-  domain: (email: Email): string => { /* extract domain */ },
-  toString: (email: Email): string => email as string
+  create: (value: string): Effect<Email> => {
+    /* validation */
+  },
+  domain: (email: Email): string => {
+    /* extract domain */
+  },
+  toString: (email: Email): string => email as string,
 };
 
 // Usage
@@ -267,6 +288,7 @@ const emailEffect = Email.create("user@example.com"); // Effect<Email>
 ```
 
 Benefits:
+
 - Type safety: Can't pass raw strings where Email is expected
 - Validation happens at creation time
 - Self-documenting API
@@ -281,12 +303,22 @@ Repositories use **factory functions** for dependency injection and testing.
 // src/infrastructure/repositories/drizzle/UserRepository.ts
 export function createUserRepository(dbInstance: typeof db) {
   return {
-    findById: (id: number) => { /* ... */ },
-    findByEmail: (email: string) => { /* ... */ },
-    create: (data: NewUser) => { /* ... */ },
-    update: (id: number, data: Partial<NewUser>) => { /* ... */ },
-    delete: (id: number) => { /* ... */ },
-    withTransaction: (tx: unknown) => createUserRepository(tx as typeof db)
+    findById: (id: number) => {
+      /* ... */
+    },
+    findByEmail: (email: string) => {
+      /* ... */
+    },
+    create: (data: NewUser) => {
+      /* ... */
+    },
+    update: (id: number, data: Partial<NewUser>) => {
+      /* ... */
+    },
+    delete: (id: number) => {
+      /* ... */
+    },
+    withTransaction: (tx: unknown) => createUserRepository(tx as typeof db),
   };
 }
 
@@ -330,8 +362,10 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull()
-    .$onUpdate(() => new Date())
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
 });
 
 export type User = typeof users.$inferSelect;
@@ -386,15 +420,18 @@ import {
   type AppResponse,
 } from "#lib/types/response";
 
-export async function handleGetUser(req: Request): Promise<AppResponse<UserData>> {
+export async function handleGetUser(
+  req: Request,
+): Promise<AppResponse<UserData>> {
   const result = await run(getUserById(userId));
 
   return matchResponse(result, {
-    onSuccess: (user) => createSuccessResponse({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-    }),
+    onSuccess: (user) =>
+      createSuccessResponse({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      }),
     onFailure: (error) => createFailureResponse(error),
   });
 }
@@ -422,6 +459,7 @@ getTraceId(): string
 ### Type Safety
 
 The `AppResponse<T>` system enforces:
+
 - Exhaustive field mapping via TypeScript
 - Required `traceId` in all responses
 - Discriminated union (success: true/false)
@@ -434,16 +472,20 @@ The `AppResponse<T>` system enforces:
 1. **Create domain folder**: `src/routes/[domain]/`
 
 2. **Define Zod schemas** (`schemas.ts`):
+
 ```typescript
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 extendZodWithOpenApi(z);
 
-export const createBodySchema = z.object({
-  field: z.string().openapi({ example: "value" })
-}).openapi("CreateBody");
+export const createBodySchema = z
+  .object({
+    field: z.string().openapi({ example: "value" }),
+  })
+  .openapi("CreateBody");
 ```
 
 3. **Create handlers** (`handlers.ts`):
+
 ```typescript
 import {
   createSuccessResponse,
@@ -451,7 +493,9 @@ import {
   type AppResponse,
 } from "#lib/types/response";
 
-export async function handleCreate(req: Request): Promise<AppResponse<CreateResult>> {
+export async function handleCreate(
+  req: Request,
+): Promise<AppResponse<CreateResult>> {
   const body = req.body as CreateBody;
   const result = await run(createWorkflow(body));
 
@@ -463,17 +507,16 @@ export async function handleCreate(req: Request): Promise<AppResponse<CreateResu
 ```
 
 4. **Define routes** (`routes.ts`):
+
 ```typescript
 import { validate } from "#middlewares/validate";
 import { handleResult } from "#middlewares/resultHandler";
 
-router.post("/create",
-  validate(createBodySchema),
-  handleResult(handleCreate)
-);
+router.post("/create", validate(createBodySchema), handleResult(handleCreate));
 ```
 
 5. **Register in main router** (`src/routes/index.ts`):
+
 ```typescript
 import domainRoutes from "./domain/routes";
 router.use("/domain", domainRoutes);
@@ -508,6 +551,7 @@ Response (formatted by handleResult)
 ### Logging (Pino)
 
 The logger automatically includes:
+
 - Request correlation IDs (via AsyncLocalStorage)
 - Service name and environment
 - Timestamp and log level
@@ -522,6 +566,7 @@ logger.error({ error, requestId }, "Operation failed");
 ### Metrics (Prometheus)
 
 Metrics are automatically collected for:
+
 - HTTP requests (count, duration, response size)
 - Result executions (count, duration, errors)
 - Database queries (count, duration)
@@ -532,11 +577,13 @@ Access metrics: `GET /metrics`
 ### Tracing (OpenTelemetry)
 
 Distributed tracing is automatically enabled for:
+
 - HTTP requests (via auto-instrumentation)
 - Database queries (via Drizzle instrumentation)
 - Result operations (via Command metadata)
 
 Configure via environment variables:
+
 ```
 ENABLE_TRACING=true
 OTEL_SERVICE_NAME=backend
@@ -547,10 +594,12 @@ OTEL_SERVICE_NAME=backend
 ```
 
 **Tracing Behavior:**
+
 - When `OTEL_EXPORTER_OTLP_ENDPOINT` is **not set**: Traces are logged to the backend console using `ConsoleSpanExporter`
 - When `OTEL_EXPORTER_OTLP_ENDPOINT` is **set**: Traces are exported to the specified OTLP endpoint (e.g., otel-collector, Jaeger, Tempo)
 
 To add an external trace collector:
+
 1. Add otel-collector service to docker-compose.yml
 2. Configure exporters (Jaeger, Tempo, Zipkin, or cloud providers)
 3. Set `OTEL_EXPORTER_OTLP_ENDPOINT` to the collector's endpoint
@@ -576,6 +625,7 @@ For production, configure specific allowed origins in the environment or CORS mi
 Configuration is validated at startup using Zod in `src/infrastructure/config/env.ts`.
 
 Required variables (see `.env.example`):
+
 - `DATABASE_URL` - PostgreSQL connection string
 - `JWT_SECRET` - Minimum 32 characters for token signing
 - `NODE_ENV` - "development" or "production"
@@ -585,6 +635,7 @@ Required variables (see `.env.example`):
 - `METRICS_ENABLED` - "true" or "false"
 
 Optional variables:
+
 - `OTEL_EXPORTER_OTLP_ENDPOINT` - OTLP endpoint URL (if not set, traces log to console)
 - `OTEL_SERVICE_NAME` - Service name for tracing (default: "backend")
 
@@ -601,6 +652,7 @@ The project uses ES Module import aliases configured in `package.json`:
 ```
 
 Usage:
+
 ```typescript
 import { logger } from "#infrastructure/logger";
 import { userRepository } from "#infrastructure/repositories/drizzle";
@@ -633,6 +685,7 @@ router.get("/protected", auth, handleProtected);
 ```
 
 The middleware:
+
 - Verifies Bearer token from `Authorization` header
 - Attaches decoded payload to `req.user = { userId, email }`
 - Returns 401 for invalid/missing tokens
@@ -671,6 +724,7 @@ Handlers in `src/routes/**/*.ts` **must** import workflows only from domain barr
 ### Correct vs Incorrect Imports
 
 **✅ Correct** - Import from barrel:
+
 ```typescript
 // src/routes/auth/handlers.ts
 import { login, register } from "#core/users/index.js";
@@ -678,6 +732,7 @@ import type { LoginResult } from "#core/users/index.js";
 ```
 
 **❌ Incorrect** - Direct imports (will fail ESLint):
+
 ```typescript
 // Direct workflow import
 import { login } from "#core/users/login.workflow.js";
@@ -708,7 +763,10 @@ export { getUserById } from "./get-user.workflow.js";
 // Public types
 export type { LoginBody, RegisterBody } from "./types/inputs.js";
 export type { LoginResult, RegisterResult, UserData } from "./types/outputs.js";
-export type { EmailAlreadyExistsError, InvalidCredentialsError } from "./types/errors.js";
+export type {
+  EmailAlreadyExistsError,
+  InvalidCredentialsError,
+} from "./types/errors.js";
 
 // Value objects (if used in workflow signatures)
 export { Email } from "./value-objects/Email.js";
@@ -722,6 +780,7 @@ export { Password } from "./value-objects/Password.js";
 ### What to Export
 
 **✅ Export from barrel**:
+
 - Workflows (`*.workflow.ts`) - Main entry points for handlers
 - Public input types (`types/inputs.ts`) - Request data structures
 - Public output types (`types/outputs.ts`) - Response data structures
@@ -729,6 +788,7 @@ export { Password } from "./value-objects/Password.js";
 - Value objects - If used in workflow signatures
 
 **❌ DO NOT export from barrel**:
+
 - Operations (`*.operations.ts`) - Implementation details
 - Compositions (`*.compositions.ts`) - Internal orchestration
 - Rules (`*.rules.ts`) - Validation logic
@@ -759,11 +819,13 @@ This enforcement maintains the **Functional Core, Imperative Shell** pattern:
 ### Checking for Violations
 
 Run ESLint to detect violations:
+
 ```bash
 npm run lint
 ```
 
 The rule runs automatically:
+
 - In your editor (if ESLint extension is installed)
 - During `npm run lint`
 - In pre-commit hooks (via lint-staged)
@@ -774,16 +836,19 @@ The rule runs automatically:
 Tests are written using Vitest and should follow these patterns:
 
 ### Unit Tests (Operations)
+
 - Test pure functions in `*.operations.ts`
 - Mock repositories using factory functions
 - Test both success and failure paths
 
 ### Integration Tests (Workflows)
+
 - Test complete workflows with real database (test container)
 - Verify Effect composition works correctly
 - Test error handling and edge cases
 
 ### Handler Tests
+
 - Test HTTP layer with supertest
 - Verify request validation
 - Test authentication/authorization
@@ -795,12 +860,14 @@ Tests are written using Vitest and should follow these patterns:
 The OpenAPI spec is **automatically generated** from Zod schemas using `@asteasolutions/zod-to-openapi`. This ensures the documentation always stays in sync with the code.
 
 **Modular Architecture**: The OpenAPI generation uses a modular structure with separate files for:
+
 - **Registry** (`src/openapi/registry.ts`) - Central OpenAPI registry and security schemes
 - **Common Schemas** (`src/openapi/schemas.ts`) - Reusable response wrappers and error schemas
 - **Path Registrations** (`src/openapi/paths/`) - Separate file for each domain/route
 - **Generation Script** (`src/openapi/generate.ts`) - Orchestrates the spec generation
 
 **File Structure**:
+
 ```
 src/
 ├── openapi/
@@ -817,12 +884,14 @@ src/
 ```
 
 **Generation Process**:
+
 1. Define Zod schemas in `routes/[domain]/schemas.ts` with `.openapi()` metadata
 2. Create path registration in `src/openapi/paths/[domain].ts`
 3. Run `npm run generate:openapi` to generate `_docs/openapi.json`
 4. Spec auto-generates before `npm run dev` and `npm run build`
 
 **Accessing Documentation**:
+
 - OpenAPI JSON: `http://localhost:3000/docs/openapi.json`
 - Swagger UI: `http://localhost:3000/swagger` (interactive documentation)
 - Health Check: `http://localhost:3000/health`
@@ -841,16 +910,20 @@ import { z } from "zod";
 
 extendZodWithOpenApi(z);
 
-export const createBodySchema = z.object({
-  email: z.string().email().openapi({ example: "user@example.com" }),
-  name: z.string().min(1).openapi({ example: "John Doe" }),
-}).openapi("CreateBody");
+export const createBodySchema = z
+  .object({
+    email: z.string().email().openapi({ example: "user@example.com" }),
+    name: z.string().min(1).openapi({ example: "John Doe" }),
+  })
+  .openapi("CreateBody");
 
-export const createResponseSchema = z.object({
-  id: z.number().int().positive().openapi({ example: 1 }),
-  email: z.string().email().openapi({ example: "user@example.com" }),
-  name: z.string().openapi({ example: "John Doe" }),
-}).openapi("CreateResponse");
+export const createResponseSchema = z
+  .object({
+    id: z.number().int().positive().openapi({ example: 1 }),
+    email: z.string().email().openapi({ example: "user@example.com" }),
+    name: z.string().openapi({ example: "John Doe" }),
+  })
+  .openapi("CreateResponse");
 ```
 
 #### 2. Create Path Registration File
@@ -902,7 +975,7 @@ registry.registerPath({
 registry.registerPath({
   method: "get",
   path: "/api/v1/domain/{id}",
-  security: [{ BearerAuth: [] }],  // Requires JWT token
+  security: [{ BearerAuth: [] }], // Requires JWT token
   // ... rest of config
 });
 ```
@@ -916,7 +989,7 @@ Add to `src/openapi/generate.ts`:
 import "./paths/health.js";
 import "./paths/hello.js";
 import "./paths/users.js";
-import "./paths/domain.js";  // Add your new path file
+import "./paths/domain.js"; // Add your new path file
 ```
 
 #### 4. Regenerate OpenAPI Spec
@@ -939,7 +1012,7 @@ Wraps data in standard `AppResponse<T>` success format:
 import { successResponseSchema } from "../schemas.js";
 
 // Wrap your response schema
-schema: successResponseSchema(userDataSchema)
+schema: successResponseSchema(userDataSchema);
 
 // Generates:
 // {
@@ -960,7 +1033,7 @@ For paginated list endpoints:
 import { paginatedSuccessResponseSchema } from "../schemas.js";
 
 // Wrap array schema
-schema: paginatedSuccessResponseSchema(userSchema)
+schema: paginatedSuccessResponseSchema(userSchema);
 
 // Generates:
 // {

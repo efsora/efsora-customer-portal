@@ -43,7 +43,9 @@ export function all<T extends readonly Result<unknown>[]>(
 ): Result<{ [K in keyof T]: T[K] extends Result<infer U> ? U : never }> {
   // Base case: empty array
   if (results.length === 0) {
-    return success([]) as Result<{ [K in keyof T]: T[K] extends Result<infer U> ? U : never }>;
+    return success([]) as Result<{
+      [K in keyof T]: T[K] extends Result<infer U> ? U : never;
+    }>;
   }
 
   // Recursive case: process first result, then rest
@@ -94,7 +96,9 @@ export function allConcurrent<T extends readonly Result<unknown>[]>(
 ): Result<{ [K in keyof T]: T[K] extends Result<infer U> ? U : never }> {
   // Base case: empty array
   if (results.length === 0) {
-    return success([]) as Result<{ [K in keyof T]: T[K] extends Result<infer U> ? U : never }>;
+    return success([]) as Result<{
+      [K in keyof T]: T[K] extends Result<infer U> ? U : never;
+    }>;
   }
 
   // Return a Command that executes all results concurrently
@@ -104,14 +108,18 @@ export function allConcurrent<T extends readonly Result<unknown>[]>(
   >(
     async () => {
       // Execute all results concurrently using Promise.all
-      const resultValues = await Promise.all(results.map((result) => run(result)));
+      const resultValues = await Promise.all(
+        results.map((result) => run(result)),
+      );
       return resultValues;
     },
     (
       resultValues: Result<unknown>[],
     ): Result<{ [K in keyof T]: T[K] extends Result<infer U> ? U : never }> => {
       // Check if any result failed
-      const firstFailure = resultValues.find((result) => result.status === "Failure");
+      const firstFailure = resultValues.find(
+        (result) => result.status === "Failure",
+      );
 
       if (firstFailure) {
         // Return the first failure (type assertion needed for proper type narrowing)
@@ -163,7 +171,9 @@ export function allNamed<T extends Record<string, Result<unknown>>>(
 
   // Base case: empty object
   if (keys.length === 0) {
-    return success({}) as Result<{ [K in keyof T]: T[K] extends Result<infer U> ? U : never }>;
+    return success({}) as Result<{
+      [K in keyof T]: T[K] extends Result<infer U> ? U : never;
+    }>;
   }
 
   // Convert object to array of [key, result] pairs
@@ -174,7 +184,9 @@ export function allNamed<T extends Record<string, Result<unknown>>>(
 
   return chain(all(resultsArray), (values) => {
     // Reconstruct object from keys and values
-    const result = {} as { [K in keyof T]: T[K] extends Result<infer U> ? U : never };
+    const result = {} as {
+      [K in keyof T]: T[K] extends Result<infer U> ? U : never;
+    };
 
     keys.forEach((key, index) => {
       result[key] = values[index] as {
@@ -216,7 +228,9 @@ export function allNamedConcurrent<T extends Record<string, Result<unknown>>>(
 
   // Base case: empty object
   if (keys.length === 0) {
-    return success({}) as Result<{ [K in keyof T]: T[K] extends Result<infer U> ? U : never }>;
+    return success({}) as Result<{
+      [K in keyof T]: T[K] extends Result<infer U> ? U : never;
+    }>;
   }
 
   // Convert object to array of results
@@ -225,7 +239,9 @@ export function allNamedConcurrent<T extends Record<string, Result<unknown>>>(
 
   // Use allConcurrent to execute in parallel, then reconstruct object
   return chain(allConcurrent(resultsArray), (values) => {
-    const result = {} as { [K in keyof T]: T[K] extends Result<infer U> ? U : never };
+    const result = {} as {
+      [K in keyof T]: T[K] extends Result<infer U> ? U : never;
+    };
 
     keys.forEach((key, index) => {
       result[key] = values[index] as {
@@ -253,7 +269,10 @@ export function allNamedConcurrent<T extends Record<string, Result<unknown>>>(
  * );
  * ```
  */
-export function chain<T, U>(result: Result<T>, fn: (value: T) => Result<U>): Result<U> {
+export function chain<T, U>(
+  result: Result<T>,
+  fn: (value: T) => Result<U>,
+): Result<U> {
   switch (result.status) {
     case "Command":
       // If the first result is a command, compose the continuations
@@ -415,12 +434,15 @@ export function flow<A, B, C, D, E, F>(
 
 // Implementation
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function flow(...fns: ((value: any) => Result<any>)[]): (initial: any) => Result<any> {
+export function flow(
+  ...fns: ((value: any) => Result<any>)[]
+): (initial: any) => Result<any> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (initialValue: any): Result<any> =>
     fns.reduce(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (result: Result<any>, fn: (value: any) => Result<any>) => chain(result, fn),
+      (result: Result<any>, fn: (value: any) => Result<any>) =>
+        chain(result, fn),
       success(initialValue),
     );
 }
@@ -629,7 +651,7 @@ export function matchResponse<T>(
   switch (result.status) {
     case "Failure": {
       if (handlers.onFailure) {
-      // Return failure response constructed by handler
+        // Return failure response constructed by handler
         return handlers.onFailure(result.error);
       }
       return createFailureResponse(result.error);
@@ -681,9 +703,12 @@ export function matchResponse<T>(
  * );
  * ```
  */
-export function pipe<A>( result: Result<A>): Result<A>;
+export function pipe<A>(result: Result<A>): Result<A>;
 
-export function pipe<A, B>( result: Result<A>, fn1: (a: A) => Result<B>): Result<B>;
+export function pipe<A, B>(
+  result: Result<A>,
+  fn1: (a: A) => Result<B>,
+): Result<B>;
 
 export function pipe<A, B, C>(
   result: Result<A>,
@@ -716,13 +741,19 @@ export function pipe<A, B, C, D, E, F>(
 ): Result<F>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function pipe(result: Result<any>, ...fns: ((value: any) => Result<any>)[]): Result<any> {
+export function pipe(
+  result: Result<any>,
+  ...fns: ((value: any) => Result<any>)[]
+): Result<any> {
   if (fns.length === 0) {
     return result;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return fns.reduce((acc: Result<any>, fn: (value: any) => Result<any>) => chain(acc, fn), result);
+  return fns.reduce(
+    (acc: Result<any>, fn: (value: any) => Result<any>) => chain(acc, fn),
+    result,
+  );
 }
 
 /**
@@ -762,6 +793,8 @@ export function pipe(result: Result<any>, ...fns: ((value: any) => Result<any>)[
  * );
  * ```
  */
-export function tap<T, R>(fn: (input: T) => Result<R>): (input: T) => Result<T> {
+export function tap<T, R>(
+  fn: (input: T) => Result<R>,
+): (input: T) => Result<T> {
   return (input: T) => chain(fn(input), () => success(input));
 }

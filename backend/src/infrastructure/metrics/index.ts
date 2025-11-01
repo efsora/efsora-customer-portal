@@ -105,7 +105,11 @@ export function recordBusinessMetric(
 /**
  * Helper function to record effect errors
  */
-export function recordResultError(operation: string, domain: string, errorCode: string): void {
+export function recordResultError(
+  operation: string,
+  domain: string,
+  errorCode: string,
+): void {
   if (!env.METRICS_ENABLED) return;
   effectErrorsTotal.inc({ domain, error_code: errorCode, operation });
 }

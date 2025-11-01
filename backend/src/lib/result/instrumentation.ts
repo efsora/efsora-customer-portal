@@ -20,14 +20,23 @@ import { context, type Span, trace } from "@opentelemetry/api";
  * All fields are nullable to support graceful degradation when modules are unavailable.
  */
 export interface InstrumentationContext {
-  createSpan: ((name: string, attributes?: Record<string, string>) => Span) | null;
+  createSpan:
+    | ((name: string, attributes?: Record<string, string>) => Span)
+    | null;
   endSpan: ((span: Span) => void) | null;
   endSpanWithError: ((span: Span, error: Error | string) => void) | null;
   getRequestId: (() => string | undefined) | null;
   logger: Logger | null;
-  recordEffectError: ((operation: string, domain: string, errorCode: string) => void) | null;
+  recordEffectError:
+    | ((operation: string, domain: string, errorCode: string) => void)
+    | null;
   recordEffectMetrics:
-    | ((operation: string, domain: string, duration: number, status: "failure" | "success") => void)
+    | ((
+        operation: string,
+        domain: string,
+        duration: number,
+        status: "failure" | "success",
+      ) => void)
     | null;
 }
 
@@ -46,13 +55,22 @@ export async function loadInstrumentationContext(): Promise<InstrumentationConte
   let logger: Logger | null = null;
   let getRequestId: (() => string | undefined) | null = null;
   let recordEffectMetrics:
-    | ((operation: string, domain: string, duration: number, status: "failure" | "success") => void)
+    | ((
+        operation: string,
+        domain: string,
+        duration: number,
+        status: "failure" | "success",
+      ) => void)
     | null = null;
-  let recordEffectError: ((operation: string, domain: string, errorCode: string) => void) | null =
-    null;
-  let createSpan: ((name: string, attributes?: Record<string, string>) => Span) | null = null;
+  let recordEffectError:
+    | ((operation: string, domain: string, errorCode: string) => void)
+    | null = null;
+  let createSpan:
+    | ((name: string, attributes?: Record<string, string>) => Span)
+    | null = null;
   let endSpan: ((span: Span) => void) | null = null;
-  let endSpanWithError: ((span: Span, error: Error | string) => void) | null = null;
+  let endSpanWithError: ((span: Span, error: Error | string) => void) | null =
+    null;
 
   try {
     const loggerModule = await import("#infrastructure/logger/index");
@@ -120,7 +138,12 @@ export function logError(
 
   // Record error metrics
   if (ctx.recordEffectMetrics && ctx.recordEffectError) {
-    ctx.recordEffectMetrics(operation, tags.domain || "unknown", duration, "failure");
+    ctx.recordEffectMetrics(
+      operation,
+      tags.domain || "unknown",
+      duration,
+      "failure",
+    );
     // Extract error code if available from the error
     const errorCode =
       error && typeof error === "object" && "code" in error
@@ -131,7 +154,10 @@ export function logError(
 
   // End span with error
   if (span && ctx.endSpanWithError) {
-    ctx.endSpanWithError(span, error instanceof Error ? error : new Error(errorMessage));
+    ctx.endSpanWithError(
+      span,
+      error instanceof Error ? error : new Error(errorMessage),
+    );
   }
 }
 
@@ -204,7 +230,12 @@ export function logSuccess(
 
   // Record metrics
   if (ctx.recordEffectMetrics) {
-    ctx.recordEffectMetrics(operation, tags.domain || "unknown", duration, "success");
+    ctx.recordEffectMetrics(
+      operation,
+      tags.domain || "unknown",
+      duration,
+      "success",
+    );
   }
 
   // End span with success
@@ -238,7 +269,10 @@ export function logSuccess(
  * });
  * ```
  */
-export async function withSpanContext<T>(span: null | Span, fn: () => Promise<T>): Promise<T> {
+export async function withSpanContext<T>(
+  span: null | Span,
+  fn: () => Promise<T>,
+): Promise<T> {
   if (!span) {
     // No span available (tracing disabled or unavailable), execute without context
     return fn();

@@ -47,7 +47,8 @@ registry.registerPath({
  * Get user by ID (authenticated users only, can only access own data)
  */
 registry.registerPath({
-  description: "Retrieve user information by ID. Users can only access their own data.",
+  description:
+    "Retrieve user information by ID. Users can only access their own data.",
   method: "get",
   path: "/api/v1/users/{id}",
   request: {

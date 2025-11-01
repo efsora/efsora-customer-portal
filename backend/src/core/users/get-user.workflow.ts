@@ -12,7 +12,5 @@ import { UserData } from "./types/outputs.js";
  * @returns Result with user data (excluding password)
  */
 export function getUserById(userId: number): Result<UserData> {
-  return pipe(
-    findUserById(userId),
-  );
+  return pipe(findUserById(userId));
 }

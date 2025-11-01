@@ -59,6 +59,8 @@ export function isResult(value: unknown): value is Result<unknown> {
     value !== undefined &&
     typeof value === "object" &&
     "status" in value &&
-    (value.status === "Success" || value.status === "Failure" || value.status === "Command")
+    (value.status === "Success" ||
+      value.status === "Failure" ||
+      value.status === "Command")
   );
 }

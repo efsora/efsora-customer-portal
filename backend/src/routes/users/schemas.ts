@@ -8,8 +8,14 @@ extendZodWithOpenApi(z);
  */
 export const createUserBodySchema = z
   .object({
-    email: z.string().email("Invalid email format").openapi({ example: "jane.doe@example.com" }),
-    name: z.string().min(1, "Name is required").openapi({ example: "Jane Doe" }),
+    email: z
+      .string()
+      .email("Invalid email format")
+      .openapi({ example: "jane.doe@example.com" }),
+    name: z
+      .string()
+      .min(1, "Name is required")
+      .openapi({ example: "Jane Doe" }),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters long")
@@ -47,7 +53,9 @@ export const createUserResponseSchema = z
     email: z.string().email().openapi({ example: "jane.doe@example.com" }),
     id: z.number().int().positive().openapi({ example: 1 }),
     name: z.string().nullable().openapi({ example: "Jane Doe" }),
-    token: z.string().openapi({ example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }),
+    token: z
+      .string()
+      .openapi({ example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }),
   })
   .openapi("CreateUserResponse");
 

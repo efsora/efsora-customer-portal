@@ -17,7 +17,9 @@ import { findByEmail } from "./find.operations";
  * Validates user creation input
  * Creates Email and Password value objects
  */
-export function validateUserCreation(input: CreateUserInput): Result<ValidatedCreationData> {
+export function validateUserCreation(
+  input: CreateUserInput,
+): Result<ValidatedCreationData> {
   return chain(
     allNamed({
       email: Email.create(input.email),

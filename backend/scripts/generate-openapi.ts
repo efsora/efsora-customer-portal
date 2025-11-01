@@ -1,4 +1,7 @@
-import { OpenAPIRegistry, OpenApiGeneratorV31 } from "@asteasolutions/zod-to-openapi";
+import {
+  OpenAPIRegistry,
+  OpenApiGeneratorV31,
+} from "@asteasolutions/zod-to-openapi";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -55,7 +58,9 @@ registry.registerPath({
           schema: z.object({
             status: z.literal("ok").openapi({ example: "ok" }),
             message: z.string().openapi({ example: "Server is healthy" }),
-            timestamp: z.string().openapi({ example: "2025-10-29T10:30:00.000Z" }),
+            timestamp: z
+              .string()
+              .openapi({ example: "2025-10-29T10:30:00.000Z" }),
           }),
         },
       },
@@ -131,7 +136,8 @@ registry.registerPath({
   method: "get",
   path: "/api/v1/users/{id}",
   summary: "Get user by ID",
-  description: "Retrieve user information by ID. Users can only access their own data.",
+  description:
+    "Retrieve user information by ID. Users can only access their own data.",
   tags: ["Users"],
   security: [{ BearerAuth: [] }],
   request: {
@@ -180,7 +186,8 @@ const document = generator.generateDocument({
   info: {
     title: "Full Stack Template API",
     version: "1.0.0",
-    description: "API documentation for the Full Stack Template backend service",
+    description:
+      "API documentation for the Full Stack Template backend service",
   },
   servers: [
     {

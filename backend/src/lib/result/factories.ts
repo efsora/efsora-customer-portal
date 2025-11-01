@@ -5,7 +5,13 @@
  * These factories construct Success, Failure, and Command types.
  */
 
-import type { Command, Failure, Result, ResultMetadata, Success } from "#lib/result/types";
+import type {
+  Command,
+  Failure,
+  Result,
+  ResultMetadata,
+  Success,
+} from "#lib/result/types";
 import type { AppError } from "#lib/result/types/errors";
 
 import {
