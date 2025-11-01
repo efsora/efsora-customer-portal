@@ -6,7 +6,7 @@ export type RequestContext = {
   requestId: string;
   spanId?: string;
   traceId?: string;
-}
+};
 /**
  * AsyncLocalStorage for request context propagation
  * Allows access to request ID and trace context from anywhere in the request lifecycle

@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 
 import { Password } from "#core/users/value-objects/Password";
 import { run } from "#lib/result/index";
+import { isValidationError } from "#lib/result/types/errors";
 
 describe("Password Value Object", () => {
   describe("create()", () => {
@@ -32,7 +33,9 @@ describe("Password Value Object", () => {
         expect(result.error.message).toBe(
           "Password must be at least 8 characters long",
         );
-        expect(result.error.field).toBe("password");
+        if (isValidationError(result.error)) {
+          expect(result.error.field).toBe("password");
+        }
       }
     });
 

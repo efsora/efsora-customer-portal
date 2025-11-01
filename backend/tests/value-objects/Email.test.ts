@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 
 import { Email } from "#core/users/value-objects/Email";
 import { run } from "#lib/result/index";
+import { isValidationError } from "#lib/result/types/errors";
 
 describe("Email Value Object", () => {
   describe("create()", () => {
@@ -21,7 +22,9 @@ describe("Email Value Object", () => {
       if (result.status === "Failure") {
         expect(result.error.code).toBe("VALIDATION_ERROR");
         expect(result.error.message).toBe("Invalid email format");
-        expect(result.error.field).toBe("email");
+        if (isValidationError(result.error)) {
+          expect(result.error.field).toBe("email");
+        }
       }
     });
 

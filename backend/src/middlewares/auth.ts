@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken";
 export type JwtPayload = {
   email: string;
   userId: number;
-}
+};
 
 /**
  * Extend Express Request to include user

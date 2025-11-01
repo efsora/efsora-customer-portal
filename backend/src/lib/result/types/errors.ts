@@ -101,7 +101,7 @@ export type ErrorBase = {
   resourceId?: number;
   timestamp?: string;
   userId?: number;
-}
+};
 
 /**
  * Generic error codes used across all domains.

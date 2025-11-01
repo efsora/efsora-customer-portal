@@ -368,6 +368,7 @@ export type CreateUserResult = {
 ```
 
 **When to use `type`:**
+
 - Input types (`types/inputs.ts`) - Request data from external sources
 - Output types (`types/outputs.ts`) - Response data to external consumers
 - Internal types (`types/internal.ts`) - Domain-internal data shapes
@@ -375,6 +376,7 @@ export type CreateUserResult = {
 - Union types and intersections
 
 **Benefits:**
+
 - More flexible (supports unions, intersections, primitives)
 - Clearer intent: "this is just a data shape"
 - Preferred by modern TypeScript community for DTOs
@@ -402,6 +404,7 @@ declare global {
 ```
 
 **When to use `interface`:**
+
 - Repository contracts and service interfaces
 - Class hierarchies and inheritance
 - Declaration merging (extending third-party types)
@@ -756,6 +759,7 @@ logger.error({ error, requestId }, "Operation failed");
 **Critical Security Feature**: The request logger automatically sanitizes sensitive data to prevent credential leakage in logs.
 
 **What Gets Redacted**:
+
 - **Authentication**: passwords, tokens, API keys, Bearer tokens, sessions
 - **Payment**: credit card numbers, CVV, account numbers
 - **PII**: SSN, passport, driver's license, national ID
@@ -765,7 +769,11 @@ logger.error({ error, requestId }, "Operation failed");
 The `sanitize` utility (`src/middlewares/utils/sanitize.ts`) recursively redacts sensitive fields:
 
 ```typescript
-import { sanitize, sanitizeBody, sanitizeHeaders } from "#middlewares/utils/sanitize";
+import {
+  sanitize,
+  sanitizeBody,
+  sanitizeHeaders,
+} from "#middlewares/utils/sanitize";
 
 // Sanitize request data before logging
 const safeBody = sanitizeBody(req.body);
@@ -777,6 +785,7 @@ logger.info({ body: safeBody, headers: safeHeaders }, "Request received");
 **Automatic Sanitization**: The `requestLogger` middleware automatically sanitizes all request bodies, headers, and query parameters before logging. No manual sanitization needed in route handlers.
 
 **Example**:
+
 ```typescript
 // Input
 { email: "user@example.com", password: "secret123" }

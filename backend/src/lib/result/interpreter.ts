@@ -40,7 +40,7 @@ type ExecutionContext = {
   span: null | Span;
   startTime: number;
   tags: Record<string, string>;
-}
+};
 
 // ============================================================================
 // Private Helper Functions

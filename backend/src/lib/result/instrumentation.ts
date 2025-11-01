@@ -38,7 +38,7 @@ export type InstrumentationContext = {
         status: "failure" | "success",
       ) => void)
     | null;
-}
+};
 
 /**
  * Lazy loads observability modules to avoid circular dependencies.

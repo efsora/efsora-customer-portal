@@ -15,7 +15,7 @@ export type Command<T = unknown> = {
   continuation: (result: unknown) => Result<T>;
   metadata?: ResultMetadata;
   status: "Command";
-}
+};
 
 /**
  * A computation that may succeed with a value, fail with an error, or require side effects.
@@ -36,7 +36,7 @@ export type Result<T> = Command<T> | Failure | Success<T>;
 export type ResultMetadata = {
   operation: string; // e.g., "findUserByEmail", "savePost"
   tags?: Record<string, string>; // e.g., { domain: "users", action: "create" }
-}
+};
 
 /**
  * Represents a failed computation with typed error information.
@@ -64,7 +64,7 @@ export type ResultMetadata = {
 export type Failure = {
   error: AppError;
   status: "Failure";
-}
+};
 
 /**
  * Represents a successful computation with a value of type T.
@@ -74,4 +74,4 @@ export type Failure = {
 export type Success<T> = {
   status: "Success";
   value: T;
-}
+};

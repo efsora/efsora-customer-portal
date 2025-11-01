@@ -29,7 +29,7 @@ export type ValidationSchemas = {
   body?: z.ZodType;
   params?: z.ZodType;
   query?: z.ZodType;
-}
+};
 
 /**
  * Validation middleware factory
