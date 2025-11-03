@@ -12,13 +12,6 @@
     {
       "idx": 1,
       "version": "7",
-      "when": 1762158707890,
-      "tag": "0001_free_kingpin",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
       "when": 1762160202474,
       "tag": "0002_fast_shinko_yamashiro",
       "breakpoints": true

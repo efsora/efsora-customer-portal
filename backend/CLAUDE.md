@@ -1066,25 +1066,309 @@ The rule runs automatically:
 
 ## Testing Strategy
 
-Tests are written using Vitest and should follow these patterns:
+Tests are written using Vitest v4.0.4 and organized by test category. The project uses Docker testcontainers for integration tests with real PostgreSQL databases.
 
-### Unit Tests (Operations)
+### Test Categories and When to Use Them
 
-- Test pure functions in `*.operations.ts`
-- Mock repositories using factory functions
-- Test both success and failure paths
+**Unit Tests** (`tests/value-objects/`):
+- **What to test**: Pure value objects, utility functions, isolated operations
+- **Characteristics**: No database, no external dependencies, fast execution
+- **Example**: Email validation, Password strength calculation
+- **When to write**: For pure functions that don't require external resources
 
-### Integration Tests (Workflows)
+**Integration Tests** (`tests/integration/`):
+- **What to test**: Complete workflows with real database operations
+- **Characteristics**: Uses testcontainers, tests end-to-end business logic
+- **Example**: Full createUser workflow including validation, hashing, and database persistence
+- **When to write**: For workflows that orchestrate multiple operations and database access
 
-- Test complete workflows with real database (test container)
-- Verify Effect composition works correctly
-- Test error handling and edge cases
+**Handler Tests** (Future):
+- **What to test**: HTTP layer with request/response handling
+- **Characteristics**: Uses supertest, tests routing and validation middleware
+- **Example**: POST /api/v1/users with authentication
+- **When to write**: For testing the HTTP API layer separately from business logic
 
-### Handler Tests
+### Testing with Result System
 
-- Test HTTP layer with supertest
-- Verify request validation
-- Test authentication/authorization
+All tests work with the `Result<T>` type and use the `run()` interpreter:
+
+```typescript
+import { run } from "#lib/result/index";
+import { createUser } from "#core/users/create-user.workflow";
+
+// Always await run() to execute Result effects
+const result = await run(createUser(input));
+
+// Use type narrowing to safely access result values
+if (result.status === "Success") {
+  expect(result.value.email).toBe("test@example.com");
+  // TypeScript knows result.value exists here
+} else if (result.status === "Failure") {
+  expect(result.error.code).toBe("USER_EMAIL_ALREADY_EXISTS");
+  // TypeScript knows result.error exists here
+}
+```
+
+**Testing Patterns**:
+1. **Always use `run()`**: Convert Result to Promise for testing
+2. **Check status first**: Use `result.status` before accessing value/error
+3. **Type narrowing**: Let TypeScript narrow types after status check
+4. **Test both paths**: Write tests for Success and Failure scenarios
+5. **Descriptive names**: Use "should..." pattern for test descriptions
+
+### Integration Testing with Testcontainers
+
+Integration tests use PostgreSQL testcontainers for isolated, reproducible testing:
+
+```typescript
+import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
+import {
+  setupTestDatabase,
+  createTestDb,
+  cleanupDatabase,
+  teardownTestDatabase,
+  getTestDb,
+} from "../helpers/database";
+
+describe("Workflow Integration Tests", () => {
+  // Setup: Start container and run migrations (once for all tests)
+  beforeAll(async () => {
+    const connectionString = await setupTestDatabase();
+    createTestDb(connectionString);
+  }, 60000); // 60s timeout for container startup
+
+  // Cleanup: Truncate tables before each test for isolation
+  beforeEach(async () => {
+    const db = getTestDb();
+    await cleanupDatabase(db);
+  });
+
+  // Teardown: Stop container after all tests
+  afterAll(async () => {
+    await teardownTestDatabase();
+  });
+
+  it("should test workflow with real database", async () => {
+    // Your test here
+  });
+});
+```
+
+**Testcontainer Lifecycle**:
+1. **beforeAll**: Starts PostgreSQL 18 container, runs migrations (shared across tests)
+2. **beforeEach**: Truncates all tables with CASCADE (ensures test isolation)
+3. **Test Execution**: All tests share the same container (parallel execution)
+4. **afterAll**: Stops container and cleans up resources
+
+**Benefits**:
+- **Real Database**: Tests against actual PostgreSQL, not mocks or SQLite
+- **Isolation**: Each test starts with clean database state
+- **Parallel Execution**: Shared container makes tests fast
+- **No Manual Setup**: Docker handles everything automatically
+- **Consistent Environment**: Same PostgreSQL version as production (18-alpine)
+
+### Database Cleanup Strategy
+
+The project uses `TRUNCATE CASCADE` for database cleanup between tests:
+
+```typescript
+// tests/helpers/database.ts
+export async function cleanupDatabase(db) {
+  const tables = ["users"]; // Add tables as schema grows
+  for (const table of tables) {
+    await db.execute(sql.raw(`TRUNCATE TABLE "${table}" CASCADE`));
+  }
+}
+```
+
+**Why TRUNCATE CASCADE**:
+- **Fast**: Faster than DELETE for removing all rows
+- **Handles Foreign Keys**: CASCADE automatically handles dependent data
+- **Resets Sequences**: Optional - can reset AUTO_INCREMENT if needed
+- **Simple**: One command per table, no ordering required
+
+**When to Update**:
+- Add new tables to the `tables` array as you expand the schema
+- Keep the list in dependency order if not using CASCADE
+
+### Coverage Configuration
+
+Coverage is configured in `vitest.config.js`:
+
+```javascript
+coverage: {
+  provider: "v8",                    // Fast native Node.js coverage
+  reporter: ["text", "lcov"],        // Console output + lcov for IDEs
+  include: ["src/core/**/*.ts"],     // Only measure business logic
+  exclude: ["src/core/**/*.test.ts"], // Exclude test files
+  thresholds: {
+    lines: 35,                        // Warn if < 35% lines covered
+    functions: 35,
+    branches: 35,
+    statements: 35,
+    autoUpdate: false,
+  },
+  all: false,                         // Warn only, don't fail build
+}
+```
+
+**Coverage Scope**:
+- **Included**: `src/core/**/*.ts` (business logic only)
+- **Excluded**: Infrastructure, routes, config, tests
+- **Rationale**: Focus on testing the functional core, not framework code
+
+**Coverage Expectations**:
+- **35% Threshold**: Template starts with minimal examples, thresholds are low
+- **Warn Only**: Coverage warnings don't fail builds (encourages testing without blocking)
+- **Increase Over Time**: As you add tests, gradually increase thresholds
+- **Business Logic Focus**: Only core domain logic counts toward coverage
+
+**Running Coverage**:
+```bash
+npm run test:coverage           # Generate coverage report
+# Output: coverage/lcov.info    # For IDE integration
+# Output: Terminal summary      # Quick coverage overview
+```
+
+### Test Helper Utilities
+
+The project provides reusable test helpers in `tests/helpers/database.ts`:
+
+**Available Functions**:
+```typescript
+// Setup PostgreSQL testcontainer and run migrations
+setupTestDatabase(): Promise<string>
+
+// Create Drizzle database instance for testing
+createTestDb(connectionString: string): Database
+
+// Get the shared test database instance
+getTestDb(): Database
+
+// Cleanup database (truncate all tables)
+cleanupDatabase(db: Database): Promise<void>
+
+// Teardown testcontainer and close connections
+teardownTestDatabase(): Promise<void>
+
+// Get test database connection string
+getTestConnectionString(): string
+```
+
+**Usage Pattern**:
+1. Call `setupTestDatabase()` in `beforeAll` (starts container, runs migrations)
+2. Call `createTestDb()` in `beforeAll` (creates shared db instance)
+3. Call `cleanupDatabase()` in `beforeEach` (cleans data between tests)
+4. Use `getTestDb()` in tests (access shared db instance)
+5. Call `teardownTestDatabase()` in `afterAll` (cleanup resources)
+
+### Testing Conventions
+
+**File Organization**:
+- Unit tests: `tests/value-objects/*.test.ts`
+- Integration tests: `tests/integration/*.test.ts`
+- Helpers: `tests/helpers/*.ts`
+- Name pattern: `*.test.ts` (Vitest auto-discovers)
+
+**Import Patterns**:
+```typescript
+// Use # aliases for clean imports
+import { Email } from "#core/users/value-objects/Email";
+import { createUser } from "#core/users/create-user.workflow";
+import { run } from "#lib/result/index";
+import { getTestDb } from "../helpers/database";
+```
+
+**Test Structure (AAA Pattern)**:
+```typescript
+it("should create user successfully", async () => {
+  // Arrange: Setup test data
+  const input = { email: "test@example.com", password: "pass123" };
+
+  // Act: Execute the operation
+  const result = await run(createUser(input));
+
+  // Assert: Verify the outcome
+  expect(result.status).toBe("Success");
+  if (result.status === "Success") {
+    expect(result.value.email).toBe("test@example.com");
+  }
+});
+```
+
+**Error Testing Pattern**:
+```typescript
+it("should fail with invalid email", async () => {
+  const input = { email: "not-an-email", password: "pass123" };
+
+  const result = await run(createUser(input));
+
+  expect(result.status).toBe("Failure");
+  if (result.status === "Failure") {
+    expect(result.error.code).toBe("USER_INVALID_EMAIL");
+    expect(result.error.message).toBe("Invalid email format");
+  }
+});
+```
+
+**Database Verification Pattern**:
+```typescript
+it("should persist user in database", async () => {
+  const input = { email: "test@example.com", password: "pass123" };
+
+  const result = await run(createUser(input));
+
+  // Verify in database
+  const db = getTestDb();
+  const users = await db.query.users.findMany({
+    where: (users, { eq }) => eq(users.email, "test@example.com"),
+  });
+
+  expect(users).toHaveLength(1);
+  expect(users[0].email).toBe("test@example.com");
+});
+```
+
+### Common Testing Issues and Solutions
+
+**Issue: "Test database not initialized"**
+- **Cause**: `getTestDb()` called before `setupTestDatabase()`
+- **Solution**: Ensure `setupTestDatabase()` runs in `beforeAll` before any tests
+
+**Issue: "Container startup timeout"**
+- **Cause**: Docker not running or slow network
+- **Solution**: Increase timeout in `beforeAll` to 60000ms (60 seconds)
+
+**Issue: "Tests fail with duplicate key errors"**
+- **Cause**: Database not cleaned between tests
+- **Solution**: Add `cleanupDatabase()` call in `beforeEach`
+
+**Issue: "Cannot find table 'users'"**
+- **Cause**: Migrations not run or wrong connection string
+- **Solution**: Verify `runMigrations()` is called in `setupTestDatabase()`
+
+**Issue: "Tests work locally but fail in CI"**
+- **Cause**: Docker not available in CI environment
+- **Solution**: Ensure CI has Docker installed and running
+
+### Example Test Files
+
+**Unit Test Example**: `tests/value-objects/Email.test.ts`
+- Tests pure Email validation logic
+- No database required
+- Fast execution (< 1ms per test)
+
+**Integration Test Example**: `tests/integration/create-user.test.ts`
+- Tests complete createUser workflow
+- Uses real PostgreSQL database
+- Tests validation, hashing, persistence, error handling
+- Verifies database state after operations
+
+**Helper Utilities**: `tests/helpers/database.ts`
+- Testcontainer setup and teardown
+- Database cleanup utilities
+- Shared database instance management
+- Migration execution
 
 ## API Documentation
 

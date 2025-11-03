@@ -173,8 +173,9 @@ This project enforces code quality through automated linting, formatting, and te
 
 **Test Location**: All tests are located in `backend/tests/` directory, organized by category:
 
-- `tests/value-objects/` - Pure function tests for domain value objects
-- More test directories will be added as the codebase grows
+- `tests/value-objects/` - Unit tests for domain value objects (Email, Password)
+- `tests/integration/` - Integration tests for workflows with real database
+- `tests/helpers/` - Shared test utilities and database setup
 
 **Running Tests**:
 
@@ -191,13 +192,25 @@ npm run test:run
 
 # Coverage report
 npm run test:coverage
-# Generates detailed coverage report
-# Shows which lines of code are tested
+# Generates detailed coverage report in coverage/ directory
+# Shows which lines of code in src/core/ are tested
+# Configured thresholds: 35% (lines, functions, branches, statements)
 ```
+
+**Coverage Configuration**:
+
+Coverage is configured to:
+- Only measure code in `src/core/` (business logic)
+- Use v8 provider for fast, accurate coverage
+- Generate lcov reports for IDE integration
+- Warn when thresholds aren't met (doesn't fail build)
+- Exclude test files from coverage metrics
 
 **Test Patterns**:
 
-The codebase includes example tests demonstrating how to test pure functions that return `Result<T>`:
+#### Unit Tests (Value Objects)
+
+Test pure functions that return `Result<T>`:
 
 ```typescript
 import { describe, it, expect } from "vitest";
@@ -219,21 +232,117 @@ describe("Email Value Object", () => {
 
     expect(result.status).toBe("Failure");
     if (result.status === "Failure") {
-      expect(result.error.code).toBe("VALIDATION_ERROR");
+      expect(result.error.code).toBe("USER_INVALID_EMAIL");
     }
   });
 });
 ```
 
+#### Integration Tests (Workflows)
+
+Test complete workflows with real PostgreSQL database using Docker testcontainers:
+
+```typescript
+import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
+import { run } from "#lib/result/index";
+import { createUser } from "#core/users/create-user.workflow";
+import {
+  setupTestDatabase,
+  createTestDb,
+  cleanupDatabase,
+  teardownTestDatabase,
+  getTestDb,
+} from "../helpers/database";
+
+describe("createUser Integration Tests", () => {
+  // Setup test database before all tests
+  beforeAll(async () => {
+    const connectionString = await setupTestDatabase();
+    createTestDb(connectionString);
+  }, 60000); // 60s timeout for container startup
+
+  // Cleanup database before each test to ensure isolation
+  beforeEach(async () => {
+    const db = getTestDb();
+    await cleanupDatabase(db);
+  });
+
+  // Teardown test database after all tests
+  afterAll(async () => {
+    await teardownTestDatabase();
+  });
+
+  it("should create user successfully with valid input", async () => {
+    // Arrange
+    const input = {
+      email: "test@example.com",
+      password: "securePassword123",
+      name: "Test User",
+    };
+
+    // Act
+    const result = await run(createUser(input));
+
+    // Assert
+    expect(result.status).toBe("Success");
+    if (result.status === "Success") {
+      expect(result.value.email).toBe("test@example.com");
+      expect(result.value.token).toBeDefined();
+
+      // Verify user exists in database
+      const db = getTestDb();
+      const users = await db.query.users.findMany({
+        where: (users, { eq }) => eq(users.email, "test@example.com"),
+      });
+      expect(users).toHaveLength(1);
+    }
+  });
+});
+```
+
+**Integration Testing with Testcontainers**:
+
+The project uses Docker testcontainers for isolated, reproducible integration tests:
+
+- **Automatic PostgreSQL Setup**: Tests automatically start a PostgreSQL 18 container
+- **Migration Execution**: Drizzle migrations run automatically before tests
+- **Parallel Execution**: Shared container across all test files for speed
+- **Database Cleanup**: `TRUNCATE CASCADE` between tests ensures isolation
+- **No Manual Setup**: Docker handles everything automatically
+
+**Test Helper Utilities** (`tests/helpers/database.ts`):
+
+```typescript
+// Setup testcontainer and run migrations (call in beforeAll)
+const connectionString = await setupTestDatabase();
+createTestDb(connectionString);
+
+// Get shared database instance (use in tests)
+const db = getTestDb();
+
+// Cleanup database (call in beforeEach)
+await cleanupDatabase(db);
+
+// Teardown container (call in afterAll)
+await teardownTestDatabase();
+```
+
 **Key Testing Principles**:
 
-1. Use `run()` to execute `Result<T>` effects
-2. Check `result.status` to discriminate between Success/Failure
-3. Use TypeScript narrowing to safely access result values
-4. Test both happy paths and error cases
-5. Use descriptive test names that explain behavior
+1. **Unit Tests**: Use `run()` to execute `Result<T>` effects
+2. **Type Safety**: Check `result.status` and use TypeScript narrowing
+3. **Isolation**: Clean database between tests with `beforeEach`
+4. **Descriptive Names**: Test names should explain behavior
+5. **Test Both Paths**: Always test success and failure scenarios
+6. **Real Database**: Integration tests use real PostgreSQL, not mocks
+7. **Arrange-Act-Assert**: Structure tests clearly with AAA pattern
 
-See `tests/value-objects/Email.test.ts` and `tests/value-objects/Password.test.ts` for complete examples.
+**Example Files**:
+
+- `tests/value-objects/Email.test.ts` - Unit test example
+- `tests/value-objects/Password.test.ts` - Unit test example
+- `tests/integration/create-user.test.ts` - Integration test example
+- `tests/helpers/database.ts` - Test infrastructure utilities
 
 ### Linting (ESLint)
 
