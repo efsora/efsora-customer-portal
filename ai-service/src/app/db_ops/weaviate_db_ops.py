@@ -13,7 +13,7 @@ async def embed_text_in_weaviate(
     This example stores the text as a property.
     """
     try:
-        col = await client.collections.get(collection)
+        col = client.collections.get(collection)
 
         # Create object with text property
         uuid = await col.data.insert(
@@ -37,7 +37,7 @@ async def search_in_weaviate(
     Falls back to BM25 since no vectorizer is configured.
     """
     try:
-        col = await client.collections.get(collection)
+        col = client.collections.get(collection)
 
         # Use BM25 search since no vectorizer is configured
         response = await col.query.bm25(
