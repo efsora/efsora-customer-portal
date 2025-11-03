@@ -31,5 +31,13 @@ export type {
 export { Email } from "./value-objects/Email";
 export { Password } from "./value-objects/Password";
 
+// Continuation functions (exported for testing)
+export { handleSaveNewUserResult } from "./create-user.operations";
+export {
+  handleFindAllUsersResult,
+  handleFindByEmailResult,
+  handleFindUserByIdResult,
+} from "./find.operations";
+
 // Note: operations, internal types, and other implementation details are intentionally NOT exported
 // Handlers should only use workflows from this barrel file

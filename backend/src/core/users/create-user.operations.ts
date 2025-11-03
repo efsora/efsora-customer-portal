@@ -66,6 +66,41 @@ export function hashPasswordForCreation(data: ValidatedCreationData): Result<{
   );
 }
 
+/**
+ * Continuation function for saveNewUser operation.
+ * Handles the result of user creation in the database.
+ *
+ * @param user - User returned from database or undefined if creation failed
+ * @returns Result with CreateUserResult on success, or Failure on error
+ *
+ * @example
+ * ```ts
+ * // Unit test - success case
+ * const mockUser = { id: 'uuid-123', email: 'test@example.com', name: 'Test User' };
+ * const result = handleSaveNewUserResult(mockUser);
+ * expect(result.status).toBe('Success');
+ *
+ * // Unit test - failure case
+ * const result = handleSaveNewUserResult(undefined);
+ * expect(result.status).toBe('Failure');
+ * expect(result.error.code).toBe('INTERNAL_ERROR');
+ * ```
+ */
+export function handleSaveNewUserResult(user: { id: string; email: string; name: string | null } | undefined) {
+  if (!user) {
+    return fail({
+      code: "INTERNAL_ERROR",
+      message: "Failed to create user",
+    });
+  }
+
+  return success({
+    email: user.email,
+    id: user.id,
+    name: user.name,
+  });
+}
+
 export function saveNewUser(data: {
   email: Email;
   hashedPassword: HashedPassword;
@@ -82,20 +117,7 @@ export function saveNewUser(data: {
       const users = await userRepository.create(userData);
       return first(users);
     },
-    (user) => {
-      if (!user) {
-        return fail({
-          code: "INTERNAL_ERROR",
-          message: "Failed to create user",
-        });
-      }
-
-      return success({
-        email: user.email,
-        id: user.id,
-        name: user.name,
-      });
-    },
+    handleSaveNewUserResult,
     {
       operation: "saveNewUser",
       tags: { action: "create", domain: "users" },

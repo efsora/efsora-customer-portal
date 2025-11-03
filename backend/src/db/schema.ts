@@ -6,11 +6,11 @@ import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
  * Stores user account information
  */
 export const users = pgTable("users", {
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  email: text("email").notNull().unique(),
   id: uuid("id").primaryKey().default(sql`uuidv7()`),
+  email: text("email").notNull().unique(),
   name: text("name"),
   password: text("password").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
     .notNull()
