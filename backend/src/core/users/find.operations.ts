@@ -6,6 +6,7 @@ import first from "lodash/fp/first";
 import { command, Result, fail, success } from "#lib/result/index";
 import { UserData } from "./types/outputs";
 import { Email } from "./value-objects/Email";
+import { mapUserToUserData } from "#core/users/mappers";
 
 /**
  * Continuation function for findAllUsers operation.
@@ -116,7 +117,7 @@ export function findByEmail(email: Email): Result<undefined | User> {
  */
 export function handleFindUserByIdResult(users: User[]) {
   const user = first(users);
-  return user
+  return user !== undefined
     ? success(mapUserToUserData(user))
     : fail({
         code: "USER_NOT_FOUND",
@@ -140,17 +141,4 @@ export function findUserById(userId: string): Result<UserData> {
       tags: { action: "read", domain: "users" },
     },
   );
-}
-
-/**
- * Maps User entity to UserData DTO (excludes password)
- */
-function mapUserToUserData(user: User): UserData {
-  return {
-    createdAt: user.createdAt,
-    email: user.email,
-    id: user.id,
-    name: user.name,
-    updatedAt: user.updatedAt,
-  };
 }
