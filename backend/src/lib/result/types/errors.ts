@@ -98,9 +98,9 @@ export type ConflictType = "email"; // Extensible for future conflicts like user
 export type ErrorBase = {
   context?: Record<string, unknown>;
   message: string;
-  resourceId?: number;
+  resourceId?: number | string;
   timestamp?: string;
-  userId?: number;
+  userId?: number | string;
 };
 
 /**
@@ -138,7 +138,7 @@ export type ErrorCode =
  */
 export type ForbiddenError = ErrorBase & {
   code: "FORBIDDEN";
-  resourceId: number;
+  resourceId: number | string;
   resourceType: ResourceType;
 };
 
@@ -182,7 +182,7 @@ export type InternalError = ErrorBase & {
  */
 export type NotFoundError = ErrorBase & {
   code: "NOT_FOUND";
-  resourceId: number;
+  resourceId: number | string;
   resourceType: ResourceType;
 };
 

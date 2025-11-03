@@ -9,7 +9,7 @@ import { UserData } from "./types/outputs";
  * @param requestUserId - ID of the user making the request
  * @returns Function that checks if userData belongs to requestUserId
  */
-export function checkUserOwnership(requestUserId: number) {
+export function checkUserOwnership(requestUserId: string) {
   return (userData: UserData): Result<UserData> => {
     if (userData.id !== requestUserId) {
       return fail({

@@ -11,6 +11,6 @@ import { UserData } from "./types/outputs.js";
  * @param requestUserId - ID of the user making the request (from JWT)
  * @returns Result with user data (excluding password)
  */
-export function getUserById(userId: number): Result<UserData> {
+export function getUserById(userId: string): Result<UserData> {
   return pipe(findUserById(userId));
 }

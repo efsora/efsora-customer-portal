@@ -21,6 +21,6 @@ import jwt from "jsonwebtoken";
  * return success({ token, user: { id: userId, email, name } });
  * ```
  */
-export function generateAuthToken(userId: number, email: string): string {
+export function generateAuthToken(userId: string, email: string): string {
   return jwt.sign({ email, userId }, env.JWT_SECRET, { expiresIn: "7d" });
 }

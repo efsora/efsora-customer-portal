@@ -27,7 +27,7 @@ export const createUserBodySchema = z
  */
 export const getUserParamsSchema = z
   .object({
-    id: z.coerce.number().int().positive().openapi({ example: 1 }),
+    id: z.string().uuid().openapi({ example: "550e8400-e29b-41d4-a716-446655440000" }),
   })
   .openapi("GetUserParams");
 
@@ -38,7 +38,7 @@ export const userDataSchema = z
   .object({
     createdAt: z.coerce.date().openapi({ example: "2025-10-29T10:30:00.000Z" }),
     email: z.email().openapi({ example: "jane.doe@example.com" }),
-    id: z.number().int().positive().openapi({ example: 1 }),
+    id: z.string().uuid().openapi({ example: "550e8400-e29b-41d4-a716-446655440000" }),
     name: z.string().nullable().openapi({ example: "Jane Doe" }),
     updatedAt: z.coerce.date().openapi({ example: "2025-10-29T10:30:00.000Z" }),
   })
@@ -50,7 +50,7 @@ export const userDataSchema = z
 export const createUserResponseSchema = z
   .object({
     email: z.email().openapi({ example: "jane.doe@example.com" }),
-    id: z.number().int().positive().openapi({ example: 1 }),
+    id: z.string().uuid().openapi({ example: "550e8400-e29b-41d4-a716-446655440000" }),
     name: z.string().nullable().openapi({ example: "Jane Doe" }),
     token: z
       .string()

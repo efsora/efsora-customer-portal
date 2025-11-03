@@ -7,7 +7,7 @@
 
 export type CreateUserResult = {
   email: string;
-  id: number;
+  id: string;
   name: string | null;
   token?: string;
 };
@@ -19,7 +19,7 @@ export type CreateUserResult = {
 export type PublicUserData = {
   createdAt: Date;
   email: string;
-  id: number;
+  id: string;
   name: string | null;
   updatedAt: Date;
 };
@@ -31,7 +31,7 @@ export type PublicUserData = {
 export type UpdateUserResult = {
   createdAt: Date;
   email: string;
-  id: number;
+  id: string;
   name: string | null;
   token?: string;
   updatedAt: Date;
@@ -43,7 +43,7 @@ export type UpdateUserResult = {
 export type UserData = {
   createdAt: Date;
   email: string;
-  id: number;
+  id: string;
   name: string | null;
   updatedAt: Date;
 };

@@ -15,7 +15,7 @@ import type { Password } from "#core/users/value-objects/Password.js";
 export type UserDataWithPassword = {
   createdAt: Date;
   email: string;
-  id: number;
+  id: string;
   name: string | null;
   password: string;
   updatedAt: Date;

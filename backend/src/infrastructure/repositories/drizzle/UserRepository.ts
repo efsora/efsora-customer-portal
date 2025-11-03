@@ -19,7 +19,7 @@ export function createUserRepository(dbInstance: typeof db) {
       return dbInstance.insert(users).values(data).returning();
     },
 
-    delete: (id: number) => {
+    delete: (id: string) => {
       return dbInstance.delete(users).where(eq(users.id, id)).returning();
     },
 
@@ -35,11 +35,11 @@ export function createUserRepository(dbInstance: typeof db) {
         .limit(1);
     },
 
-    findById: (id: number): Promise<User[]> => {
+    findById: (id: string): Promise<User[]> => {
       return dbInstance.select().from(users).where(eq(users.id, id)).limit(1);
     },
 
-    update: (id: number, data: Partial<Omit<NewUser, "id">>) => {
+    update: (id: string, data: Partial<Omit<NewUser, "id">>) => {
       const updateData = {
         ...data,
         updatedAt: new Date(),

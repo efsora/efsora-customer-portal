@@ -51,7 +51,7 @@ export function findByEmail(email: Email): Result<undefined | User> {
  * Finds user by ID
  * Returns Command that queries the database via repository
  */
-export function findUserById(userId: number): Result<UserData> {
+export function findUserById(userId: string): Result<UserData> {
   return command(
     async () => {
       const users = await userRepository.findById(userId);
@@ -63,7 +63,7 @@ export function findUserById(userId: number): Result<UserData> {
         ? success(mapUserToUserData(user))
         : fail({
             code: "NOT_FOUND",
-            message: "User not found",
+            message: "ser not found",
             resourceId: userId,
             resourceType: "user",
           });
