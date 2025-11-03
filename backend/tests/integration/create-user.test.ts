@@ -6,9 +6,11 @@
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
+import { eq } from "drizzle-orm";
 import { run } from "#lib/result/index";
 import { createUser } from "#core/users/create-user.workflow";
 import type { CreateUserInput } from "#core/users/types/inputs";
+import { users } from "#db/schema";
 import { cleanupDatabase, getTestDb } from "../helpers/database";
 
 describe("createUser Integration Tests", () => {
@@ -47,20 +49,18 @@ describe("createUser Integration Tests", () => {
         // Verify authentication token is generated
         expect(result.value.token).toBeDefined();
         expect(typeof result.value.token).toBe("string");
-        expect(result.value.token!.length).toBeGreaterThan(0);
+        expect(result.value.token?.length).toBeGreaterThan(0);
 
         // Verify user exists in database
         const db = getTestDb();
-        const users = await db.query.users.findMany({
-          where: (users, { eq }) => eq(users.email, "test@example.com"),
-        });
+        const userRecords = await db.select().from(users).where(eq(users.email, "test@example.com"));
 
-        expect(users).toHaveLength(1);
-        expect(users[0].email).toBe("test@example.com");
-        expect(users[0].name).toBe("Test User");
+        expect(userRecords).toHaveLength(1);
+        expect(userRecords[0].email).toBe("test@example.com");
+        expect(userRecords[0].name).toBe("Test User");
         // Password should be hashed, not plain text
-        expect(users[0].password).not.toBe("securePassword123");
-        expect(users[0].password.startsWith("$2b$")).toBe(true);
+        expect(userRecords[0].password).not.toBe("securePassword123");
+        expect(userRecords[0].password.startsWith("$2b$")).toBe(true);
       }
     });
 
@@ -179,22 +179,23 @@ describe("createUser Integration Tests", () => {
       expect(result.status).toBe("Success");
 
       const db = getTestDb();
-      const users = await db.query.users.findMany({
-        where: (users, { eq }) => eq(users.email, "persist@example.com"),
-      });
+      const userRecords = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, "persist@example.com"));
 
-      expect(users).toHaveLength(1);
-      expect(users[0]).toMatchObject({
+      expect(userRecords).toHaveLength(1);
+      expect(userRecords[0]).toMatchObject({
         email: "persist@example.com",
         name: "Persist Test",
       });
 
       // Verify timestamps are set
-      expect(users[0].createdAt).toBeInstanceOf(Date);
-      expect(users[0].updatedAt).toBeInstanceOf(Date);
+      expect(userRecords[0].createdAt).toBeInstanceOf(Date);
+      expect(userRecords[0].updatedAt).toBeInstanceOf(Date);
 
       // Verify password is hashed with bcrypt
-      expect(users[0].password).toMatch(/^\$2[aby]\$\d{2}\$/);
+      expect(userRecords[0].password).toMatch(/^\$2[aby]\$\d{2}\$/);
     });
 
     it("should handle multiple users with different emails", async () => {
@@ -225,7 +226,7 @@ describe("createUser Integration Tests", () => {
 
       // Verify all users exist in database
       const db = getTestDb();
-      const allUsers = await db.query.users.findMany();
+      const allUsers = await db.select().from(users);
 
       expect(allUsers).toHaveLength(3);
       expect(allUsers.map((u) => u.email)).toEqual([
