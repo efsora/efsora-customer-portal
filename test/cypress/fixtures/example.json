@@ -1,0 +1,20 @@
+{
+  "name": "Example Fixture",
+  "description": "This is an example fixture file that can be used in tests",
+  "data": {
+    "string": "test string",
+    "number": 123,
+    "boolean": true,
+    "array": [1, 2, 3, 4, 5],
+    "object": {
+      "key1": "value1",
+      "key2": "value2"
+    }
+  },
+  "testData": {
+    "validInput": "valid test data",
+    "invalidInput": "",
+    "specialCharacters": "!@#$%^&*()",
+    "longString": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+  }
+}

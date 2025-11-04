@@ -1,0 +1,66 @@
+{
+  "validUser": {
+    "username": "testuser",
+    "email": "testuser@example.com",
+    "password": "TestPass123!",
+    "firstName": "Test",
+    "lastName": "User"
+  },
+  "adminUser": {
+    "username": "admin",
+    "email": "admin@example.com",
+    "password": "AdminPass123!",
+    "firstName": "Admin",
+    "lastName": "User",
+    "role": "admin"
+  },
+  "newUser": {
+    "username": "newuser",
+    "email": "newuser@example.com",
+    "password": "NewPass123!",
+    "firstName": "New",
+    "lastName": "User"
+  },
+  "invalidUser": {
+    "username": "invalid",
+    "email": "invalid@example.com",
+    "password": "wrong"
+  },
+  "userList": [
+    {
+      "id": 1,
+      "username": "john_doe",
+      "email": "john@example.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "role": "user"
+    },
+    {
+      "id": 2,
+      "username": "jane_smith",
+      "email": "jane@example.com",
+      "firstName": "Jane",
+      "lastName": "Smith",
+      "role": "user"
+    },
+    {
+      "id": 3,
+      "username": "bob_wilson",
+      "email": "bob@example.com",
+      "firstName": "Bob",
+      "lastName": "Wilson",
+      "role": "moderator"
+    }
+  ],
+  "userProfile": {
+    "id": 1,
+    "username": "testuser",
+    "email": "testuser@example.com",
+    "firstName": "Test",
+    "lastName": "User",
+    "bio": "This is a test user profile",
+    "avatar": "https://example.com/avatars/testuser.jpg",
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-15T00:00:00.000Z"
+  }
+}
