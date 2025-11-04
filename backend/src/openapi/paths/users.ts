@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 import {
   createUserBodySchema,
   createUserResponseSchema,
@@ -39,6 +41,31 @@ registry.registerPath({
     500: commonErrorResponses[500],
   },
   summary: "Create user",
+  tags: ["Users"],
+});
+
+/**
+ * GET /api/v1/users
+ * Get all users (authenticated users only)
+ */
+registry.registerPath({
+  description: "Retrieve all users. Requires authentication.",
+  method: "get",
+  path: "/api/v1/users",
+  responses: {
+    200: {
+      content: {
+        "application/json": {
+          schema: successResponseSchema(z.array(userDataSchema)),
+        },
+      },
+      description: "List of users",
+    },
+    401: commonErrorResponses[401],
+    500: commonErrorResponses[500],
+  },
+  security: [{ BearerAuth: [] }],
+  summary: "Get all users",
   tags: ["Users"],
 });
 

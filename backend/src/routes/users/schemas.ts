@@ -69,6 +69,8 @@ export const getUserSchema = {
   params: getUserParamsSchema,
 };
 
+export const getAllUsersSchema = {};
+
 export type CreateUserBody = z.infer<typeof createUserBodySchema>;
 export type CreateUserResponse = z.infer<typeof createUserResponseSchema>;
 export type GetUserParams = z.infer<typeof getUserParamsSchema>;

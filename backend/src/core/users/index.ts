@@ -6,6 +6,7 @@
 // Workflows
 export { createUser } from "./create-user.workflow";
 export { getUserById } from "./get-user.workflow";
+export { getAllUsers } from "./get-user.workflow";
 
 // Public types - Inputs
 export type { CreateUserInput, UpdateUserInput } from "./types/inputs";

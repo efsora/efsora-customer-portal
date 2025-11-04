@@ -1,6 +1,6 @@
 import { type Result, pipe } from "#lib/result/index";
 
-import { findUserById } from "#core/users/find.operations";
+import { findUserById, findAllUsers } from "#core/users/find.operations";
 import { UserData } from "./types/outputs.js";
 
 /**
@@ -13,4 +13,12 @@ import { UserData } from "./types/outputs.js";
  */
 export function getUserById(userId: string): Result<UserData> {
   return pipe(findUserById(userId));
+}
+
+
+/** 
+ * Get all users workflow
+ */
+export function getAllUsers(): Result<UserData[]> {
+  return pipe(findAllUsers());
 }

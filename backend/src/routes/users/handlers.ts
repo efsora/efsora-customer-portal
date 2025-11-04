@@ -5,6 +5,7 @@ import {
   UserData,
   createUser,
   getUserById,
+  getAllUsers,
 } from "#core/users/index";
 import {
   createFailureResponse,
@@ -59,4 +60,28 @@ export async function handleGetUserById(
       }),
     onFailure: (error) => createFailureResponse(error),
   });
+}
+
+
+/**
+ * GET /users
+ * Get all users (authenticated users only)
+ */
+export async function handleGetAllUsers(): Promise<AppResponse<UserData[]>> {
+  const result = await run(getAllUsers());
+
+  return matchResponse(result, {
+    onSuccess: (users) =>
+      createSuccessResponse(
+        users.map((user) => ({
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+        })),
+      ),
+    onFailure: (error) => createFailureResponse(error),
+  });
+
 }

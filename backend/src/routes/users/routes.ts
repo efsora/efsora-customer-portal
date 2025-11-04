@@ -2,8 +2,8 @@ import { handleResult } from "#middlewares/resultHandler";
 import { validate } from "#middlewares/validate";
 import { Router } from "express";
 
-import { handleCreateUser, handleGetUserById } from "./handlers";
-import { createUserSchema, getUserSchema } from "./schemas";
+import { handleCreateUser, handleGetUserById, handleGetAllUsers } from "./handlers";
+import { createUserSchema, getUserSchema, getAllUsersSchema } from "./schemas";
 
 const router = Router();
 
@@ -19,5 +19,11 @@ router.post("/", validate(createUserSchema), handleResult(handleCreateUser));
  * Users can only access their own data
  */
 router.get("/:id", validate(getUserSchema), handleResult(handleGetUserById));
+
+/**
+ * GET /users
+ * Get all users (protected endpoint - authentication required)
+ */
+router.get("/", validate(getAllUsersSchema), handleResult(handleGetAllUsers));
 
 export default router;
