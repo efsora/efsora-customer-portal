@@ -19,3 +19,11 @@ export type UpdateUserInput = {
   name?: string;
   password?: string;
 };
+
+/**
+ * Input for user login
+ */
+export type LoginInput = {
+  email: string;
+  password: string;
+};

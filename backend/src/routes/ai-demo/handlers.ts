@@ -11,7 +11,7 @@ import { logger } from "#infrastructure/logger";
 /**
  * Test AI service hello endpoint
  */
-export async function handleAIHello(req: Request, res: Response) {
+export async function handleAIHello(_req: Request, res: Response) {
   try {
     // Type-safe call to AI service
     const response = await aiServiceClient.hello();

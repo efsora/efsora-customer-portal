@@ -1,15 +1,10 @@
-import { useMutation } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
-import { createUser, getUserById } from '#api/methods/user.api';
+import { getUserById } from '#api/methods/user.api';
 import { MINUTES_IN_MS } from '#config/time';
 import { QUERY_KEYS } from '#constants/queryKeys';
 import type { SummaryUser } from '#models/user.types';
 import type { UserSummaryResponse_ } from '#models/user.types';
-
-export function useCreateUser() {
-    return useMutation({ mutationFn: createUser });
-}
 
 export function useGetUserDetailedById(userId: string) {
     return useQuery({

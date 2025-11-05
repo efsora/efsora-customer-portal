@@ -30,6 +30,7 @@
         "paths": {
             "#store": ["src/store/index"],
             "#store/*": ["src/store/*"],
+            "#presentation/*": ["src/presentation/*"],
             "#components": ["src/presentation/components/index"],
             "#components/*": ["src/presentation/components/*"],
             "#pages": ["src/presentation/pages/index"],

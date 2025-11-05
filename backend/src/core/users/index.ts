@@ -5,17 +5,19 @@
 
 // Workflows
 export { createUser } from "./create-user.workflow";
+export { login } from "./login.workflow";
 export { getUserById } from "./get-user.workflow";
 export { getAllUsers } from "./get-user.workflow";
 
 // Public types - Inputs
-export type { CreateUserInput, UpdateUserInput } from "./types/inputs";
+export type { CreateUserInput, UpdateUserInput, LoginInput } from "./types/inputs";
 
 // Public types - Outputs
 export type {
   CreateUserResult,
   UpdateUserResult,
   UserData,
+  LoginResult,
 } from "./types/outputs";
 
 // Public types - Errors
@@ -26,6 +28,7 @@ export type {
   UserInvalidEmailError,
   UserInvalidPasswordError,
   UserNotFoundError,
+  UserInvalidCredentialsError,
 } from "./types/errors";
 
 // Value objects

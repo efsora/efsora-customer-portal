@@ -4,25 +4,6 @@ import { z } from "zod";
 extendZodWithOpenApi(z);
 
 /**
- * Schema for user creation body
- */
-export const createUserBodySchema = z
-  .object({
-    email: z
-      .email("Invalid email format")
-      .openapi({ example: "jane.doe@example.com" }),
-    name: z
-      .string()
-      .min(1, "Name is required")
-      .openapi({ example: "Jane Doe" }),
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters long")
-      .openapi({ example: "securePassword123" }),
-  })
-  .openapi("CreateUserBody");
-
-/**
  * Schema for user ID parameter
  */
 export const getUserParamsSchema = z
@@ -45,33 +26,13 @@ export const userDataSchema = z
   .openapi("UserData");
 
 /**
- * Create user response schema (with token)
- */
-export const createUserResponseSchema = z
-  .object({
-    email: z.email().openapi({ example: "jane.doe@example.com" }),
-    id: z.uuid().openapi({ example: "550e8400-e29b-41d4-a716-446655440000" }),
-    name: z.string().nullable().openapi({ example: "Jane Doe" }),
-    token: z
-      .string()
-      .openapi({ example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }),
-  })
-  .openapi("CreateUserResponse");
-
-/**
  * Validation schemas for routes
  */
-export const createUserSchema = {
-  body: createUserBodySchema,
-};
-
 export const getUserSchema = {
   params: getUserParamsSchema,
 };
 
 export const getAllUsersSchema = {};
 
-export type CreateUserBody = z.infer<typeof createUserBodySchema>;
-export type CreateUserResponse = z.infer<typeof createUserResponseSchema>;
 export type GetUserParams = z.infer<typeof getUserParamsSchema>;
 export type UserDataResponse = z.infer<typeof userDataSchema>;
