@@ -1,0 +1,27 @@
+{
+  "baseUrl": "https://staging.example.com",
+  "apiUrl": "https://staging.example.com/api",
+  "environment": "staging",
+  "testUser": {
+    "username": "staging_testuser",
+    "password": "StagingPass123!",
+    "email": "testuser.staging@example.com"
+  },
+  "testAdmin": {
+    "username": "staging_admin",
+    "password": "StagingAdminPass123!",
+    "email": "admin.staging@example.com"
+  },
+  "timeout": {
+    "short": 5000,
+    "medium": 15000,
+    "long": 45000
+  },
+  "retries": {
+    "runMode": 2,
+    "openMode": 0
+  },
+  "video": true,
+  "screenshotOnRunFailure": true,
+  "debug": false
+}

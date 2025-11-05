@@ -1,0 +1,116 @@
+{
+  "product": {
+    "id": 1,
+    "name": "Laptop Pro 15",
+    "description": "High-performance laptop with 15-inch display",
+    "price": 1299.99,
+    "category": "Electronics",
+    "stock": 50,
+    "imageUrl": "https://example.com/images/laptop-pro-15.jpg",
+    "rating": 4.5,
+    "reviews": 127
+  },
+  "productList": [
+    {
+      "id": 1,
+      "name": "Laptop Pro 15",
+      "description": "High-performance laptop",
+      "price": 1299.99,
+      "category": "Electronics",
+      "stock": 50
+    },
+    {
+      "id": 2,
+      "name": "Wireless Mouse",
+      "description": "Ergonomic wireless mouse",
+      "price": 29.99,
+      "category": "Accessories",
+      "stock": 200
+    },
+    {
+      "id": 3,
+      "name": "Mechanical Keyboard",
+      "description": "RGB mechanical keyboard",
+      "price": 89.99,
+      "category": "Accessories",
+      "stock": 75
+    },
+    {
+      "id": 4,
+      "name": "4K Monitor",
+      "description": "27-inch 4K display",
+      "price": 399.99,
+      "category": "Electronics",
+      "stock": 30
+    },
+    {
+      "id": 5,
+      "name": "USB-C Hub",
+      "description": "Multi-port USB-C hub",
+      "price": 49.99,
+      "category": "Accessories",
+      "stock": 150
+    }
+  ],
+  "newProduct": {
+    "name": "Smartphone X",
+    "description": "Latest flagship smartphone",
+    "price": 899.99,
+    "category": "Electronics",
+    "stock": 100,
+    "imageUrl": "https://example.com/images/smartphone-x.jpg"
+  },
+  "categories": [
+    "Electronics",
+    "Accessories",
+    "Clothing",
+    "Books",
+    "Home & Garden",
+    "Sports",
+    "Toys"
+  ],
+  "electronicProducts": [
+    {
+      "id": 1,
+      "name": "Laptop Pro 15",
+      "price": 1299.99,
+      "category": "Electronics"
+    },
+    {
+      "id": 4,
+      "name": "4K Monitor",
+      "price": 399.99,
+      "category": "Electronics"
+    },
+    {
+      "id": 6,
+      "name": "Tablet Air",
+      "price": 599.99,
+      "category": "Electronics"
+    }
+  ],
+  "searchResults": [
+    {
+      "id": 1,
+      "name": "Laptop Pro 15",
+      "description": "High-performance laptop with 15-inch display",
+      "price": 1299.99,
+      "category": "Electronics",
+      "match": "name"
+    },
+    {
+      "id": 7,
+      "name": "Gaming Laptop",
+      "description": "Powerful gaming laptop",
+      "price": 1799.99,
+      "category": "Electronics",
+      "match": "name"
+    }
+  ],
+  "productUpdate": {
+    "name": "Laptop Pro 15 - Updated",
+    "description": "Updated high-performance laptop",
+    "price": 1199.99,
+    "stock": 45
+  }
+}
