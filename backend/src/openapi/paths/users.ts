@@ -1,6 +1,6 @@
+import { z } from "zod";
+
 import {
-  createUserBodySchema,
-  createUserResponseSchema,
   getUserParamsSchema,
   userDataSchema,
 } from "#routes/users/schemas";
@@ -9,36 +9,27 @@ import { registry } from "../registry.js";
 import { commonErrorResponses, successResponseSchema } from "../schemas.js";
 
 /**
- * POST /api/v1/users
- * Create a new user (register)
+ * GET /api/v1/users
+ * Get all users (authenticated users only)
  */
 registry.registerPath({
-  description: "Register a new user account",
-  method: "post",
+  description: "Retrieve all users. Requires authentication.",
+  method: "get",
   path: "/api/v1/users",
-  request: {
-    body: {
-      content: {
-        "application/json": {
-          schema: createUserBodySchema,
-        },
-      },
-    },
-  },
   responses: {
     200: {
       content: {
         "application/json": {
-          schema: successResponseSchema(createUserResponseSchema),
+          schema: successResponseSchema(z.array(userDataSchema)),
         },
       },
-      description: "User created successfully",
+      description: "List of users",
     },
-    400: commonErrorResponses[400],
-    409: commonErrorResponses[409],
+    401: commonErrorResponses[401],
     500: commonErrorResponses[500],
   },
-  summary: "Create user",
+  security: [{ BearerAuth: [] }],
+  summary: "Get all users",
   tags: ["Users"],
 });
 

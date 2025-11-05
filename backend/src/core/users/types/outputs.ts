@@ -47,3 +47,17 @@ export type UserData = {
   name: string | null;
   updatedAt: Date;
 };
+
+/**
+ * Login result with authentication token
+ */
+export type LoginResult = {
+  user: {
+    createdAt: Date;
+    email: string;
+    id: string;
+    name: string | null;
+    updatedAt: Date;
+  };
+  token: string;
+};

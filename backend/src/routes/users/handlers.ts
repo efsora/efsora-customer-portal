@@ -1,10 +1,9 @@
 import { matchResponse } from "#lib/result/combinators";
 import { run } from "#lib/result/index";
 import {
-  CreateUserResult,
   UserData,
-  createUser,
   getUserById,
+  getAllUsers,
 } from "#core/users/index";
 import {
   createFailureResponse,
@@ -12,37 +11,16 @@ import {
   type AppResponse,
 } from "#lib/types/response";
 import type { ValidatedRequest } from "#middlewares/validate";
+import type { AuthenticatedRequest } from "#middlewares/auth";
 
-import type { CreateUserBody, GetUserParams } from "./schemas";
-
-/**
- * POST /users
- * Create a new user
- */
-export async function handleCreateUser(
-  req: ValidatedRequest<{ body: CreateUserBody }>,
-): Promise<AppResponse<CreateUserResult>> {
-  const body = req.validated.body;
-  const result = await run(createUser(body));
-
-  return matchResponse(result, {
-    onSuccess: (user) =>
-      createSuccessResponse({
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        token: user.token,
-      }),
-    onFailure: (error) => createFailureResponse(error),
-  });
-}
+import type { GetUserParams } from "./schemas";
 
 /**
  * GET /users/:id
  * Get user by ID (authenticated users only, can only access own data)
  */
 export async function handleGetUserById(
-  req: ValidatedRequest<{ params: GetUserParams }>,
+  req: AuthenticatedRequest & ValidatedRequest<{ params: GetUserParams }>,
 ): Promise<AppResponse<UserData>> {
   const { id } = req.validated.params;
 
@@ -57,6 +35,28 @@ export async function handleGetUserById(
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       }),
+    onFailure: (error) => createFailureResponse(error),
+  });
+}
+
+/**
+ * GET /users
+ * Get all users (authenticated users only)
+ */
+export async function handleGetAllUsers(): Promise<AppResponse<UserData[]>> {
+  const result = await run(getAllUsers());
+
+  return matchResponse(result, {
+    onSuccess: (users) =>
+      createSuccessResponse(
+        users.map((user) => ({
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+        })),
+      ),
     onFailure: (error) => createFailureResponse(error),
   });
 }

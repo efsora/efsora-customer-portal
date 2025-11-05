@@ -16,7 +16,8 @@ export type UserError =
   | UserForbiddenError
   | UserInvalidEmailError
   | UserInvalidPasswordError
-  | UserNotFoundError;
+  | UserNotFoundError
+  | UserInvalidCredentialsError;
 
 /**
  * User not found error - requested user doesn't exist.
@@ -96,4 +97,20 @@ export type UserInvalidEmailError = ErrorBase & {
  */
 export type UserInvalidPasswordError = ErrorBase & {
   code: "USER_INVALID_PASSWORD";
+};
+
+/**
+ * User invalid credentials error - login failed (wrong email or password).
+ * Used when login attempt fails due to incorrect credentials.
+ *
+ * @example
+ * ```typescript
+ * fail({
+ *   code: "USER_INVALID_CREDENTIALS",
+ *   message: "Invalid email or password"
+ * })
+ * ```
+ */
+export type UserInvalidCredentialsError = ErrorBase & {
+  code: "USER_INVALID_CREDENTIALS";
 };

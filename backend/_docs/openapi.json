@@ -21,6 +21,10 @@
       "name": "Hello"
     },
     {
+      "description": "Authentication endpoints (login, register)",
+      "name": "Auth"
+    },
+    {
       "description": "User management endpoints",
       "name": "Users"
     }
@@ -420,7 +424,7 @@
           "message"
         ]
       },
-      "CreateUserResponse": {
+      "RegisterResponse": {
         "type": "object",
         "properties": {
           "email": {
@@ -452,7 +456,7 @@
           "token"
         ]
       },
-      "CreateUserBody": {
+      "RegisterBody": {
         "type": "object",
         "properties": {
           "email": {
@@ -520,6 +524,40 @@
           "id",
           "name",
           "updatedAt"
+        ]
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserData"
+          },
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        },
+        "required": [
+          "user",
+          "token"
+        ]
+      },
+      "LoginBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "jane.doe@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "securePassword123"
+          }
+        },
+        "required": [
+          "email",
+          "password"
         ]
       }
     },
@@ -629,32 +667,32 @@
         }
       }
     },
-    "/api/v1/users": {
+    "/api/v1/auth/register": {
       "post": {
-        "description": "Register a new user account",
-        "summary": "Create user",
+        "description": "Register a new user account with email, name, and password",
+        "summary": "Register user",
         "tags": [
-          "Users"
+          "Auth"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateUserBody"
+                "$ref": "#/components/schemas/RegisterBody"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "User created successfully",
+            "description": "User registered successfully with JWT token",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
                     "data": {
-                      "$ref": "#/components/schemas/CreateUserResponse"
+                      "$ref": "#/components/schemas/RegisterResponse"
                     },
                     "error": {
                       "type": "null"
@@ -707,6 +745,193 @@
           },
           "409": {
             "description": "Conflict - Resource already exists or conflict occurred",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "description": "Login with email and password to receive JWT authentication token",
+        "summary": "Login user",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful with JWT token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/LoginResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": [
+                            "object",
+                            "null"
+                          ]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "description": "Retrieve all users. Requires authentication.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Get all users",
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/UserData"
+                      }
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": [
+                            "object",
+                            "null"
+                          ]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
             "content": {
               "application/json": {
                 "schema": {

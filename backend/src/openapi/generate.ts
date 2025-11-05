@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 // Import all path registrations
 import "./paths/health.js";
 import "./paths/hello.js";
+import "./paths/auth.js";
 import "./paths/users.js";
 import { registry } from "./registry.js";
 
@@ -40,6 +41,10 @@ function generateOpenApiSpec() {
       {
         description: "Health check and test endpoints",
         name: "Hello",
+      },
+      {
+        description: "Authentication endpoints (login, register)",
+        name: "Auth",
       },
       {
         description: "User management endpoints",
