@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import { isTokenExpired } from '../utils/jwt';
+import { isTokenValid } from '../utils/jwt';
 
 /**
  * Auth user data from JWT token or API response
@@ -72,12 +72,12 @@ export const useAuthStore = create<AuthState>()(
             },
 
             /**
-             * Get authentication status by validating token expiration
-             * Returns true only if token exists and is not expired
+             * Get authentication status by validating token validity
+             * Returns true only if token exists and is valid (not expired)
              */
             getIsAuthenticated: () => {
                 const { token } = get();
-                return !isTokenExpired(token);
+                return isTokenValid(token);
             },
         }),
         {
