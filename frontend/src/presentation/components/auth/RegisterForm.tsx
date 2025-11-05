@@ -59,8 +59,8 @@ export const RegisterForm = () => {
             },
             {
                 onSuccess: () => {
-                    // Redirect to dashboard on successful registration
-                    navigate('/dashboard');
+                    // Redirect to home page on successful registration
+                    navigate('/');
                 },
                 onError: (error) => {
                     setServerError(

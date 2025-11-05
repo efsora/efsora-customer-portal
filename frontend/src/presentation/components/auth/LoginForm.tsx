@@ -40,8 +40,8 @@ export const LoginForm = () => {
         setServerError(null);
         loginMutate(data, {
             onSuccess: () => {
-                // Redirect to dashboard on successful login
-                navigate('/dashboard');
+                // Redirect to home page on successful login
+                navigate('/');
             },
             onError: (error) => {
                 setServerError(
