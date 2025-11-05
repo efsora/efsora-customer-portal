@@ -1,0 +1,27 @@
+{
+  "baseUrl": "http://localhost:5173",
+  "apiUrl": "http://localhost:3000/api",
+  "environment": "dev",
+  "testUser": {
+    "username": "dev_testuser",
+    "password": "DevPass123!",
+    "email": "testuser.dev@example.com"
+  },
+  "testAdmin": {
+    "username": "dev_admin",
+    "password": "DevAdminPass123!",
+    "email": "admin.dev@example.com"
+  },
+  "timeout": {
+    "short": 5000,
+    "medium": 10000,
+    "long": 30000
+  },
+  "retries": {
+    "runMode": 2,
+    "openMode": 0
+  },
+  "video": true,
+  "screenshotOnRunFailure": true,
+  "debug": true
+}
