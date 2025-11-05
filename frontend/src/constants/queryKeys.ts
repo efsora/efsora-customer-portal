@@ -5,4 +5,8 @@ export const QUERY_KEYS = {
         ALL: 'get-all-users',
     },
     HELLO: 'hello',
+    AUTH: {
+        LOGIN: 'login',
+        REGISTER: 'register',
+    },
 };

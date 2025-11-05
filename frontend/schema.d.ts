@@ -101,7 +101,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/users": {
+    "/api/v1/auth/register": {
         parameters: {
             query?: never;
             header?: never;
@@ -111,8 +111,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Create user
-         * @description Register a new user account
+         * Register user
+         * @description Register a new user account with email, name, and password
          */
         post: {
             parameters: {
@@ -123,18 +123,18 @@ export interface paths {
             };
             requestBody?: {
                 content: {
-                    "application/json": components["schemas"]["CreateUserBody"];
+                    "application/json": components["schemas"]["RegisterBody"];
                 };
             };
             responses: {
-                /** @description User created successfully */
+                /** @description User registered successfully with JWT token */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
                         "application/json": {
-                            data: components["schemas"]["CreateUserResponse"];
+                            data: components["schemas"]["RegisterResponse"];
                             error?: null;
                             message?: null;
                             meta?: components["schemas"]["Meta"] & (Record<string, never> | null);
@@ -174,6 +174,151 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Login user
+         * @description Login with email and password to receive JWT authentication token
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["LoginBody"];
+                };
+            };
+            responses: {
+                /** @description Login successful with JWT token */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: components["schemas"]["LoginResponse"];
+                            error?: null;
+                            message?: null;
+                            meta?: components["schemas"]["Meta"] & (Record<string, never> | null);
+                            /** @enum {boolean} */
+                            success: true;
+                            /** @example 00-1234567890abcdef-1234567890abcdef-01 */
+                            traceId: string;
+                        };
+                    };
+                };
+                /** @description Validation Error - Invalid request body, params, or query */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized - Invalid or missing authentication token */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error - Unexpected server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all users
+         * @description Retrieve all users. Requires authentication.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List of users */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: components["schemas"]["UserData"][];
+                            error?: null;
+                            message?: null;
+                            meta?: components["schemas"]["Meta"] & (Record<string, never> | null);
+                            /** @enum {boolean} */
+                            success: true;
+                            /** @example 00-1234567890abcdef-1234567890abcdef-01 */
+                            traceId: string;
+                        };
+                    };
+                };
+                /** @description Unauthorized - Invalid or missing authentication token */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error - Unexpected server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -389,7 +534,7 @@ export interface components {
             /** @example Hello from API */
             message: string;
         };
-        CreateUserResponse: {
+        RegisterResponse: {
             /**
              * Format: email
              * @example jane.doe@example.com
@@ -405,7 +550,7 @@ export interface components {
             /** @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... */
             token: string;
         };
-        CreateUserBody: {
+        RegisterBody: {
             /**
              * Format: email
              * @example jane.doe@example.com
@@ -439,6 +584,20 @@ export interface components {
              * @example 2025-10-29T10:30:00.000Z
              */
             updatedAt: string | null;
+        };
+        LoginResponse: {
+            user: components["schemas"]["UserData"];
+            /** @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... */
+            token: string;
+        };
+        LoginBody: {
+            /**
+             * Format: email
+             * @example jane.doe@example.com
+             */
+            email: string;
+            /** @example securePassword123 */
+            password: string;
         };
     };
     responses: never;

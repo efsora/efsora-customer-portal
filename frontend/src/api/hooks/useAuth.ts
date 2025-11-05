@@ -64,8 +64,8 @@ export const useLogin = () => {
                         id: data.user.id,
                         email: data.user.email,
                         name: data.user.name || null,
-                        createdAt: data.user.createdAt,
-                        updatedAt: data.user.updatedAt,
+                        createdAt: data.user.createdAt || '',
+                        updatedAt: data.user.updatedAt || '',
                     },
                     data.token,
                 );

@@ -1,14 +1,4 @@
-/**
- * Request types for authentication endpoints
- */
+import type { components } from '../../../../schema';
 
-export interface RegisterRequest {
-    email: string;
-    name: string;
-    password: string;
-}
-
-export interface LoginRequest {
-    email: string;
-    password: string;
-}
+export type RegisterRequest = components['schemas']['RegisterBody'];
+export type LoginRequest = components['schemas']['LoginBody'];

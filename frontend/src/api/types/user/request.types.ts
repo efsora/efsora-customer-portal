@@ -1,4 +1,4 @@
 import type { components } from '../../../../schema';
 
-export type CreateUserRequest = components['schemas']['CreateUserBody'];
-export type CreateUserBody = components['schemas']['CreateUserBody'];
+export type RegisterRequest = components['schemas']['RegisterBody'];
+export type RegisterBody = components['schemas']['RegisterBody'];
