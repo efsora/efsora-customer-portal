@@ -1,6 +1,6 @@
 import type { User } from "#db/schema";
 import { generateAuthToken } from "#infrastructure/auth/token";
-import { command, type Result, fail, success, pipe, chain } from "#lib/result/index";
+import { command, type Result, fail, success, pipe } from "#lib/result/index";
 
 import type { LoginInput } from "./types/inputs";
 import type { LoginResult } from "./types/outputs";
@@ -66,8 +66,9 @@ export function handlePasswordVerificationResult(
 export function verifyLoginPassword(
   data: { input: LoginInput; user: User },
 ): Result<{ user: User }> {
-  return chain(
-    HashedPassword.verify(data.user.password as HashedPassword, data.input.password),
+  return pipe(
+    HashedPassword.create(data.user.password),
+    (hashedPassword) => HashedPassword.verify(hashedPassword, data.input.password),
     (isValid: boolean) => handlePasswordVerificationResult(data, isValid),
   );
 }
