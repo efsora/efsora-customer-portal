@@ -22,6 +22,23 @@ export function validateLoginInput(input: LoginInput): Result<LoginInput> {
 }
 
 /**
+ * Validates that user was found during login
+ * Returns failure if user doesn't exist, success with input and user if found
+ */
+function validateUserFound(
+  user: User | undefined,
+  input: LoginInput,
+): Result<{ input: LoginInput; user: User }> {
+  if (!user) {
+    return fail({
+      code: "USER_INVALID_CREDENTIALS",
+      message: "Invalid email or password",
+    });
+  }
+  return success({ input, user });
+}
+
+/**
  * Finds user by email during login
  * Returns the full User entity (including password hash) for authentication
  */
@@ -31,15 +48,7 @@ export function findUserByEmailForLogin(
   return pipe(
     Email.create(input.email),
     findByEmail,
-    (user) => {
-      if (!user) {
-        return fail({
-          code: "USER_INVALID_CREDENTIALS",
-          message: "Invalid email or password",
-        });
-      }
-      return success({ input, user });
-    },
+    (user) => validateUserFound(user, input),
   );
 }
 

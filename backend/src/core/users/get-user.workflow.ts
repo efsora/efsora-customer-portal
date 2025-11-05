@@ -20,5 +20,5 @@ export function getUserById(userId: string): Result<UserData> {
  * Get all users workflow
  */
 export function getAllUsers(): Result<UserData[]> {
-  return pipe(findAllUsers());
+  return findAllUsers();
 }
