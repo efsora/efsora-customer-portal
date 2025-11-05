@@ -28,9 +28,7 @@
       "make -C frontend -f Makefile commit-check"
     ],
     "ai-service/**/*.py": [
-      "cd ai-service && uv run ruff check .",
-      "cd ai-service && uv run black --check .",
-      "cd ai-service && uv run mypy ."
+      "make -C ai-service -f Makefile pre-commit"
     ]
   },
   "engines": {
