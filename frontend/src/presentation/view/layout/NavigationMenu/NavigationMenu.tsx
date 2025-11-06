@@ -8,7 +8,10 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-    { label: "Home", path: "/" },
+    { label: "Dashboard", path: "/" },
+    { label: "Timeline", path: "/timeline" },
+    { label: "Documents", path: "/documents" },
+    { label: "Your Team", path: "/yourteam" },
     { label: "Users", path: "/users" },
 ];
 

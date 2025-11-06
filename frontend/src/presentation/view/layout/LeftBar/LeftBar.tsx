@@ -1,11 +1,8 @@
 import NavigationMenu from '../NavigationMenu/NavigationMenu';
 import styles from "./LeftBar.module.css";
-import Logout from '#presentation/components/common/Logout';
-
+import Logout from '#components/common/Logout';
 
 export default function LeftBar() {
-
-
 
     return (
         <div className={styles.leftBarContainer}>
