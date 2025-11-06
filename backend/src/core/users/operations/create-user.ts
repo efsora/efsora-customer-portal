@@ -2,6 +2,7 @@ import type { NewUser } from "#db/schema";
 import { userRepository } from "#infrastructure/repositories/drizzle";
 import { command, type Result, fail, success } from "#lib/result/index";
 import { allNamed, chain } from "#lib/result/combinators";
+import { generateAuthToken } from "#infrastructure/auth/token";
 import first from "lodash/fp/first";
 
 import type { CreateUserInput } from "../types/inputs";
@@ -119,6 +120,15 @@ export function saveNewUser(data: {
       const users = await userRepository.create(userData);
       return first(users);
     },
-    handleSaveNewUserResult,
+    handleSaveNewUserResult
   );
+}
+
+/**
+ * Adds authentication token to user result
+ * Generates JWT token for the newly created user
+ */
+export function addAuthToken(result: CreateUserResult): Result<CreateUserResult> {
+  const token = generateAuthToken(result.id, result.email);
+  return success({ ...result, token });
 }

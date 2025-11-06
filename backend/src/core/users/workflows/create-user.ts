@@ -1,11 +1,10 @@
 import { pipe } from "#lib/result/combinators";
 import type { Result } from "#lib/result/index";
-import { generateAuthToken } from "#infrastructure/auth/token";
-import { success } from "#lib/result/factories";
 
 import type { CreateUserInput } from "../types/inputs";
 import type { CreateUserResult } from "../types/outputs";
 import {
+  addAuthToken,
   checkEmailAvailability,
   hashPasswordForCreation,
   saveNewUser,
@@ -36,12 +35,4 @@ export function createUser(input: CreateUserInput): Result<CreateUserResult> {
     saveNewUser,
     addAuthToken,
   );
-}
-
-/**
- * Adds authentication token to user result
- */
-function addAuthToken(result: CreateUserResult): Result<CreateUserResult> {
-  const token = generateAuthToken(result.id, result.email);
-  return success({ ...result, token });
 }
