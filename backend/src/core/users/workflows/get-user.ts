@@ -1,7 +1,7 @@
 import { type Result, pipe } from "#lib/result/index";
 
-import { findUserById, findAllUsers } from "#core/users/find.operations";
-import { UserData } from "./types/outputs.js";
+import { findUserById, findAllUsers } from "../operations/find";
+import { UserData } from "../types/outputs.js";
 
 /**
  * Get user by ID workflow

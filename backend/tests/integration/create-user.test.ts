@@ -8,8 +8,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { eq } from "drizzle-orm";
 import { run } from "#lib/result/index";
-import { createUser } from "#core/users/create-user.workflow";
-import type { CreateUserInput } from "#core/users/types/inputs";
+import { createUser } from "#core/users";
+import type { CreateUserInput } from "#core/users";
 import { users } from "#db/schema";
 import { cleanupDatabase, getTestDb } from "../helpers/database";
 

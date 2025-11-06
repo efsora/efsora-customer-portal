@@ -1,13 +1,13 @@
 import { pipe, type Result } from "#lib/result/index";
 
-import type { LoginInput } from "./types/inputs";
-import type { LoginResult } from "./types/outputs";
+import type { LoginInput } from "../types/inputs";
+import type { LoginResult } from "../types/outputs";
 import {
   validateLoginInput,
   findUserByEmailForLogin,
   verifyLoginPassword,
   addAuthTokenToLogin,
-} from "./login.operations";
+} from "../operations/login";
 
 /**
  * Login workflow

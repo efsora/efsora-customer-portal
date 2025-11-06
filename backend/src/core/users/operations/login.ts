@@ -2,12 +2,12 @@ import type { User } from "#db/schema";
 import { generateAuthToken } from "#infrastructure/auth/token";
 import { command, type Result, fail, success, pipe } from "#lib/result/index";
 
-import type { LoginInput } from "./types/inputs";
-import type { LoginResult } from "./types/outputs";
-import { Email } from "./value-objects/Email";
-import { HashedPassword } from "./value-objects/Password";
-import { findByEmail } from "./find.operations";
-import { mapUserToUserData } from "./mappers";
+import type { LoginInput } from "../types/inputs";
+import type { LoginResult } from "../types/outputs";
+import { Email } from "../value-objects/Email";
+import { HashedPassword } from "../value-objects/Password";
+import { findByEmail } from "./find";
+import { mapUserToUserData } from "../mappers";
 
 /**
  * Validates login input (email + password format)

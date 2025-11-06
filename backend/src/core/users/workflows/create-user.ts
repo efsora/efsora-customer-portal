@@ -3,14 +3,14 @@ import type { Result } from "#lib/result/index";
 import { generateAuthToken } from "#infrastructure/auth/token";
 import { success } from "#lib/result/factories";
 
-import type { CreateUserInput } from "./types/inputs";
-import type { CreateUserResult } from "./types/outputs";
+import type { CreateUserInput } from "../types/inputs";
+import type { CreateUserResult } from "../types/outputs";
 import {
   checkEmailAvailability,
   hashPasswordForCreation,
   saveNewUser,
   validateUserCreation,
-} from "./create-user.operations";
+} from "../operations/create-user";
 
 /**
  * Create User Workflow

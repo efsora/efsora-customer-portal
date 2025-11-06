@@ -4,9 +4,9 @@ import { userRepository } from "#infrastructure/repositories/drizzle";
 import first from "lodash/fp/first";
 
 import { command, Result, fail, success } from "#lib/result/index";
-import { UserData } from "./types/outputs";
-import { Email } from "./value-objects/Email";
-import { mapUserToUserData } from "#core/users/mappers";
+import { UserData } from "../types/outputs";
+import { Email } from "../value-objects/Email";
+import { mapUserToUserData } from "../mappers";
 
 /**
  * Continuation function for findAllUsers operation.
