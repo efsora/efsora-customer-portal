@@ -7,7 +7,7 @@
 .navList {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 8px;
 }
 
 .navItem {
@@ -18,7 +18,7 @@
 
 .navLink {
     display: block;
-    padding: 12px 20px;
+    padding: 12px 12px;
     color: #333;
     text-decoration: none;
     border-left: 3px solid transparent;

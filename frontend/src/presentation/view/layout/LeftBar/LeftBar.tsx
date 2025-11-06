@@ -1,4 +1,4 @@
-import NavigationMenu from './NavigationMenu';
+import NavigationMenu from '../NavigationMenu/NavigationMenu';
 import styles from "./LeftBar.module.css";
 import Logout from '#presentation/components/common/Logout';
 
