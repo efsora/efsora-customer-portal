@@ -1,6 +1,6 @@
 import NavigationMenu from '../NavigationMenu/NavigationMenu';
 import styles from "./LeftBar.module.css";
-import Logout from '#components/common/Logout';
+import Logout from '#components/common/Logout/Logout';
 
 export default function LeftBar() {
 
