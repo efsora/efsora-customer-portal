@@ -9,7 +9,7 @@ import {
   checkEmailAvailability,
   hashPasswordForCreation,
   saveNewUser,
-  validateUserCreation,
+  mapRegisterDataToUser,
 } from "../operations/create-user";
 
 /**
@@ -30,7 +30,7 @@ import {
  */
 export function createUser(input: CreateUserInput): Result<CreateUserResult> {
   return pipe(
-    validateUserCreation(input),
+    mapRegisterDataToUser(input),
     checkEmailAvailability,
     hashPasswordForCreation,
     saveNewUser,

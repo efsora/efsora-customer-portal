@@ -12,10 +12,10 @@ import { HashedPassword, Password } from "../value-objects/Password";
 import { findByEmail } from "./find";
 
 /**
- * Validates user creation input
- * Creates Email and Password value objects
+ * Maps raw registration input to domain Value Objects
+ * Transforms primitive strings into type-safe Email and Password branded types
  */
-export function validateUserCreation(
+export function mapRegisterDataToUser(
   input: CreateUserInput,
 ): Result<ValidatedCreationData> {
   return chain(
@@ -120,9 +120,5 @@ export function saveNewUser(data: {
       return first(users);
     },
     handleSaveNewUserResult,
-    {
-      operation: "saveNewUser",
-      tags: { action: "create", domain: "users" },
-    },
   );
 }
