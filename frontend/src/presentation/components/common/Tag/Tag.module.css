@@ -10,36 +10,36 @@
 /* --- Status Variants --- */
 
 .scheduled {
-    background-color: var(--color-gray-bg);
-    color: var(--color-gray-text);
+    background-color: var(--color-neutral-grey-100);
+    color: var(--color-neutral-grey-400);
 }
 
 .inProgress {
-    background-color: var(--color-orange-bg);
-    color: var(--color-orange-text);
+    background-color: var(--color-warning-100);
+    color: var(--color-warning-500);
 }
 
 .waiting {
-    background-color: var(--color-red-bg);
-    color: var(--color-red-text);
+    background-color: var(--color-error-100);
+    color: var(--color-error-500);
 }
 
 .internalReview {
-    background-color: var(--color-blue-bg);
-    color: var(--color-blue-text);
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-500);
 }
 
 .delivered {
-    background-color: var(--color-green-bg);
-    color: var(--color-green-text);
+    background-color: var(--color-success-100);
+    color: var(--color-success-600);
 }
 
 .completed {
-    background-color: var(--color-indigo-bg);
-    color: var(--color-indigo-text);
+    background-color: var(--color-info-300);
+    color: var(--color-info-800);
 }
 
 .revision {
-    background-color: var(--color-revision-bg);
-    color: var(--color-revision-text);
+    background-color: var(--color-neutral-grey-400);
+    color: var(--color-neutral-grey-800);
 }
