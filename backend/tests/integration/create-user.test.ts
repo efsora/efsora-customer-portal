@@ -36,20 +36,24 @@ describe("createUser Integration Tests", () => {
       expect(result.status).toBe("Success");
 
       if (result.status === "Success") {
+        // Verify nested structure (best practice)
+        expect(result.value).toHaveProperty("user");
+        expect(result.value).toHaveProperty("token");
+
         // Verify user data structure
-        expect(result.value).toMatchObject({
+        expect(result.value.user).toMatchObject({
           email: "test@example.com",
           name: "Test User",
         });
 
         // Verify UUID is generated
-        expect(result.value.id).toBeDefined();
-        expect(typeof result.value.id).toBe("string");
+        expect(result.value.user.id).toBeDefined();
+        expect(typeof result.value.user.id).toBe("string");
 
         // Verify authentication token is generated
         expect(result.value.token).toBeDefined();
         expect(typeof result.value.token).toBe("string");
-        expect(result.value.token?.length).toBeGreaterThan(0);
+        expect(result.value.token.length).toBeGreaterThan(0);
 
         // Verify user exists in database
         const db = getTestDb();
@@ -81,8 +85,8 @@ describe("createUser Integration Tests", () => {
       expect(result.status).toBe("Success");
 
       if (result.status === "Success") {
-        expect(result.value.email).toBe("noname@example.com");
-        expect(result.value.name).toBeNull();
+        expect(result.value.user.email).toBe("noname@example.com");
+        expect(result.value.user.name).toBeNull();
         expect(result.value.token).toBeDefined();
       }
     });

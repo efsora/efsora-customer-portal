@@ -424,7 +424,7 @@
           "message"
         ]
       },
-      "RegisterResponse": {
+      "RegisterUserData": {
         "type": "object",
         "properties": {
           "email": {
@@ -443,6 +443,19 @@
               "null"
             ],
             "example": "Jane Doe"
+          }
+        },
+        "required": [
+          "email",
+          "id",
+          "name"
+        ]
+      },
+      "RegisterResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/RegisterUserData"
           },
           "token": {
             "type": "string",
@@ -450,9 +463,7 @@
           }
         },
         "required": [
-          "email",
-          "id",
-          "name",
+          "user",
           "token"
         ]
       },

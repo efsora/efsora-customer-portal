@@ -3,24 +3,35 @@ import { pipe, type Result } from "#lib/result/index";
 import type { LoginInput } from "../types/inputs";
 import type { LoginResult } from "../types/outputs";
 import {
-  validateLoginInput,
+  mapLoginInput,
   findUserByEmailForLogin,
   verifyLoginPassword,
   addAuthTokenToLogin,
 } from "../operations/login";
 
 /**
- * Login workflow
+ * Login workflow - Simplified and efficient
  *
  * Orchestrates the user login process by composing operations using railway-oriented programming.
+ * Optimized to avoid redundant validations and unnecessary async wrappers.
  *
  * Flow:
- * 1. Validate input (email and password format)
- * 2. Find user by email (return error if not found)
- * 3. Verify password against hash (return error if incorrect)
- * 4. Generate JWT token and return user data + token
+ * 1. Map input to Email value object (single validation)
+ * 2. Find user by email (using Email directly, no re-validation)
+ * 3. Verify password with bcrypt (direct comparison, no value object wrapper)
+ * 4. Generate JWT token (synchronous, no fake async)
  *
- * @param input - LoginInput with email and password
+ * Performance improvements:
+ * - Email validation happens only once (not twice)
+ * - No unnecessary HashedPassword wrapper for DB hash
+ * - No fake async wrapping of synchronous JWT generation
+ *
+ * Security maintained:
+ * - Generic error messages prevent user enumeration
+ * - Timing-safe bcrypt comparison
+ * - All passwords auto-sanitized in logs
+ *
+ * @param input - LoginInput with email and password (pre-validated by Zod schema)
  * @returns Result<LoginResult> with user data and authentication token, or error
  *
  * @example
@@ -39,7 +50,7 @@ import {
  */
 export function login(input: LoginInput): Result<LoginResult> {
   return pipe(
-    validateLoginInput(input),
+    mapLoginInput(input),
     findUserByEmailForLogin,
     verifyLoginPassword,
     addAuthTokenToLogin,

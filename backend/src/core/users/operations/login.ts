@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import type { User } from "#db/schema";
 import { generateAuthToken } from "#infrastructure/auth/token";
 import { command, type Result, fail, success, pipe } from "#lib/result/index";
@@ -5,111 +6,101 @@ import { command, type Result, fail, success, pipe } from "#lib/result/index";
 import type { LoginInput } from "../types/inputs";
 import type { LoginResult } from "../types/outputs";
 import { Email } from "../value-objects/Email";
-import { HashedPassword } from "../value-objects/Password";
 import { findByEmail } from "./find";
 import { mapUserToUserData } from "../mappers";
 
 /**
- * Validates login input (email + password format)
- * Creates Email value object to ensure valid email format
+ * Step 1: Map and validate login input
+ *
+ * Converts raw input string to Email value object (validates ONCE).
+ * This replaces the redundant validateLoginInput that was discarding the Email.
+ *
+ * @param input - Raw login input from HTTP request (already validated by Zod)
+ * @returns Result with Email value object and password
  */
-export function validateLoginInput(input: LoginInput): Result<LoginInput> {
-  // Email validation through value object creation
+export function mapLoginInput(input: LoginInput): Result<{
+  email: Email;
+  password: string;
+}> {
   return pipe(
     Email.create(input.email),
-    () => success(input),
+    (email) => success({ email, password: input.password }),
   );
 }
 
 /**
- * Validates that user was found during login
- * Returns failure if user doesn't exist, success with input and user if found
+ * Step 2: Find user by email
+ *
+ * Uses Email value object from step 1 (no re-validation needed).
+ * Returns the full User entity (including password hash) for authentication.
+ *
+ * @param data - Contains validated Email and plain password
+ * @returns Result with password and user if found, or failure with generic error
  */
-function validateUserFound(
-  user: User | undefined,
-  input: LoginInput,
-): Result<{ input: LoginInput; user: User }> {
-  if (!user) {
-    return fail({
-      code: "USER_INVALID_CREDENTIALS",
-      message: "Invalid email or password",
-    });
-  }
-  return success({ input, user });
-}
-
-/**
- * Finds user by email during login
- * Returns the full User entity (including password hash) for authentication
- */
-export function findUserByEmailForLogin(
-  input: LoginInput,
-): Result<{ input: LoginInput; user: User }> {
+export function findUserByEmailForLogin(data: {
+  email: Email;
+  password: string;
+}): Result<{ password: string; user: User }> {
   return pipe(
-    Email.create(input.email),
-    findByEmail,
-    (user) => validateUserFound(user, input),
+    findByEmail(data.email),
+    (user) => {
+      if (!user) {
+        return fail({
+          code: "USER_INVALID_CREDENTIALS",
+          message: "Invalid email or password",
+        });
+      }
+      return success({ password: data.password, user });
+    },
   );
 }
 
 /**
- * Continuation function for verifying password during login
+ * Step 3: Verify password
+ *
+ * Direct bcrypt comparison without unnecessary HashedPassword value object wrapper.
+ * Uses command for observability (logging, metrics, tracing) since bcrypt is async.
+ *
+ * Security notes:
+ * - bcrypt.compare is timing-safe (constant-time comparison)
+ * - Generic error message prevents user enumeration
+ * - Password from DB is already a valid bcrypt hash (no validation needed)
+ *
+ * @param data - Contains plain password and user with hashed password
+ * @returns Result with user if password matches, or failure with generic error
  */
-export function handlePasswordVerificationResult(
-  data: { input: LoginInput; user: User },
-  isValid: boolean,
-): Result<{ user: User }> {
-  if (!isValid) {
-    return fail({
-      code: "USER_INVALID_CREDENTIALS",
-      message: "Invalid email or password",
-    });
-  }
-  return success({ user: data.user });
-}
-
-/**
- * Verifies plain-text password against hashed password
- * Uses Password Value Object's verify method
- */
-export function verifyLoginPassword(
-  data: { input: LoginInput; user: User },
-): Result<{ user: User }> {
-  return pipe(
-    HashedPassword.create(data.user.password),
-    (hashedPassword) => HashedPassword.verify(hashedPassword, data.input.password),
-    (isValid: boolean) => handlePasswordVerificationResult(data, isValid),
+export function verifyLoginPassword(data: {
+  password: string;
+  user: User;
+}): Result<User> {
+  return command(
+    async () => {
+      return await bcrypt.compare(data.password, data.user.password);
+    },
+    (isValid: boolean) =>
+      isValid
+        ? success(data.user)
+        : fail({
+            code: "USER_INVALID_CREDENTIALS",
+            message: "Invalid email or password",
+          })
   );
 }
 
 /**
- * Continuation function for adding auth token to login result
+ * Step 4: Generate JWT token
+ *
+ * Synchronous operation (no async overhead needed).
+ * JWT generation is a pure function (userId + email → token string).
+ * No observability needed - it's not a side effect that can fail.
+ *
+ * @param user - Authenticated user entity
+ * @returns Result with login result containing user data and JWT token
  */
-export function handleAddAuthTokenToLoginResult(
-  user: User,
-): Result<LoginResult> {
+export function addAuthTokenToLogin(user: User): Result<LoginResult> {
   const token = generateAuthToken(user.id, user.email);
   return success({
     user: mapUserToUserData(user),
     token,
   });
-}
-
-/**
- * Generates JWT token and returns login result
- */
-export function addAuthTokenToLogin(data: {
-  user: User;
-}): Result<LoginResult> {
-  return command(
-    async () => {
-      // Return the user from async context for command execution
-      return await Promise.resolve(data.user);
-    },
-    handleAddAuthTokenToLoginResult,
-    {
-      operation: "generateLoginToken",
-      tags: { action: "create", domain: "users" },
-    },
-  );
 }

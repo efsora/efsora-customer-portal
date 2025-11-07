@@ -72,7 +72,7 @@ export function hashPasswordForCreation(data: ValidatedCreationData): Result<{
  * Handles the result of user creation in the database.
  *
  * @param user - User returned from database or undefined if creation failed
- * @returns Result with CreateUserResult on success, or Failure on error
+ * @returns Result with user data (without token yet) on success, or Failure on error
  *
  * @example
  * ```ts
@@ -97,6 +97,7 @@ export function handleSaveNewUserResult(
     });
   }
 
+  // Return user data structure (token will be added in next step)
   return success({
     email: user.email,
     id: user.id,
@@ -108,7 +109,7 @@ export function saveNewUser(data: {
   email: Email;
   hashedPassword: HashedPassword;
   name?: string;
-}): Result<CreateUserResult> {
+}): Result<{ email: string; id: string; name: string | null }> {
   return command(
     async () => {
       const userData: NewUser = {
@@ -120,15 +121,29 @@ export function saveNewUser(data: {
       const users = await userRepository.create(userData);
       return first(users);
     },
-    handleSaveNewUserResult
+    handleSaveNewUserResult,
   );
 }
 
 /**
  * Adds authentication token to user result
- * Generates JWT token for the newly created user
+ * Generates JWT token for the newly created user and wraps in proper structure
+ *
+ * @param userData - User data from database (id, email, name)
+ * @returns Result with nested structure: { user: {...}, token: "..." }
  */
-export function addAuthToken(result: CreateUserResult): Result<CreateUserResult> {
-  const token = generateAuthToken(result.id, result.email);
-  return success({ ...result, token });
+export function addAuthToken(userData: {
+  email: string;
+  id: string;
+  name: string | null;
+}): Result<CreateUserResult> {
+  const token = generateAuthToken(userData.id, userData.email);
+  return success({
+    user: {
+      id: userData.id,
+      email: userData.email,
+      name: userData.name,
+    },
+    token,
+  });
 }

@@ -1,5 +1,6 @@
 import { env } from "#infrastructure/config/env";
 import jwt from "jsonwebtoken";
+import { LOGIN_EXPIRES_AT } from "#infrastructure/auth/constants";
 
 /**
  * Generates a JWT authentication token for a user
@@ -22,5 +23,5 @@ import jwt from "jsonwebtoken";
  * ```
  */
 export function generateAuthToken(userId: string, email: string): string {
-  return jwt.sign({ email, userId }, env.JWT_SECRET, { expiresIn: "7d" });
+  return jwt.sign({ email, userId }, env.JWT_SECRET, { expiresIn: LOGIN_EXPIRES_AT });
 }

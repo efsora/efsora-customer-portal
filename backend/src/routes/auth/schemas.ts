@@ -50,13 +50,18 @@ export const userDataSchema = z
   .openapi("UserData");
 
 /**
- * Registration response schema (user + token)
+ * Registration response schema (nested: user + token)
+ * Best practice: separates user data from authentication token
  */
 export const registerResponseSchema = z
   .object({
-    email: z.email().openapi({ example: "jane.doe@example.com" }),
-    id: z.uuid().openapi({ example: "550e8400-e29b-41d4-a716-446655440000" }),
-    name: z.string().nullable().openapi({ example: "Jane Doe" }),
+    user: z
+      .object({
+        email: z.email().openapi({ example: "jane.doe@example.com" }),
+        id: z.uuid().openapi({ example: "550e8400-e29b-41d4-a716-446655440000" }),
+        name: z.string().nullable().openapi({ example: "Jane Doe" }),
+      })
+      .openapi("RegisterUserData"),
     token: z
       .string()
       .openapi({ example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }),

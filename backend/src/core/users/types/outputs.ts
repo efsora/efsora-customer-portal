@@ -5,11 +5,17 @@
  * They typically exclude sensitive fields (e.g., password hashes).
  */
 
+/**
+ * Create user result with nested structure
+ * Follows best practice: separates user data from authentication token
+ */
 export type CreateUserResult = {
-  email: string;
-  id: string;
-  name: string | null;
-  token?: string;
+  user: {
+    email: string;
+    id: string;
+    name: string | null;
+  };
+  token: string;
 };
 
 /**

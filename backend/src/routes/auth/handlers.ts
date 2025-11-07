@@ -18,6 +18,9 @@ import type { RegisterBody, LoginBody } from "./schemas";
 /**
  * POST /auth/register
  * Register a new user
+ *
+ * Returns nested structure following best practices:
+ * { user: { id, email, name }, token: "..." }
  */
 export async function handleRegister(
   req: ValidatedRequest<{ body: RegisterBody }>,
@@ -26,12 +29,14 @@ export async function handleRegister(
   const result = await run(createUser(body));
 
   return matchResponse(result, {
-    onSuccess: (user) =>
+    onSuccess: (data) =>
       createSuccessResponse({
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        token: user.token,
+        user: {
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.name,
+        },
+        token: data.token,
       }),
     onFailure: (error) => createFailureResponse(error),
   });
