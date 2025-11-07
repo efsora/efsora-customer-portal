@@ -7,5 +7,16 @@
     display: flex;
     align-items: center;
     gap: 16px;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
     padding: 0 12px;
+}
+
+.subMenuTitle {
+    font-size: medium;
+    padding-top: 10px;
 }

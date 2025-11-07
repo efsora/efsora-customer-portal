@@ -18,11 +18,11 @@ export function CurrentMilestone() {
                     <p className={styles.milestoneItemDate}>Oct 15, 2025</p>
                 </div>
 
-                <div className={styles.separator}>{"->"}</div>
+                <div>{"->"}</div>
 
                 <ActiveMilestone />
 
-                <div className={styles.separator}>{"->"}</div>
+                <div>{"->"}</div>
 
                 <div className={styles.milestoneItem}> 
                     <div className='flex items-center gap-2 text-gray-500 text-sm'>
