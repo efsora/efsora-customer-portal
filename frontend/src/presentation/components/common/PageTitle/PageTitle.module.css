@@ -1,3 +1,9 @@
 .pageTitleContainer {
     margin-bottom: 20px;
 }
+
+.pageTitle {
+    font-size: 2rem;
+    color: #2B376D; 
+    font-weight: 900;
+}

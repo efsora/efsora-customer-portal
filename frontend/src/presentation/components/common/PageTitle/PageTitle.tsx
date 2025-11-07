@@ -8,7 +8,7 @@ interface PageTitleProps {
 export default function PageTitle({ title, description }: PageTitleProps) {
     return (
         <div className={styles.pageTitleContainer}>
-            <h2 className='text-2xl'>{title}</h2>
+            <div className={styles.pageTitle}>{title}</div>
             {description && <p className="text-gray-600">{description}</p>}
         </div>
     );

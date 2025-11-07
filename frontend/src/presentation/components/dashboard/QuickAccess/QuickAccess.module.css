@@ -1,0 +1,41 @@
+.quickAccessButtons {
+    display: grid;
+    margin-top: 20px;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 12px;
+    grid-row-gap: 12px;
+}
+
+.quickAccessContainer {
+    background-color: white;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #e4e4e4;
+    margin-top: 20px;
+}
+
+.quickAccessButton {
+    font-size: small;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.quickAccessButtonWrapper {
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #e4e4e4;
+    font-size: small;
+    gap: 12px;
+    align-items: center;
+    cursor: pointer;
+}
+
+.quickAccessButtonWrapper:hover {
+    background-color: #f9f9f9;
+    transition: background-color 0.3s ease;
+}
+
+.quickAccessTitle {
+    color: #2B376D;
+}

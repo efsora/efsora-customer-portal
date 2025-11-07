@@ -1,0 +1,45 @@
+.tag {
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    height: fit-content;
+}
+
+/* --- Status Variants --- */
+
+.scheduled {
+    background-color: var(--color-gray-bg);
+    color: var(--color-gray-text);
+}
+
+.inProgress {
+    background-color: var(--color-orange-bg);
+    color: var(--color-orange-text);
+}
+
+.waiting {
+    background-color: var(--color-red-bg);
+    color: var(--color-red-text);
+}
+
+.internalReview {
+    background-color: var(--color-blue-bg);
+    color: var(--color-blue-text);
+}
+
+.delivered {
+    background-color: var(--color-green-bg);
+    color: var(--color-green-text);
+}
+
+.completed {
+    background-color: var(--color-indigo-bg);
+    color: var(--color-indigo-text);
+}
+
+.revision {
+    background-color: var(--color-revision-bg);
+    color: var(--color-revision-text);
+}
