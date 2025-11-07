@@ -69,12 +69,14 @@ export function auth(
         "Authorization header missing",
       );
 
-      res.status(401).json(
-        errorResponse(
-          "Authorization header missing. Please provide a valid JWT token.",
-          "MISSING_AUTH_HEADER",
-        ),
-      );
+      res
+        .status(401)
+        .json(
+          errorResponse(
+            "Authorization header missing. Please provide a valid JWT token.",
+            "MISSING_AUTH_HEADER",
+          ),
+        );
       return;
     }
 
@@ -91,12 +93,14 @@ export function auth(
         "Invalid Authorization header format",
       );
 
-      res.status(401).json(
-        errorResponse(
-          "Invalid Authorization header format. Expected 'Bearer <token>'.",
-          "INVALID_AUTH_HEADER_FORMAT",
-        ),
-      );
+      res
+        .status(401)
+        .json(
+          errorResponse(
+            "Invalid Authorization header format. Expected 'Bearer <token>'.",
+            "INVALID_AUTH_HEADER_FORMAT",
+          ),
+        );
       return;
     }
 
@@ -141,8 +145,6 @@ export function auth(
       "Authentication failed",
     );
 
-    res.status(401).json(
-      errorResponse(message, errorCode),
-    );
+    res.status(401).json(errorResponse(message, errorCode));
   }
 }

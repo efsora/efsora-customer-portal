@@ -5,6 +5,8 @@
  * Uses generated types from OpenAPI spec for full type safety.
  */
 
+/* eslint-disable @typescript-eslint/prefer-promise-reject-errors */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
 import type { paths, components } from "#generated/ai-service";
 import { logger } from "#infrastructure/logger";
@@ -31,7 +33,7 @@ export class AIServiceClient {
 
   constructor(baseURL?: string) {
     this.client = axios.create({
-      baseURL: baseURL || AI_SERVICE_CONFIG.baseURL,
+      baseURL: baseURL ?? AI_SERVICE_CONFIG.baseURL,
       timeout: AI_SERVICE_CONFIG.timeout,
       headers: AI_SERVICE_CONFIG.headers,
     });
@@ -101,13 +103,10 @@ export class AIServiceClient {
    */
   async createUser(
     data: components["schemas"]["CreateUserRequest"],
-  ): Promise<
-    AIServiceResponse<components["schemas"]["CreateUserResponse"]>
-  > {
-    const response =
-      await this.client.post<
-        paths["/api/v1/users"]["post"]["responses"][201]["content"]["application/json"]
-      >("/api/v1/users", data);
+  ): Promise<AIServiceResponse<components["schemas"]["CreateUserResponse"]>> {
+    const response = await this.client.post<
+      paths["/api/v1/users"]["post"]["responses"][201]["content"]["application/json"]
+    >("/api/v1/users", data);
     return response.data;
   }
 
@@ -117,10 +116,9 @@ export class AIServiceClient {
   async embedText(
     data: components["schemas"]["EmbedRequest"],
   ): Promise<AIServiceResponse<components["schemas"]["EmbedResponse"]>> {
-    const response =
-      await this.client.post<
-        paths["/api/v1/weaviate/embed"]["post"]["responses"][201]["content"]["application/json"]
-      >("/api/v1/weaviate/embed", data);
+    const response = await this.client.post<
+      paths["/api/v1/weaviate/embed"]["post"]["responses"][201]["content"]["application/json"]
+    >("/api/v1/weaviate/embed", data);
     return response.data;
   }
 
@@ -130,10 +128,9 @@ export class AIServiceClient {
   async search(
     data: components["schemas"]["SearchRequest"],
   ): Promise<AIServiceResponse<components["schemas"]["SearchResponse"]>> {
-    const response =
-      await this.client.post<
-        paths["/api/v1/weaviate/search"]["post"]["responses"][200]["content"]["application/json"]
-      >("/api/v1/weaviate/search", data);
+    const response = await this.client.post<
+      paths["/api/v1/weaviate/search"]["post"]["responses"][200]["content"]["application/json"]
+    >("/api/v1/weaviate/search", data);
     return response.data;
   }
 

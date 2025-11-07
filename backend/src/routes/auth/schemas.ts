@@ -30,9 +30,7 @@ export const loginBodySchema = z
     email: z
       .email("Invalid email format")
       .openapi({ example: "jane.doe@example.com" }),
-    password: z
-      .string()
-      .openapi({ example: "securePassword123" }),
+    password: z.string().openapi({ example: "securePassword123" }),
   })
   .openapi("LoginBody");
 
@@ -58,7 +56,9 @@ export const registerResponseSchema = z
     user: z
       .object({
         email: z.email().openapi({ example: "jane.doe@example.com" }),
-        id: z.uuid().openapi({ example: "550e8400-e29b-41d4-a716-446655440000" }),
+        id: z
+          .uuid()
+          .openapi({ example: "550e8400-e29b-41d4-a716-446655440000" }),
         name: z.string().nullable().openapi({ example: "Jane Doe" }),
       })
       .openapi("RegisterUserData"),

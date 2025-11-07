@@ -51,7 +51,10 @@ describe("Auth Middleware", () => {
   describe("token extraction and validation", () => {
     it("should return 401 when JWT_SECRET is not properly configured", async () => {
       // This test checks that missing JWT_SECRET causes errors
-      const payload: JwtPayload = { userId: "user-123", email: "test@example.com" };
+      const payload: JwtPayload = {
+        userId: "user-123",
+        email: "test@example.com",
+      };
       const token = jwt.sign(payload, testSecret, { expiresIn: "7d" });
 
       const req = createMockRequest(`Bearer ${token}`) as any;
@@ -117,7 +120,10 @@ describe("Auth Middleware", () => {
     });
 
     it("should return 401 if token is signed with different secret", async () => {
-      const payload: JwtPayload = { userId: "user-123", email: "test@example.com" };
+      const payload: JwtPayload = {
+        userId: "user-123",
+        email: "test@example.com",
+      };
       const wrongSecret = "different-secret-key-minimum-32-chars-long!";
       const token = jwt.sign(payload, wrongSecret, { expiresIn: "7d" });
 
@@ -138,7 +144,10 @@ describe("Auth Middleware", () => {
 
   describe("token expiration", () => {
     it("should return 401 if token is invalid or expired", async () => {
-      const payload: JwtPayload = { userId: "user-123", email: "test@example.com" };
+      const payload: JwtPayload = {
+        userId: "user-123",
+        email: "test@example.com",
+      };
       // Create a token that expired 1 second ago
       const token = jwt.sign(payload, testSecret, { expiresIn: "-1s" });
 

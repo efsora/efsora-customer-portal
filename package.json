@@ -21,14 +21,13 @@
   },
   "lint-staged": {
     "backend/**/*.{ts,tsx,js,jsx}": [
-      "cd backend && npm run lint",
-      "cd backend && npm run type-check"
+      "make -C backend pre-commit"
     ],
     "frontend/**/*.{ts,tsx,js,jsx}": [
-      "make -C frontend -f Makefile commit-check"
+      "make -C frontend pre-commit"
     ],
     "ai-service/**/*.py": [
-      "make -C ai-service -f Makefile pre-commit"
+      "make -C ai-service pre-commit"
     ]
   },
   "engines": {

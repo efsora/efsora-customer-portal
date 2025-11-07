@@ -23,5 +23,7 @@ import { LOGIN_EXPIRES_AT } from "#infrastructure/auth/constants";
  * ```
  */
 export function generateAuthToken(userId: string, email: string): string {
-  return jwt.sign({ email, userId }, env.JWT_SECRET, { expiresIn: LOGIN_EXPIRES_AT });
+  return jwt.sign({ email, userId }, env.JWT_SECRET, {
+    expiresIn: LOGIN_EXPIRES_AT,
+  });
 }

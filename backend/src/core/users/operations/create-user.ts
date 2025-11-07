@@ -110,19 +110,16 @@ export function saveNewUser(data: {
   hashedPassword: HashedPassword;
   name?: string;
 }): Result<{ email: string; id: string; name: string | null }> {
-  return command(
-    async () => {
-      const userData: NewUser = {
-        email: Email.toString(data.email),
-        name: data.name ?? null,
-        password: HashedPassword.toString(data.hashedPassword),
-      };
+  return command(async () => {
+    const userData: NewUser = {
+      email: Email.toString(data.email),
+      name: data.name ?? null,
+      password: HashedPassword.toString(data.hashedPassword),
+    };
 
-      const users = await userRepository.create(userData);
-      return first(users);
-    },
-    handleSaveNewUserResult,
-  );
+    const users = await userRepository.create(userData);
+    return first(users);
+  }, handleSaveNewUserResult);
 }
 
 /**

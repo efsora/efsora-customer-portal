@@ -10,7 +10,11 @@ export { getUserById } from "./workflows/get-user";
 export { getAllUsers } from "./workflows/get-user";
 
 // Public types - Inputs
-export type { CreateUserInput, UpdateUserInput, LoginInput } from "./types/inputs";
+export type {
+  CreateUserInput,
+  UpdateUserInput,
+  LoginInput,
+} from "./types/inputs";
 
 // Public types - Outputs
 export type {

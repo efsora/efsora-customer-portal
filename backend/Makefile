@@ -6,7 +6,7 @@
 # Declare all targets as phony (don't produce files)
 .PHONY: help dev dev-docker build install clean-install ci-install \
 	test test-run test-coverage \
-	lint lint-fix format format-check type-check check fix \
+	lint lint-fix format format-check type-check check fix pre-commit \
 	db-generate db-migrate db-push db-studio migrate reset-db \
 	docker-up docker-down docker-logs docker-clean up down logs clean \
 	generate-openapi env setup ci
@@ -162,6 +162,13 @@ check: lint type-check format-check ## Run all checks
 
 fix: lint-fix format ## Fix all issues
 	@echo "✅ All fixes applied"
+
+pre-commit: ## Run pre-commit checks (check only, no fixes)
+	@echo "🔍 Running backend pre-commit checks..."
+	@npm run format:check || (echo "❌ Format check failed" && exit 1)
+	@npm run lint || (echo "❌ Lint check failed" && exit 1)
+	@npm run type-check || (echo "❌ Type check failed" && exit 1)
+	@echo "✅ Backend pre-commit checks passed"
 
 #===========================================
 # Database (Drizzle ORM)

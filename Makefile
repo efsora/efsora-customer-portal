@@ -4,6 +4,7 @@
 # Main commands for managing the full-stack application
 
 .PHONY: help full-stack-up full-stack-down full-stack-logs full-stack-clean
+.PHONY: dev-up dev-down dev-logs
 .PHONY: backend-test ai-test frontend-test
 .PHONY: generate-backend-types generate-ai-types generate-all-types
 .PHONY: backend-shell ai-shell frontend-shell
@@ -89,6 +90,45 @@ full-stack-rebuild: ## 🔨 Rebuild and restart all services
 	@echo "🔨 Rebuilding all services..."
 	docker compose up -d --build --force-recreate
 	@echo "✅ All services rebuilt and restarted!"
+
+# ==============================================================================
+# Development Mode (with debugging)
+# ==============================================================================
+
+dev-up: ## 🐛 Start all services in development mode with debugging enabled
+	@echo "🐛 Starting full-stack application in development mode..."
+	@echo "   - PostgreSQL (port 5432)"
+	@echo "   - Weaviate (port 8080)"
+	@echo "   - Backend (port 3000, debug: 9229)"
+	@echo "   - Frontend (port 5173)"
+	@echo "   - AI Service (port 8000, debug: 5678)"
+	@echo ""
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+	@echo ""
+	@echo "✅ All services started in development mode!"
+	@echo ""
+	@echo "📍 Access points:"
+	@echo "   Frontend:         http://localhost:5173"
+	@echo "   Backend API:      http://localhost:3000"
+	@echo "   Backend Swagger:  http://localhost:3000/swagger"
+	@echo "   AI Service:       http://localhost:8000"
+	@echo "   AI Service Docs:  http://localhost:8000/docs"
+	@echo ""
+	@echo "🐛 Debug ports:"
+	@echo "   Backend (Node.js):  localhost:9229"
+	@echo "   AI Service (Python): localhost:5678"
+	@echo ""
+	@echo "💡 Use VSCode 'Debug All Services' to attach debuggers"
+	@echo "📊 View logs with: make dev-logs"
+	@echo "🛑 Stop services with: make dev-down"
+
+dev-down: ## 🛑 Stop development services
+	@echo "🛑 Stopping development services..."
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml down
+	@echo "✅ Development services stopped!"
+
+dev-logs: ## 📊 Follow logs for all development services
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml logs -f
 
 # ==============================================================================
 # Testing Commands

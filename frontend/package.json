@@ -10,6 +10,7 @@
         "preview": "vite preview",
         "generate:types": "openapi-typescript ../backend/_docs/openapi.json --output schema.d.ts",
         "format": "prettier --write .",
+        "format:check": "prettier --check .",
         "type-check": "npx tsc -b --noEmit --verbose"
     },
     "dependencies": {

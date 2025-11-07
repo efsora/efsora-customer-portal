@@ -47,7 +47,8 @@ registry.registerPath({
  * Login an existing user
  */
 registry.registerPath({
-  description: "Login with email and password to receive JWT authentication token",
+  description:
+    "Login with email and password to receive JWT authentication token",
   method: "post",
   path: "/api/v1/auth/login",
   request: {

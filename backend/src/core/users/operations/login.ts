@@ -22,9 +22,8 @@ export function mapLoginInput(input: LoginInput): Result<{
   email: Email;
   password: string;
 }> {
-  return pipe(
-    Email.create(input.email),
-    (email) => success({ email, password: input.password }),
+  return pipe(Email.create(input.email), (email) =>
+    success({ email, password: input.password }),
   );
 }
 
@@ -41,18 +40,15 @@ export function findUserByEmailForLogin(data: {
   email: Email;
   password: string;
 }): Result<{ password: string; user: User }> {
-  return pipe(
-    findByEmail(data.email),
-    (user) => {
-      if (!user) {
-        return fail({
-          code: "USER_INVALID_CREDENTIALS",
-          message: "Invalid email or password",
-        });
-      }
-      return success({ password: data.password, user });
-    },
-  );
+  return pipe(findByEmail(data.email), (user) => {
+    if (!user) {
+      return fail({
+        code: "USER_INVALID_CREDENTIALS",
+        message: "Invalid email or password",
+      });
+    }
+    return success({ password: data.password, user });
+  });
 }
 
 /**
@@ -83,7 +79,7 @@ export function verifyLoginPassword(data: {
         : fail({
             code: "USER_INVALID_CREDENTIALS",
             message: "Invalid email or password",
-          })
+          }),
   );
 }
 

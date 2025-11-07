@@ -1,10 +1,6 @@
 import { matchResponse } from "#lib/result/combinators";
 import { run } from "#lib/result/index";
-import {
-  UserData,
-  getUserById,
-  getAllUsers,
-} from "#core/users/index";
+import { UserData, getUserById, getAllUsers } from "#core/users/index";
 import {
   createFailureResponse,
   createSuccessResponse,

@@ -73,7 +73,11 @@ pre-commit-install:
 	$(PY) pre-commit install
 
 pre-commit:
-	$(PY) pre-commit run --all-files
+	@echo "🔍 Running ai-service pre-commit checks..."
+	@$(PY) black --check . || (echo "❌ Black format check failed" && exit 1)
+	@$(PY) ruff check . || (echo "❌ Ruff lint check failed" && exit 1)
+	@PYTHONPATH=$(PYTHONPATH) $(PY) mypy || (echo "❌ MyPy type check failed" && exit 1)
+	@echo "✅ AI service pre-commit checks passed"
 
 ruff:
 	$(PY) ruff check --config pyproject.toml .

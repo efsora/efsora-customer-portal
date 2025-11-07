@@ -11,7 +11,11 @@ const router = Router();
  * POST /auth/register
  * Register a new user (public endpoint - no authentication required)
  */
-router.post("/register", validate(registerSchema), handleResult(handleRegister));
+router.post(
+  "/register",
+  validate(registerSchema),
+  handleResult(handleRegister),
+);
 
 /**
  * POST /auth/login

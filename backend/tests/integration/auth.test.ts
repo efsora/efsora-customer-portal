@@ -141,7 +141,9 @@ describe("Auth Workflows", () => {
         expect(user).toHaveProperty("updatedAt");
 
         // Verify token is JWT-like (contains dots)
-        expect(token).toMatch(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/);
+        expect(token).toMatch(
+          /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/,
+        );
       }
     });
   });

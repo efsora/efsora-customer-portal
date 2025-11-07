@@ -1,9 +1,6 @@
 import { z } from "zod";
 
-import {
-  getUserParamsSchema,
-  userDataSchema,
-} from "#routes/users/schemas";
+import { getUserParamsSchema, userDataSchema } from "#routes/users/schemas";
 
 import { registry } from "../registry.js";
 import { commonErrorResponses, successResponseSchema } from "../schemas.js";

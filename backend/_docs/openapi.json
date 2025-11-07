@@ -63,15 +63,10 @@
               },
               "code": {
                 "type": "string",
-                "enum": [
-                  "COMMAND_EXECUTION_ERROR"
-                ]
+                "enum": ["COMMAND_EXECUTION_ERROR"]
               }
             },
-            "required": [
-              "message",
-              "code"
-            ]
+            "required": ["message", "code"]
           },
           {
             "type": "object",
@@ -95,25 +90,17 @@
               },
               "code": {
                 "type": "string",
-                "enum": [
-                  "CONFLICT"
-                ]
+                "enum": ["CONFLICT"]
               },
               "conflictType": {
                 "type": "string",
-                "enum": [
-                  "email"
-                ]
+                "enum": ["email"]
               },
               "email": {
                 "type": "string"
               }
             },
-            "required": [
-              "message",
-              "code",
-              "conflictType"
-            ]
+            "required": ["message", "code", "conflictType"]
           },
           {
             "type": "object",
@@ -137,26 +124,14 @@
               },
               "code": {
                 "type": "string",
-                "enum": [
-                  "FORBIDDEN"
-                ]
+                "enum": ["FORBIDDEN"]
               },
               "resourceType": {
                 "type": "string",
-                "enum": [
-                  "auth",
-                  "comment",
-                  "post",
-                  "user"
-                ]
+                "enum": ["auth", "comment", "post", "user"]
               }
             },
-            "required": [
-              "message",
-              "resourceId",
-              "code",
-              "resourceType"
-            ]
+            "required": ["message", "resourceId", "code", "resourceType"]
           },
           {
             "type": "object",
@@ -180,15 +155,10 @@
               },
               "code": {
                 "type": "string",
-                "enum": [
-                  "INTERNAL_ERROR"
-                ]
+                "enum": ["INTERNAL_ERROR"]
               }
             },
-            "required": [
-              "message",
-              "code"
-            ]
+            "required": ["message", "code"]
           },
           {
             "type": "object",
@@ -212,26 +182,14 @@
               },
               "code": {
                 "type": "string",
-                "enum": [
-                  "NOT_FOUND"
-                ]
+                "enum": ["NOT_FOUND"]
               },
               "resourceType": {
                 "type": "string",
-                "enum": [
-                  "auth",
-                  "comment",
-                  "post",
-                  "user"
-                ]
+                "enum": ["auth", "comment", "post", "user"]
               }
             },
-            "required": [
-              "message",
-              "resourceId",
-              "code",
-              "resourceType"
-            ]
+            "required": ["message", "resourceId", "code", "resourceType"]
           },
           {
             "type": "object",
@@ -255,15 +213,10 @@
               },
               "code": {
                 "type": "string",
-                "enum": [
-                  "UNAUTHORIZED"
-                ]
+                "enum": ["UNAUTHORIZED"]
               }
             },
-            "required": [
-              "message",
-              "code"
-            ]
+            "required": ["message", "code"]
           },
           {
             "type": "object",
@@ -287,19 +240,13 @@
               },
               "code": {
                 "type": "string",
-                "enum": [
-                  "VALIDATION_ERROR"
-                ]
+                "enum": ["VALIDATION_ERROR"]
               },
               "field": {
                 "type": "string"
               }
             },
-            "required": [
-              "message",
-              "code",
-              "field"
-            ]
+            "required": ["message", "code", "field"]
           }
         ]
       },
@@ -321,21 +268,14 @@
           },
           "success": {
             "type": "boolean",
-            "enum": [
-              false
-            ]
+            "enum": [false]
           },
           "traceId": {
             "type": "string",
             "example": "00-1234567890abcdef-1234567890abcdef-01"
           }
         },
-        "required": [
-          "error",
-          "message",
-          "success",
-          "traceId"
-        ]
+        "required": ["error", "message", "success", "traceId"]
       },
       "PaginationMeta": {
         "type": "object",
@@ -356,27 +296,17 @@
             "example": 100
           }
         },
-        "required": [
-          "page",
-          "size",
-          "total"
-        ]
+        "required": ["page", "size", "total"]
       },
       "CursorMeta": {
         "type": "object",
         "properties": {
           "next_cursor": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "example": "abc123"
           },
           "previous_cursor": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "example": "def456"
           }
         }
@@ -390,10 +320,7 @@
                 "$ref": "#/components/schemas/CursorMeta"
               },
               {
-                "type": [
-                  "object",
-                  "null"
-                ]
+                "type": ["object", "null"]
               }
             ]
           },
@@ -403,10 +330,7 @@
                 "$ref": "#/components/schemas/PaginationMeta"
               },
               {
-                "type": [
-                  "object",
-                  "null"
-                ]
+                "type": ["object", "null"]
               }
             ]
           }
@@ -420,9 +344,7 @@
             "example": "Hello from API"
           }
         },
-        "required": [
-          "message"
-        ]
+        "required": ["message"]
       },
       "RegisterUserData": {
         "type": "object",
@@ -438,18 +360,11 @@
             "example": "550e8400-e29b-41d4-a716-446655440000"
           },
           "name": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "example": "Jane Doe"
           }
         },
-        "required": [
-          "email",
-          "id",
-          "name"
-        ]
+        "required": ["email", "id", "name"]
       },
       "RegisterResponse": {
         "type": "object",
@@ -462,10 +377,7 @@
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
           }
         },
-        "required": [
-          "user",
-          "token"
-        ]
+        "required": ["user", "token"]
       },
       "RegisterBody": {
         "type": "object",
@@ -486,20 +398,13 @@
             "example": "securePassword123"
           }
         },
-        "required": [
-          "email",
-          "name",
-          "password"
-        ]
+        "required": ["email", "name", "password"]
       },
       "UserData": {
         "type": "object",
         "properties": {
           "createdAt": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "format": "date",
             "example": "2025-10-29T10:30:00.000Z"
           },
@@ -514,28 +419,16 @@
             "example": "550e8400-e29b-41d4-a716-446655440000"
           },
           "name": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "example": "Jane Doe"
           },
           "updatedAt": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "format": "date",
             "example": "2025-10-29T10:30:00.000Z"
           }
         },
-        "required": [
-          "createdAt",
-          "email",
-          "id",
-          "name",
-          "updatedAt"
-        ]
+        "required": ["createdAt", "email", "id", "name", "updatedAt"]
       },
       "LoginResponse": {
         "type": "object",
@@ -548,10 +441,7 @@
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
           }
         },
-        "required": [
-          "user",
-          "token"
-        ]
+        "required": ["user", "token"]
       },
       "LoginBody": {
         "type": "object",
@@ -566,10 +456,7 @@
             "example": "securePassword123"
           }
         },
-        "required": [
-          "email",
-          "password"
-        ]
+        "required": ["email", "password"]
       }
     },
     "parameters": {}
@@ -579,9 +466,7 @@
       "get": {
         "description": "Check if the server is running and healthy",
         "summary": "Health check",
-        "tags": [
-          "System"
-        ],
+        "tags": ["System"],
         "responses": {
           "200": {
             "description": "Server is healthy",
@@ -596,9 +481,7 @@
                     },
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "ok"
-                      ],
+                      "enum": ["ok"],
                       "example": "ok"
                     },
                     "timestamp": {
@@ -606,11 +489,7 @@
                       "example": "2025-10-31T10:30:00.000Z"
                     }
                   },
-                  "required": [
-                    "message",
-                    "status",
-                    "timestamp"
-                  ]
+                  "required": ["message", "status", "timestamp"]
                 }
               }
             }
@@ -622,9 +501,7 @@
       "get": {
         "description": "Simple health/test endpoint that returns a greeting message",
         "summary": "Hello endpoint",
-        "tags": [
-          "Hello"
-        ],
+        "tags": ["Hello"],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -648,29 +525,20 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": [
-                            "object",
-                            "null"
-                          ]
+                          "type": ["object", "null"]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [
-                        true
-                      ]
+                      "enum": [true]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": [
-                    "data",
-                    "success",
-                    "traceId"
-                  ]
+                  "required": ["data", "success", "traceId"]
                 }
               }
             }
@@ -682,9 +550,7 @@
       "post": {
         "description": "Register a new user account with email, name, and password",
         "summary": "Register user",
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "requestBody": {
           "content": {
             "application/json": {
@@ -717,29 +583,20 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": [
-                            "object",
-                            "null"
-                          ]
+                          "type": ["object", "null"]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [
-                        true
-                      ]
+                      "enum": [true]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": [
-                    "data",
-                    "success",
-                    "traceId"
-                  ]
+                  "required": ["data", "success", "traceId"]
                 }
               }
             }
@@ -781,9 +638,7 @@
       "post": {
         "description": "Login with email and password to receive JWT authentication token",
         "summary": "Login user",
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "requestBody": {
           "content": {
             "application/json": {
@@ -816,29 +671,20 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": [
-                            "object",
-                            "null"
-                          ]
+                          "type": ["object", "null"]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [
-                        true
-                      ]
+                      "enum": [true]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": [
-                    "data",
-                    "success",
-                    "traceId"
-                  ]
+                  "required": ["data", "success", "traceId"]
                 }
               }
             }
@@ -885,9 +731,7 @@
           }
         ],
         "summary": "Get all users",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "200": {
             "description": "List of users",
@@ -914,29 +758,20 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": [
-                            "object",
-                            "null"
-                          ]
+                          "type": ["object", "null"]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [
-                        true
-                      ]
+                      "enum": [true]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": [
-                    "data",
-                    "success",
-                    "traceId"
-                  ]
+                  "required": ["data", "success", "traceId"]
                 }
               }
             }
@@ -973,9 +808,7 @@
           }
         ],
         "summary": "Get user by ID",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "parameters": [
           {
             "schema": {
@@ -1011,29 +844,20 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": [
-                            "object",
-                            "null"
-                          ]
+                          "type": ["object", "null"]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [
-                        true
-                      ]
+                      "enum": [true]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": [
-                    "data",
-                    "success",
-                    "traceId"
-                  ]
+                  "required": ["data", "success", "traceId"]
                 }
               }
             }

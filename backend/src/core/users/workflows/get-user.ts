@@ -15,8 +15,7 @@ export function getUserById(userId: string): Result<UserData> {
   return pipe(findUserById(userId));
 }
 
-
-/** 
+/**
  * Get all users workflow
  */
 export function getAllUsers(): Result<UserData[]> {

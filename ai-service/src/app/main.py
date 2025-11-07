@@ -1,3 +1,13 @@
+import logging
+import os
+
+# Enable debugpy for VSCode debugging in Docker
+if os.getenv("ENABLE_DEBUGPY") == "true":
+    import debugpy
+
+    debugpy.listen(("0.0.0.0", 5678))
+    logging.info("🐛 Debugpy listening on port 5678")
+
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import Any, cast
