@@ -29,9 +29,31 @@ Tests live under `tests/` and mirror the same structure with unit, integration, 
 
 ## Prerequisites
 
-- Python 3.11+
+- **Python 3.11+** (project uses Python 3.11 in Docker)
 - [uv](https://github.com/astral-sh/uv) (preferred) or `pip`
 - Docker + Docker Compose (for Postgres and containerised workflows)
+
+## VSCode Extensions (Recommended)
+
+For the best development experience with real-time linting, formatting, type checking, and error detection, install these extensions:
+
+**Required:**
+- [Python](https://marketplace.visualstudio.com/items?itemName=ms-python.python) - Python language support
+- [Black Formatter](https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter) - Code formatting
+- [Ruff](https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff) - Fast Python linter
+- [MyPy Type Checker](https://marketplace.visualstudio.com/items?itemName=ms-python.mypy-type-checker) - Static type checking
+- [Python Debugger](https://marketplace.visualstudio.com/items?itemName=ms-python.debugpy) - Python debugging
+
+**Highly Recommended:**
+- [Pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance) - Enhanced language features
+- [Coverage Gutters](https://marketplace.visualstudio.com/items?itemName=ryanluker.vscode-coverage-gutters) - Visualize test coverage
+- [Docker](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker) - Docker support
+
+**Configuration:** The workspace is already configured in `.vscode/settings.json` to:
+- Auto-format on save with Black
+- Auto-fix with Ruff on save
+- Organize imports automatically
+- Use correct PYTHONPATH and interpreter
 
 ## Quick Start
 
@@ -48,23 +70,6 @@ make run     # wraps the docker dev container
 ```
 
 Open http://localhost:8000/docs for the interactive API documentation.
-
-## VS Code Setup
-
-The repository ships with workspace settings under `.vscode/` so VS Code mirrors the tooling we use in CI (formatting, linting, type checking, debugger attach configs, and Docker-based pytest tasks). To get the full experience, install the following extensions:
-
-- `ms-python.python`
-- `ms-python.black-formatter`
-- `charliermarsh.ruff`
-- `ms-python.mypy-type-checker`
-- `ryanluker.vscode-coverage-gutters`
-
-Helpful extras:
-
-- `ms-python.vscode-pylance` (richer language features on top of the Python extension)
-- `ms-azuretools.vscode-docker` (manage the Docker tasks and dev container from the sidebar)
-
-After the extensions are installed, reload VS Code so it picks up the workspace interpreter at `.venv`, the `PYTHONPATH=src` wiring, Ruff+Black on save, and the preconfigured pytest/Docker tasks (`Run All Tests`, `pytest:docker`).
 
 ## Database & Migrations
 
