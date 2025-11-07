@@ -1,6 +1,6 @@
 import { ActiveMilestone } from './ActiveMilestone/ActiveMilestone';
 import styles from './CurrentMilestone.module.css';
-
+import { QuickAccess } from '../QuickAccess/QuickAccess';
 
 
 export function CurrentMilestone() {
@@ -28,8 +28,8 @@ export function CurrentMilestone() {
                     <p className={styles.milestoneItemDescription}>Development Sprint 1</p>
                     <p className={styles.milestoneItemDate}>Oct 25, 2025</p>
                 </div>
-                
             </div>
+            <QuickAccess />
         </div>
     );
 }

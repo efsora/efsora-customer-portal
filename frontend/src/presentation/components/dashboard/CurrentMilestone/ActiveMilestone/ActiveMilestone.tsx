@@ -5,7 +5,7 @@ function Title() {
     return (
         <div className='flex gap-4 justify-between'>
             <div className='flex gap-4'>
-                <div className={styles.activeMilestoneIcon} />
+                <img src="milestone-icon.svg" alt="milestone-icon" />
                 <div>
                     <div className={styles.activeMilestoneTitle}>Design Phase Review</div>
                     <div className='flex gap-4 text-xs text-gray-500'>
@@ -43,21 +43,30 @@ function RecentUpdates() {
             date: 'Oct 18, 2025',
             time: '2:30 PM',
             description: 'Wireframes approved by client.',
-            owner: 'Sarah Johnson'
+            owner: 'Sarah Johnson',
+            status: 'past'
         },
         {
             date: 'Oct 16, 2025',
             time: '10:15 AM',
             description: 'Initial design concepts shared with the team.',
-            owner: 'Michael Chen'
+            owner: 'Michael Chen',
+            status: 'present'
         },
         {
             date: 'Oct 15, 2025',
             time: '4:00 PM',
             description: 'Feedback session scheduled for Oct 15, 2025.',
-            owner: 'Emily Rodriguez'
+            owner: 'Emily Rodriguez',
+            status: 'future'
         }
     ];
+
+    const statusDotIcons: Record<string, string> = {
+        past: "future-dot.svg",
+        present: "present-dot.svg",
+        future: "past-dot.svg",
+    };
 
     return (
         <div className='mt-4'>
@@ -66,6 +75,10 @@ function RecentUpdates() {
                 {updates.map((update, index) => (
                     <li key={index} className={styles.updateItem}>
                         <div className={styles.dateTime}>
+                            <img
+                                src={statusDotIcons[update.status]}
+                                alt={`${update.status}-dot`}
+                            />
                             <div>{update.date}</div>
                             <div>•</div>
                             <div>{update.time}</div>

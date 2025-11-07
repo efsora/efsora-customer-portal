@@ -48,25 +48,12 @@
     color: #4B5563;
 }
 
-.recentUpdatesList li {
-    margin-top: 20px;
-    margin-left: 20px;
-    position: relative;
-}
-
-.recentUpdatesList li::before {
-    content: '•';
-    color: #0F6FC6;
-    font-size: 1.2rem;
-    position: absolute;
-    left: -18px;
-    line-height: 1;
-}
-
 .updateItem {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    padding-top: 12px;
+    padding-left: 12px;
 }
 
 .dateTime {

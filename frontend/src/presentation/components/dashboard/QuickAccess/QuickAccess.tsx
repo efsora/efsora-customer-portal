@@ -2,8 +2,7 @@ import styles from "./QuickAccess.module.css";
 
 export function QuickAccess() {
     return (
-        <div className={styles.quickAccessContainer}>
-            <div className={styles.quickAccessTitle}>Quick Access</div>
+        <div>
             <div className={styles.quickAccessButtons}>
                 <a 
                     href="https://www.figma.com" 

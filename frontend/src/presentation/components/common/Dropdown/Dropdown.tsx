@@ -2,9 +2,9 @@ import { useState, useRef, useEffect, type ReactNode } from "react";
 import styles from "./Dropdown.module.css";
 
 interface DropdownProps {
-  trigger: ReactNode;       
-  children: ReactNode;      
-  align?: "left" | "right"; 
+  trigger: (open: boolean) => ReactNode;
+  children: ReactNode;
+  align?: "left" | "right";
 }
 
 export default function Dropdown({ trigger, children, align = "right" }: DropdownProps) {
@@ -24,7 +24,7 @@ export default function Dropdown({ trigger, children, align = "right" }: Dropdow
   return (
     <div className={styles.container} ref={ref}>
       <div onClick={() => setOpen((prev) => !prev)} className={styles.trigger}>
-        {trigger}
+        {trigger(open)}
       </div>
 
       {open && (

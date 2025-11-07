@@ -1,17 +1,9 @@
 .quickAccessButtons {
     display: grid;
     margin-top: 20px;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(6, 1fr);
     grid-column-gap: 12px;
     grid-row-gap: 12px;
-}
-
-.quickAccessContainer {
-    background-color: white;
-    padding: 16px;
-    border-radius: 12px;
-    border: 1px solid #e4e4e4;
-    margin-top: 20px;
 }
 
 .quickAccessButton {
@@ -19,16 +11,21 @@
     display: flex;
     gap: 12px;
     align-items: center;
+
+
 }
 
 .quickAccessButtonWrapper {
     padding: 16px;
-    border-radius: 12px;
+    border-radius: 8px;
     border: 1px solid #e4e4e4;
     font-size: small;
     gap: 12px;
     align-items: center;
     cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .quickAccessButtonWrapper:hover {

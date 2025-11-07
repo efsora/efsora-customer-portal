@@ -26,10 +26,13 @@ export default function UserProfile() {
                 </div>
             </div>
             <Dropdown
-                trigger={
-                    <div>...</div>
-                }
-            > 
+                trigger={(open) => (
+                    <img
+                        src={open ? "/dropdown-up.svg" : "/dropdown.svg"}
+                        alt="toggle dropdown"
+                    />
+                )}
+            >
                 <div className='text-lg'>Quick Actions</div>
                 <div className="flex items-center px-2">
                     <div className="iconPlaceholder" />
