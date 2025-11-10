@@ -1,4 +1,4 @@
-import UserProfile from '#components/user/UserProfile';
+import UserProfile from '#presentation/components/user/UserProfile/UserProfile';
 import styles from "./Header.module.css";
 
 export default function Header() {

@@ -6,7 +6,7 @@ import { RegisterPage } from '#pages/RegisterPage';
 import Users from '#pages/Users';
 import { ProtectedRoute } from '#presentation/components/auth/ProtectedRoute';
 import { PublicRoute } from '#presentation/components/auth/PublicRoute';
-import Dashboard from '#presentation/pages/Dashboard';
+import Dashboard from '#presentation/pages/Dashboard/Dashboard';
 import Timeline from '#presentation/pages/Timeline';
 import { NoPage } from '#presentation/pages/NoPage';
 import { Documents } from '#presentation/pages/Documents';

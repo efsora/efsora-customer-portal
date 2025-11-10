@@ -1,0 +1,11 @@
+.pageLayout {
+    display: flex;
+    flex: 1;
+    gap: 24px;
+    height: min-content;
+}
+
+.currentMilestone {
+    flex: 1;
+    height: 100%;
+}

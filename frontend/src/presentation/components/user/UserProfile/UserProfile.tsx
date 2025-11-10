@@ -2,7 +2,7 @@ import { useGetUserSummaryById } from "#hooks/useUser";
 import { useCurrentUser } from "#store/authStore";
 import Dropdown from "#components/common/Dropdown/Dropdown";
 import styles from "./UserProfile.module.css";
-import Logout from "../common/Logout";
+import Logout from "../../common/Logout";
 
 export default function UserProfile() {
     const currentUser = useCurrentUser();
@@ -34,50 +34,50 @@ export default function UserProfile() {
                 )}
             >
                 <div className='text-lg'>Quick Actions</div>
-                <div className="flex items-center px-2">
-                    <div className="iconPlaceholder" />
+                <div className={styles.dropdownItem}>
+                    <img src="new-event.svg" alt="new-event" />
                     <button>New Event</button>
                 </div>
-                <div className="flex items-center px-2">
-                    <div className="iconPlaceholder" />
+                <div className={styles.dropdownItem}>
+                    <img src="new-document.svg" alt="new-document" />
                     <button>New Document</button>
                 </div>
-                <div className="flex items-center px-2">
-                    <div className="iconPlaceholder" />
+                <div className={styles.dropdownItem}>
+                    <img src="new-milestone.svg" alt="new-milestone" />
                     <button>New Milestone</button>
                 </div>
 
                 <div className="separator" />
 
                 <div className='text-lg pt-2'>Recently Viewed</div>
-                <div className="flex items-center px-2">
-                    <div className="iconPlaceholder" />
+                <div className={styles.dropdownItem}>
+                    <img src="recent.svg" alt="recent" />
                     <button>August Invoice</button>
                 </div>
-                <div className="flex items-center px-2">
-                    <div className="iconPlaceholder" />
+                <div className={styles.dropdownItem}>
+                    <img src="recent.svg" alt="recent" />
                     <button>Front-end Development Phase 2</button>
                 </div>
-                <div className="flex items-center px-2">
-                    <div className="iconPlaceholder" />
+                <div className={styles.dropdownItem}>
+                    <img src="recent.svg" alt="recent" />
                     <button>MVP Scope Agreement</button>  
                 </div>
 
                 <div className="separator" />
 
-                <div className="flex items-center px-2">
-                    <div className="iconPlaceholder" />
+                <div className={styles.dropdownItem}>
+                    <img src="settings.svg" alt="settings" />
                     <button>Settings</button>
                 </div>
-                <div className="flex items-center px-2">
-                    <div className="iconPlaceholder" />
+                <div className={styles.dropdownItem}>
+                    <img src="help.svg" alt="help" />
                     <button>Help & Support</button>
                 </div>
 
                 <div className="separator" />
 
-                <div className="flex items-center px-2 text-red-600">
-                    <div className="iconPlaceholder" />
+                <div className={`${styles.dropdownItem} ${styles.logout}`}>
+                    <img src="red-logout.svg" alt="red-logout" />
                     <Logout />
                 </div>
             </Dropdown>

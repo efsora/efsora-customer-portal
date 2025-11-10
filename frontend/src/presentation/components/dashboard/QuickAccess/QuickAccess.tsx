@@ -2,7 +2,7 @@ import styles from "./QuickAccess.module.css";
 
 export function QuickAccess() {
     return (
-        <div>
+        <div className={styles.container}>
             <div className={styles.quickAccessButtons}>
                 <a 
                     href="https://www.figma.com" 
@@ -12,7 +12,6 @@ export function QuickAccess() {
                 >
                     <button className={styles.quickAccessButton}>
                         <img src="figma.svg" alt="figma" />
-                        Figma
                     </button>
                 </a>
 
@@ -24,7 +23,6 @@ export function QuickAccess() {
                 >
                     <button className={styles.quickAccessButton}>
                         <img src="linear.svg" alt="linear" />
-                        Linear
                     </button>
                 </a>
                 <a 
@@ -35,7 +33,6 @@ export function QuickAccess() {
                 >
                     <button className={styles.quickAccessButton}>
                         <img src="slack.svg" alt="slack" />
-                        Slack
                     </button>
                 </a>
                 <a 
@@ -46,7 +43,6 @@ export function QuickAccess() {
                 >
                     <button className={styles.quickAccessButton}>
                         <img src="notion.svg" alt="notion" />
-                        Notion
                     </button>
                 </a>
                 <a 
@@ -57,7 +53,6 @@ export function QuickAccess() {
                 >
                     <button className={styles.quickAccessButton}>
                         <img src="github.svg" alt="github" />
-                        Github
                     </button>
                 </a>
                 <a 
@@ -68,7 +63,6 @@ export function QuickAccess() {
                 >
                     <button className={styles.quickAccessButton}>
                         <img src="google-drive.svg" alt="google-drive" />
-                        Google Drive
                     </button>
                 </a>
             </div>
