@@ -145,6 +145,12 @@ Backend uses type-safe AI service client
    ```
 
 2. **Start all services**
+
+   For development (with hot reload):
+   ```bash
+   make dev-up
+   ```
+   For production:
    ```bash
    make full-stack-up
    ```
@@ -156,7 +162,7 @@ Backend uses type-safe AI service client
    - Frontend (port 5173)
    - AI Service (port 8000)
 
-3. **Access the application**
+4. **Access the application**
    - Frontend: http://localhost:5173
    - Backend API: http://localhost:3000
    - Backend Swagger: http://localhost:3000/swagger
@@ -164,12 +170,12 @@ Backend uses type-safe AI service client
    - AI Service Docs: http://localhost:8000/docs
    - Weaviate: http://localhost:8080
 
-4. **Stop services**
+5. **Stop services**
    ```bash
    make full-stack-down
    ```
 
-### Local Development Setup
+### ~~Local Development Setup~~ (currently not active)
 
 For development without Docker:
 
