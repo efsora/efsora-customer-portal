@@ -9,10 +9,7 @@ import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from "@testcontainers/postgresql";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
 import { sql } from "drizzle-orm";
-import * as schema from "../src/db/schema.js";
 
 let globalContainer: StartedPostgreSqlContainer | null = null;
 
@@ -32,19 +29,29 @@ export async function setup() {
   console.log("✅ Test database container started");
   console.log(`📦 Connection: ${connectionUri}`);
 
-  // Set DATABASE_URL before any modules import db client
+  // Set all required environment variables BEFORE importing any modules
   process.env.DATABASE_URL = connectionUri;
+  process.env.NODE_ENV = "development";
+  process.env.JWT_SECRET =
+    "test-secret-key-minimum-32-chars-long-for-jwt-signing";
+  process.env.OTEL_SERVICE_NAME = "backend-test";
+  process.env.LOG_LEVEL = "error";
+  process.env.ENABLE_TRACING = "false";
+  process.env.METRICS_ENABLED = "false";
+  process.env.PORT = "3000";
 
-  // Apply schema
+  // Apply schema using lazy-initialized client
   console.log("🔄 Applying database schema...");
-  const schemaClient = postgres(connectionUri, { max: 1 });
-  const schemaDb = drizzle(schemaClient, { schema });
+
+  // Import getDb after setting all environment variables
+  const { getDb } = await import("../src/db/client.js");
+  const db = getDb();
 
   // Enable pgcrypto for gen_random_uuid()
-  await schemaDb.execute(sql`CREATE EXTENSION IF NOT EXISTS pgcrypto;`);
+  await db.execute(sql`CREATE EXTENSION IF NOT EXISTS pgcrypto;`);
 
   // Create users table
-  await schemaDb.execute(sql`
+  await db.execute(sql`
     CREATE TABLE IF NOT EXISTS users (
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
       email text NOT NULL UNIQUE,
@@ -55,7 +62,17 @@ export async function setup() {
     );
   `);
 
-  await schemaClient.end();
+  // Create session table
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS session (
+      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      token text NOT NULL UNIQUE,
+      created_at timestamp DEFAULT now() NOT NULL,
+      expires_at timestamp NOT NULL,
+      last_active_at timestamp DEFAULT now() NOT NULL
+    );
+  `);
 
   console.log("✅ Database schema applied");
 

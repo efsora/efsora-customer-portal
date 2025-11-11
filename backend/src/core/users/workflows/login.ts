@@ -7,10 +7,11 @@ import {
   findUserByEmailForLogin,
   verifyLoginPassword,
   addAuthTokenToLogin,
+  createLoginSession,
 } from "../operations/login";
 
 /**
- * Login workflow - Simplified and efficient
+ * Login workflow - Session-based authentication
  *
  * Orchestrates the user login process by composing operations using railway-oriented programming.
  * Optimized to avoid redundant validations and unnecessary async wrappers.
@@ -20,6 +21,7 @@ import {
  * 2. Find user by email (using Email directly, no re-validation)
  * 3. Verify password with bcrypt (direct comparison, no value object wrapper)
  * 4. Generate JWT token (synchronous, no fake async)
+ * 5. Create session in database (enables proper logout and token invalidation)
  *
  * Performance improvements:
  * - Email validation happens only once (not twice)
@@ -30,6 +32,7 @@ import {
  * - Generic error messages prevent user enumeration
  * - Timing-safe bcrypt comparison
  * - All passwords auto-sanitized in logs
+ * - Session-based token management for immediate invalidation
  *
  * @param input - LoginInput with email and password (pre-validated by Zod schema)
  * @returns Result<LoginResult> with user data and authentication token, or error
@@ -54,5 +57,6 @@ export function login(input: LoginInput): Result<LoginResult> {
     findUserByEmailForLogin,
     verifyLoginPassword,
     addAuthTokenToLogin,
+    createLoginSession,
   );
 }

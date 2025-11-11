@@ -1,13 +1,15 @@
-import bcrypt from "bcrypt";
 import type { User } from "#db/schema";
+import { SESSION_EXPIRES_IN_MS } from "#infrastructure/auth/constants";
 import { generateAuthToken } from "#infrastructure/auth/token";
-import { command, type Result, fail, success, pipe } from "#lib/result/index";
+import { sessionRepository } from "#infrastructure/repositories/drizzle";
+import { command, fail, pipe, success, type Result } from "#lib/result/index";
+import bcrypt from "bcrypt";
 
+import { mapUserToUserData } from "../mappers";
 import type { LoginInput } from "../types/inputs";
 import type { LoginResult } from "../types/outputs";
 import { Email } from "../value-objects/Email";
 import { findByEmail } from "./find";
-import { mapUserToUserData } from "../mappers";
 
 /**
  * Step 1: Map and validate login input
@@ -99,4 +101,34 @@ export function addAuthTokenToLogin(user: User): Result<LoginResult> {
     user: mapUserToUserData(user),
     token,
   });
+}
+
+/**
+ * Step 5: Create session in database
+ *
+ * Stores the authentication session for stateful token management.
+ * This enables proper logout functionality and session invalidation.
+ *
+ * @param loginResult - Login result with user data and token
+ * @returns Result with the same login result, or failure if session creation fails
+ */
+export function createLoginSession(
+  loginResult: LoginResult,
+): Result<LoginResult> {
+  return command(
+    async () => {
+      const expiresAt = new Date(Date.now() + SESSION_EXPIRES_IN_MS);
+
+      const sessions = await sessionRepository.create({
+        userId: loginResult.user.id,
+        token: loginResult.token,
+        expiresAt,
+      });
+
+      return sessions[0];
+    },
+    () => {
+      return success(loginResult);
+    },
+  );
 }
