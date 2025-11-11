@@ -1,30 +1,11 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
-import {
-  setupTestDatabase,
-  createTestDb,
-  cleanupDatabase,
-  teardownTestDatabase,
-  getTestDb,
-} from "../helpers/database";
+import { describe, it, expect, beforeEach } from "vitest";
 import { run } from "#lib/result/index";
 import { login, createUser } from "#core/users/index";
+import { cleanupDatabase } from "../helpers/database";
 
 describe("Auth Workflows", () => {
-  // Setup: Start container and run migrations (once for all tests)
-  beforeAll(async () => {
-    const connectionString = await setupTestDatabase();
-    createTestDb(connectionString);
-  }, 60000); // 60s timeout for container startup
-
-  // Cleanup: Truncate tables before each test for isolation
   beforeEach(async () => {
-    const db = getTestDb();
-    await cleanupDatabase(db);
-  });
-
-  // Teardown: Stop container after all tests
-  afterAll(async () => {
-    await teardownTestDatabase();
+    await cleanupDatabase();
   });
 
   describe("login workflow", () => {

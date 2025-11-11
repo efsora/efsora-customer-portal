@@ -20,7 +20,10 @@
     "lint-staged": "^15.2.0"
   },
   "lint-staged": {
-    "backend/**/*.{ts,tsx,js,jsx}": [
+    "backend/**/!(migrations)/**/*.{ts,tsx,js,jsx}": [
+      "make -C backend pre-commit"
+    ],
+    "backend/*.{ts,tsx,js,jsx}": [
       "make -C backend pre-commit"
     ],
     "frontend/**/*.{ts,tsx,js,jsx}": [

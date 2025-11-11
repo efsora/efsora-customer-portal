@@ -81,6 +81,15 @@ export const loginResponseSchema = z
   .openapi("LoginResponse");
 
 /**
+ * Logout response schema
+ */
+export const logoutResponseSchema = z
+  .object({
+    message: z.string().openapi({ example: "Logged out successfully" }),
+  })
+  .openapi("LogoutResponse");
+
+/**
  * Validation schemas for routes
  */
 export const registerSchema = {
@@ -95,4 +104,5 @@ export type RegisterBody = z.infer<typeof registerBodySchema>;
 export type LoginBody = z.infer<typeof loginBodySchema>;
 export type RegisterResponse = z.infer<typeof registerResponseSchema>;
 export type LoginResponse = z.infer<typeof loginResponseSchema>;
+export type LogoutResponse = z.infer<typeof logoutResponseSchema>;
 export type UserDataResponse = z.infer<typeof userDataSchema>;

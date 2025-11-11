@@ -14,10 +14,8 @@ import { users } from "#db/schema";
 import { cleanupDatabase, getTestDb } from "../helpers/database";
 
 describe("createUser Integration Tests", () => {
-  // Cleanup database before each test to ensure isolation
   beforeEach(async () => {
-    const db = getTestDb();
-    await cleanupDatabase(db);
+    await cleanupDatabase();
   });
 
   describe("Happy Path", () => {
