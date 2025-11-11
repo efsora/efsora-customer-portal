@@ -1,9 +1,13 @@
-.pageTitleContainer {
+.container {
     margin-bottom: 20px;
 }
 
-.pageTitle {
+.title {
     font-size: 2rem;
     color: #2B376D; 
     font-weight: 900;
+}
+
+.subtitle {
+    color: var(--color-neutral-grey-600)
 }
