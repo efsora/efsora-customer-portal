@@ -1,23 +1,22 @@
 import glob
 import json
+import logging
 import os
-from typing import List, Dict
+from typing import Any
 
+from langchain_aws import BedrockEmbeddings
+from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain_core.documents import Document
-from langchain_community.document_loaders import TextLoader, PyPDFLoader
-from langchain_openai import OpenAIEmbeddings
-
 from semantic_chunker.core import SemanticChunker
-from app.core.settings import Settings 
 
+from app.core.settings import Settings
 
 settings = Settings()
 
 
-
-def load_documents(data_dir: str = settings.DATA_DIR) -> List[Document]:
+def load_documents(data_dir: str = settings.DATA_DIR) -> list[Document]:
     """Load all .txt and .pdf files from data_dir into LangChain Documents."""
-    docs: List[Document] = []
+    docs: list[Document] = []
 
     # Load .txt files
     for file_path in glob.glob(os.path.join(data_dir, "*.txt")):
@@ -29,14 +28,14 @@ def load_documents(data_dir: str = settings.DATA_DIR) -> List[Document]:
         loader = PyPDFLoader(file_path)
         docs.extend(loader.load())
 
-    print(f" Loaded {len(docs)} raw documents from '{data_dir}'")
+    logging.info(f" Loaded {len(docs)} raw documents from '{data_dir}'")
     return docs
 
 
 def build_semantic_chunks_per_doc(
-    all_docs: List[Document],
+    all_docs: list[Document],
     max_tokens: int = settings.SEMANTIC_MAX_TOKENS,
-) -> List[Document]:
+) -> list[Document]:
     """
     Use SemanticChunker (advanced-chunker) to merge/split docs semantically
     and return a new list of LangChain Documents.
@@ -52,34 +51,31 @@ def build_semantic_chunks_per_doc(
 
     for doc in all_docs:
         # Advanced-chunker expects a list of {text, metadata}
-        primitive = [{
-            "text": doc.page_content,
-            "metadata": doc.metadata if hasattr(doc, "metadata") else {},
-        }]
+        primitive = [
+            {
+                "text": doc.page_content,
+                "metadata": doc.metadata if hasattr(doc, "metadata") else {},
+            }
+        ]
 
         merged_chunks = chunker.chunk(primitive)
 
         for merged in merged_chunks:
             # Here we FORCE the source to be this doc's source
             src = doc.metadata.get("source", "unknown") if hasattr(doc, "metadata") else "unknown"
-            split_docs.append(
-                Document(
-                    page_content=merged["text"],
-                    metadata={"source": src}
-                )
-            )
+            split_docs.append(Document(page_content=merged["text"], metadata={"source": src}))
 
-    print(f" SemanticChunker produced {len(split_docs)} merged chunks (per-doc)")
+    logging.info(f" SemanticChunker produced {len(split_docs)} merged chunks (per-doc)")
     return split_docs
 
 
 def save_chunks_and_embeddings(
-    split_docs: List[Document],
-    embeddings: OpenAIEmbeddings,
+    split_docs: list[Document],
+    embeddings: BedrockEmbeddings,
     output_dir: str = settings.OUTPUT_DIR,
     save_chunks_txt: bool = True,
     save_embeddings_json: bool = True,
-) -> dict:
+) -> dict[str, Any]:
     """
     Save chunks, embeddings and metadata to disk for debugging/inspection.
     Returns metadata dict.
@@ -93,8 +89,7 @@ def save_chunks_and_embeddings(
             for i, doc in enumerate(split_docs):
                 f.write(f"--- Chunk {i} ---\n")
                 f.write(doc.page_content + "\n\n")
-        print(f"{len(split_docs)} chunks saved to {chunks_file}")
-
+        logging.info(f"{len(split_docs)} chunks saved to {chunks_file}")
 
     metadata = {
         "total_chunks": len(split_docs),
@@ -119,11 +114,11 @@ def save_chunks_and_embeddings(
         embeddings_file = os.path.join(output_dir, "embeddings.json")
         with open(embeddings_file, "w", encoding="utf-8") as f:
             json.dump(embedded_chunks, f, indent=2, ensure_ascii=False)
-        print(f" Embeddings saved to {embeddings_file}")
+        logging.info(f" Embeddings saved to {embeddings_file}")
 
     metadata_file = os.path.join(output_dir, "metadata.json")
     with open(metadata_file, "w", encoding="utf-8") as f:
         json.dump(metadata, f, indent=2, ensure_ascii=False)
-    print(f" Metadata saved to {metadata_file}")
+    logging.info(f" Metadata saved to {metadata_file}")
 
     return metadata
