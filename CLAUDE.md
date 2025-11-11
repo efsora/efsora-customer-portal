@@ -29,6 +29,72 @@ Full-stack monorepo with microservices architecture:
 - Frontend ↔ Backend: HTTP + Server-Sent Events (SSE)
 - Backend ↔ AI Service: HTTP + SSE
 
+## Docker Development Setup
+
+### Production vs Development Mode
+
+**Production Mode** (`docker-compose.yml` only):
+- Code is baked into Docker images at build time
+- No hot reload - requires rebuild for code changes
+- Uses nginx for frontend (static files)
+- Suitable for production deployment
+
+**Development Mode** (`docker-compose.yml` + `docker-compose.dev.yml`):
+- Source code is mounted as volumes
+- Hot reload enabled for all services
+- Changes instantly reflect without rebuilding
+- Frontend uses Vite dev server
+- Backend uses Node.js watch mode
+- AI service uses uvicorn --reload
+
+### Quick Start Development
+
+```bash
+# Start in development mode with hot reload
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+# View logs
+docker-compose logs -f [backend|frontend|ai-service]
+
+# Stop services
+docker-compose down
+```
+
+### Development Mode Features
+
+**Frontend (Vite)**:
+- Volume mount: `./frontend/src` → `/app/src`
+- Port: 5174 (temporarily, will change to 5173)
+- Hot Module Replacement (HMR) enabled
+- Changes reflect instantly in browser
+
+**Backend (Node.js + tsx)**:
+- Volume mount: `./backend/src` → `/app/src`
+- Port: 3000 (app), 9229 (debugger)
+- Watch mode enabled via `--watch-path`
+- Auto-restart on file changes
+
+**AI Service (FastAPI + uvicorn)**:
+- Volume mount: `./ai-service/src` → `/app/src`
+- Port: 8000 (app), 5678 (debugpy)
+- `--reload` flag enabled
+- Auto-restart on file changes
+
+### When to Rebuild
+
+You only need to rebuild if you:
+- Change `package.json` / `requirements.txt` (dependencies)
+- Modify `Dockerfile` / `docker-compose.yml`
+- Add new system packages
+
+```bash
+# Rebuild specific service
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build [service-name]
+
+# Rebuild all services
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+```
+
 ## Essential Commands
 
 ### Root Level (Monorepo)
@@ -48,8 +114,14 @@ npm run format:contracts
 # Start infrastructure only
 docker-compose up -d postgres weaviate
 
-# Start all services
+# Start all services (production mode - no hot reload)
 docker-compose up -d
+
+# Start all services (development mode - WITH HOT RELOAD)
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+# Rebuild and start in dev mode (after dependency changes)
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 ```
 
 ### AI Service (FastAPI)

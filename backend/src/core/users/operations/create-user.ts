@@ -1,13 +1,17 @@
 import type { NewUser } from "#db/schema";
-import { userRepository } from "#infrastructure/repositories/drizzle";
-import { command, type Result, fail, success } from "#lib/result/index";
-import { allNamed, chain } from "#lib/result/combinators";
+import { SESSION_EXPIRES_IN_MS } from "#infrastructure/auth/constants";
 import { generateAuthToken } from "#infrastructure/auth/token";
+import {
+  sessionRepository,
+  userRepository,
+} from "#infrastructure/repositories/drizzle";
+import { allNamed, chain } from "#lib/result/combinators";
+import { command, fail, success, type Result } from "#lib/result/index";
 import first from "lodash/fp/first";
 
 import type { CreateUserInput } from "../types/inputs";
-import type { CreateUserResult } from "../types/outputs";
 import type { ValidatedCreationData } from "../types/internal";
+import type { CreateUserResult } from "../types/outputs";
 import { Email } from "../value-objects/Email";
 import { HashedPassword, Password } from "../value-objects/Password";
 import { findByEmail } from "./find";
@@ -143,4 +147,34 @@ export function addAuthToken(userData: {
     },
     token,
   });
+}
+
+/**
+ * Create session in database for newly registered user
+ *
+ * Stores the authentication session for stateful token management.
+ * This enables proper logout functionality and session invalidation.
+ *
+ * @param createUserResult - Create user result with user data and token
+ * @returns Result with the same create user result, or failure if session creation fails
+ */
+export function createRegisterSession(
+  createUserResult: CreateUserResult,
+): Result<CreateUserResult> {
+  return command(
+    async () => {
+      const expiresAt = new Date(Date.now() + SESSION_EXPIRES_IN_MS);
+
+      const sessions = await sessionRepository.create({
+        userId: createUserResult.user.id,
+        token: createUserResult.token,
+        expiresAt,
+      });
+
+      return sessions[0];
+    },
+    () => {
+      return success(createUserResult);
+    },
+  );
 }

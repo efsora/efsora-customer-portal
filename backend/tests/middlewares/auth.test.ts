@@ -65,7 +65,7 @@ describe("Auth Middleware", () => {
       };
 
       // Run auth which should handle token verification
-      auth(req, res, nextMiddleware);
+      await auth(req, res, nextMiddleware);
 
       // Should return 401 since JWT_SECRET might not match
       expect(res.statusCode).toBe(401);
@@ -81,7 +81,7 @@ describe("Auth Middleware", () => {
         nextCalled = true;
       };
 
-      auth(req, res, nextMiddleware);
+      await auth(req, res, nextMiddleware);
 
       expect(nextCalled).toBe(false);
       expect(res.statusCode).toBe(401);
@@ -98,7 +98,7 @@ describe("Auth Middleware", () => {
         nextCalled = true;
       };
 
-      auth(req, res, nextMiddleware);
+      await auth(req, res, nextMiddleware);
 
       expect(nextCalled).toBe(false);
       expect(res.statusCode).toBe(401);
@@ -113,7 +113,7 @@ describe("Auth Middleware", () => {
         nextCalled = true;
       };
 
-      auth(req, res, nextMiddleware);
+      await auth(req, res, nextMiddleware);
 
       expect(nextCalled).toBe(false);
       expect(res.statusCode).toBe(401);
@@ -135,7 +135,7 @@ describe("Auth Middleware", () => {
         nextCalled = true;
       };
 
-      auth(req, res, nextMiddleware);
+      await auth(req, res, nextMiddleware);
 
       expect(nextCalled).toBe(false);
       expect(res.statusCode).toBe(401);
@@ -158,7 +158,7 @@ describe("Auth Middleware", () => {
         // middleware should not call next
       };
 
-      auth(req, res, nextMiddleware);
+      await auth(req, res, nextMiddleware);
 
       // Should return 401 for invalid or expired tokens
       expect(res.statusCode).toBe(401);
@@ -175,7 +175,7 @@ describe("Auth Middleware", () => {
         // next not called
       };
 
-      auth(req, res, nextMiddleware);
+      await auth(req, res, nextMiddleware);
 
       expect(res.jsonData).toHaveProperty("success");
       expect(res.jsonData).toHaveProperty("error");

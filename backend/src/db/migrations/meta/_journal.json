@@ -15,6 +15,13 @@
       "when": 1762160202474,
       "tag": "0002_fast_shinko_yamashiro",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1762848382687,
+      "tag": "0002_thankful_nightcrawler",
+      "breakpoints": true
     }
   ]
 }

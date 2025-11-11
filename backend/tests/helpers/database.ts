@@ -2,22 +2,18 @@
  * Database Test Helpers
  *
  * Provides utilities for integration testing with PostgreSQL testcontainers.
- * Supports parallel test execution with shared container and proper cleanup.
+ * Works with lazy-initialized database client to ensure proper test isolation.
  */
 
 import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from "@testcontainers/postgresql";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
 import { sql } from "drizzle-orm";
-import * as schema from "#db/schema";
+import { getDb, resetDatabase } from "#db/client";
 
 // Shared testcontainer instance for all tests (started once)
 let testContainer: StartedPostgreSqlContainer | null = null;
-let sharedDb: ReturnType<typeof drizzle> | null = null;
-let sharedClient: ReturnType<typeof postgres> | null = null;
 
 /**
  * Setup PostgreSQL testcontainer
@@ -41,8 +37,14 @@ export async function setupTestDatabase(): Promise<string> {
 
   const connectionUri = testContainer.getConnectionUri();
 
+  // Set DATABASE_URL for the lazy-initialized client
+  process.env.DATABASE_URL = connectionUri;
+
+  // Reset any existing database connection to force recreation with new URL
+  resetDatabase();
+
   // Apply schema directly to test database (simpler than migrations)
-  await applySchema(connectionUri);
+  await applySchema();
 
   return connectionUri;
 }
@@ -51,19 +53,17 @@ export async function setupTestDatabase(): Promise<string> {
  * Apply schema directly to test database
  * Uses the Drizzle schema to create tables without migrations
  * Note: Uses gen_random_uuid() instead of uuidv7() for simplicity in tests
- *
- * @param connectionString - PostgreSQL connection string
  */
-export async function applySchema(connectionString: string): Promise<void> {
-  const schemaClient = postgres(connectionString, { max: 1 });
-  const schemaDb = drizzle(schemaClient, { schema });
+export async function applySchema(): Promise<void> {
+  // Use the lazy-initialized database client
+  const db = getDb();
 
   // Enable pgcrypto extension for gen_random_uuid()
-  await schemaDb.execute(sql`CREATE EXTENSION IF NOT EXISTS pgcrypto;`);
+  await db.execute(sql`CREATE EXTENSION IF NOT EXISTS pgcrypto;`);
 
   // Create users table directly from schema
   // Note: Using gen_random_uuid() instead of uuidv7() for test simplicity
-  await schemaDb.execute(sql`
+  await db.execute(sql`
     CREATE TABLE IF NOT EXISTS users (
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
       email text NOT NULL UNIQUE,
@@ -74,62 +74,51 @@ export async function applySchema(connectionString: string): Promise<void> {
     );
   `);
 
-  await schemaClient.end();
+  // Create session table directly from schema
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS session (
+      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      token text NOT NULL UNIQUE,
+      created_at timestamp DEFAULT now() NOT NULL,
+      expires_at timestamp NOT NULL,
+      last_active_at timestamp DEFAULT now() NOT NULL
+    );
+  `);
 }
 
 /**
  * Create a Drizzle database instance for testing
  *
- * @param connectionString - PostgreSQL connection string
+ * @deprecated Use getTestDb() instead - now uses lazy-initialized client
  * @returns Drizzle database instance
  */
-export function createTestDb(connectionString: string) {
-  // Return shared instance if already created
-  if (sharedDb && sharedClient) {
-    return sharedDb;
-  }
-
-  sharedClient = postgres(connectionString, {
-    max: 10,
-  });
-
-  sharedDb = drizzle(sharedClient, { schema });
-
-  return sharedDb;
+export function createTestDb() {
+  return getDb();
 }
 
 /**
  * Get the shared test database instance
- * Creates a new instance if not already created (uses DATABASE_URL from env)
+ * Uses the lazy-initialized database client from #db/client
  *
  * @returns Shared Drizzle database instance
  */
 export function getTestDb() {
-  if (!sharedDb) {
-    // Create db instance using DATABASE_URL set by global setup
-    const connectionString = process.env.DATABASE_URL;
-    if (!connectionString) {
-      throw new Error("DATABASE_URL not set. Ensure global setup has run.");
-    }
-
-    sharedClient = postgres(connectionString, { max: 10 });
-    sharedDb = drizzle(sharedClient, { schema });
-  }
-  return sharedDb;
+  return getDb();
 }
 
 /**
  * Cleanup database by truncating all tables
  * Uses CASCADE to handle foreign key constraints
- *
- * @param db - Drizzle database instance
+ * Uses the lazy-initialized database client
  */
-export async function cleanupDatabase(
-  db: ReturnType<typeof drizzle>,
-): Promise<void> {
+export async function cleanupDatabase(): Promise<void> {
+  const db = getDb();
+
   // Truncate all tables in the schema
   // CASCADE automatically handles foreign key constraints
-  const tables = ["users"]; // Add more tables as schema grows
+  // Order matters: session depends on users, so truncate in reverse dependency order
+  const tables = ["session", "users"]; // Add more tables as schema grows
 
   for (const table of tables) {
     await db.execute(sql.raw(`TRUNCATE TABLE "${table}" CASCADE`));
@@ -141,12 +130,9 @@ export async function cleanupDatabase(
  * Closes connections and stops the container
  */
 export async function teardownTestDatabase(): Promise<void> {
-  // Close shared database connection
-  if (sharedClient) {
-    await sharedClient.end();
-    sharedClient = null;
-    sharedDb = null;
-  }
+  // Import closeDatabase from client to properly close connection
+  const { closeDatabase } = await import("#db/client");
+  await closeDatabase();
 
   // Stop testcontainer
   if (testContainer) {
