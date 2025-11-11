@@ -28,13 +28,12 @@ class Settings(BaseSettings):
     WEAVIATE_GRPC_PORT: int = Field(default=50051)
     DATA_DIR: str = Field(default="data/")
     OUTPUT_DIR: str = Field(default="output/")
-    WEAVIATE_VERSION: str = Field(default="1.26.6")
+    WEAVIATE_VERSION: str = Field(default="1.27.3")
     WEAVIATE_DATA_PATH: str = Field(default="./weaviate_data")
     WEAVIATE_COLLECTION_NAME: str = Field(default="EfsoraDocs")
     SEMANTIC_MAX_TOKENS: int = Field(default=512)
     EMBED_MODEL: str = Field(default="amazon.titan-embed-text-v2:0")
     BEDROCK_REGION: str = Field(default="us-east-1")
-
 
     @property
     def DATABASE_URL(self) -> str:
