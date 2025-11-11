@@ -43,3 +43,38 @@
     background-color: var(--color-neutral-grey-400);
     color: var(--color-neutral-grey-800);
 }
+
+.blocked {
+    background-color: var(--color-error-500);
+    color: var(--color-error-900)
+}
+
+.management {
+    background-color: var(--color-neutral-grey-800);
+    color: var(--color-neutral-grey-300)
+}
+
+.product {
+    background-color: var(--color-primary-800);
+    color: var(--color-primary-100)
+}
+
+.legal {
+    background-color: var(--color-error-900);
+    color: var(--color-error-100)
+}
+
+.financial {
+    background-color: var(--color-success-700);
+    color: var(--color-success-100)
+}
+
+.dev {
+    background-color: var(--color-info-700);
+    color: var(--color-info-100)
+}
+
+.testing {
+    background-color: var(--color-info-900);
+    color: var(--color-info-100)
+}
