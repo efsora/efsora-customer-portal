@@ -1,30 +1,25 @@
 # src/app/services/rag_service.py
 
-from typing import Tuple
+from langchain_aws import BedrockEmbeddings
 from langchain_weaviate import WeaviateVectorStore
-from langchain_openai import OpenAIEmbeddings
-from langchain_core.runnables import RunnableParallel, RunnablePassthrough
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
+import weaviate
 
 from app.core.settings import Settings
-from app.domain.ingestion_operations import *
+from app.domain.ingestion_operations import (
+    build_semantic_chunks_per_doc,
+    load_documents,
+    save_chunks_and_embeddings,
+)
 from app.infrastructure.weaviate.client import create_embedded_weaviate_client
 from app.infrastructure.weaviate.collection import ensure_weaviate_collection
-import weaviate
-from weaviate.classes.config import Property, DataType, Configure
-from langchain_weaviate import WeaviateVectorStore
-from langchain_aws import BedrockEmbeddings
-from langchain_aws import ChatBedrockConverse
-
 
 settings = Settings()
+
 
 def build_vectorstore(
     save_chunks_txt: bool = True,
     save_embeddings_json: bool = True,
-) -> Tuple[WeaviateVectorStore, weaviate.WeaviateClient]:
+) -> tuple[WeaviateVectorStore, weaviate.WeaviateClient]:
 
     all_docs = load_documents(settings.DATA_DIR)
 

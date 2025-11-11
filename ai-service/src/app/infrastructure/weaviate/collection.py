@@ -1,21 +1,8 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import StreamingResponse
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-
-from langchain_core.documents import Document
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnableParallel, RunnablePassthrough
-from langchain_core.output_parsers import StrOutputParser
-
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from langchain_community.document_loaders import TextLoader, PyPDFLoader
-
-from semantic_chunker.core import SemanticChunker
+import logging
 
 import weaviate
-from weaviate.classes.config import Property, DataType, Configure
-from langchain_weaviate import WeaviateVectorStore
+from weaviate.classes.config import Configure, DataType, Property
+
 
 def ensure_weaviate_collection(client: weaviate.WeaviateClient, name: str) -> None:
     """Create collection if it does not exist."""
@@ -32,6 +19,6 @@ def ensure_weaviate_collection(client: weaviate.WeaviateClient, name: str) -> No
             ],
             vectorizer_config=Configure.Vectorizer.none(),
         )
-        print(f"🆕 Created collection: {name}")
+        logging.info(f"🆕 Created collection: {name}")
     else:
-        print(f"ℹ️ Collection '{name}' already exists.")
+        logging.info(f"ℹ️ Collection '{name}' already exists.")

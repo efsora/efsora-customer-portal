@@ -21,9 +21,10 @@ def create_weaviate_client(settings: Settings) -> weaviate.WeaviateAsyncClient:
     except Exception as e:
         raise ValueError(f"Failed to create Weaviate async client: {str(e)}") from e
 
+
 def create_embedded_weaviate_client(settings: Settings) -> weaviate.WeaviateClient:
     return weaviate.connect_to_embedded(
-        version= settings.WEAVIATE_VERSION,
+        version=settings.WEAVIATE_VERSION,
         persistence_data_path=settings.WEAVIATE_DATA_PATH,
         environment_variables={"LOG_LEVEL": "error"},
     )
