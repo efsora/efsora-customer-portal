@@ -7,20 +7,23 @@ from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from langchain_weaviate import WeaviateVectorStore
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import Response as SstarletteResponse
+import weaviate
+from weaviate import connect_to_local
 
 from app.api.schemas.base_response import AppResponse, FieldError
 from app.api.schemas.errors import ErrorCode
-from app.api.v1 import routes, user_routes, weaviate_routes
+from app.api.v1 import chat_routes, routes, user_routes, weaviate_routes
 from app.core.exceptions import AppException
 from app.core.logging import get_logger, setup_logging
 from app.core.settings import Settings
 from app.core.version import APP_NAME, APP_VERSION
 from app.dependency_injection.container import Container
-from app.infrastructure.db.schema import metadata
 from app.middleware.logging import RequestLoggingMiddleware
+from app.services.rag_service import build_rag_chain
 
 logger = get_logger(__name__)
 
@@ -54,13 +57,12 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         env=settings.ENV,
     )
 
-    engine = container.engine()
+    #   engine = container.engine()
 
     # Auto-create tables in dev, but NOT in test (conftest handles test_schema creation)
-    if settings.ENV == "dev":
-        async with engine.begin() as conn:
-            await conn.run_sync(metadata.create_all)
-        logger.debug(f"Database tables created for {settings.ENV} environment", env=settings.ENV)
+    #   if settings.ENV == "dev":
+    #       async with engine.begin() as conn:
+    #           await conn.run_sync(metadata.create_all)
 
     # Wire at runtime
     container.wire(
@@ -68,6 +70,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             "app.api.v1.routes",
             "app.api.v1.user_routes",
             "app.api.v1.weaviate_routes",
+            "app.api.v1.chat_routes",
             "app.api.dependencies",
             "app.services.user_service",
             "app.services.weaviate_service",
@@ -78,11 +81,38 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
     # Connect Weaviate client
     weaviate_client = container.weaviate_client()
+    embeddings = container.embeddings()
+    vectorstore_client: weaviate.WeaviateClient | None = None
     try:
         await weaviate_client.connect()
         logger.debug("Weaviate async client connected successfully")
     except Exception as e:
         logger.error(f"Failed to connect to Weaviate: {str(e)}", error=str(e))
+        raise
+
+    # Initialize vectorstore + RAG chain for chat endpoints
+    try:
+        vectorstore_client = connect_to_local(
+            host=settings.WEAVIATE_HOST,
+            port=settings.WEAVIATE_PORT,
+            grpc_port=settings.WEAVIATE_GRPC_PORT,
+            headers=None,
+        )
+
+        vectorstore = WeaviateVectorStore(
+            client=vectorstore_client,
+            index_name=settings.WEAVIATE_COLLECTION_NAME,
+            text_key="content",
+            embedding=embeddings,
+        )
+        rag_chain = build_rag_chain(vectorstore, settings)
+        cast(Any, app.state).rag_vectorstore = vectorstore
+        cast(Any, app.state).rag_chain = rag_chain
+        logger.info("RAG chain initialized successfully")
+    except Exception as e:
+        logger.error("Failed to initialize RAG chain", error=str(e))
+        if vectorstore_client is not None:
+            vectorstore_client.close()
         raise
 
     try:
@@ -95,8 +125,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             logger.debug("Weaviate async client closed successfully")
         except Exception as e:
             logger.error(f"Error closing Weaviate client: {str(e)}", error=str(e))
+        if vectorstore_client is not None:
+            vectorstore_client.close()
         # Dispose database engine
-        await engine.dispose()
+        # await engine.dispose()
         container.unwire()
 
 
@@ -114,6 +146,7 @@ def create_app() -> FastAPI:
     app.include_router(routes.router)
     app.include_router(user_routes.router)
     app.include_router(weaviate_routes.router)
+    app.include_router(chat_routes.router)
     app.add_middleware(RequestLoggingMiddleware)
     app.add_middleware(TraceIdMiddleware)
     app.add_middleware(
