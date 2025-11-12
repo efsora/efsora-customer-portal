@@ -23,17 +23,35 @@ export function MessageList({ messages, loading, emptyContent }: Props) {
         }
     }, [messages, loading]);
     return (
-        <div className={styles.chatBox}>
-            {messages.length === 0 && emptyContent}
+        <div
+            className={styles.chatBox}
+            data-testid="chat-message-list-container"
+        >
+            {messages.length === 0 && (
+                <div data-testid="chat-message-list-empty">
+                    {emptyContent}
+                </div>
+            )}
             {messages.map((msg, index) => (
-                <Message key={index} msg={msg}/>
+                <div
+                    key={index}
+                    data-testid={`chat-message-item-${index}`}
+                >
+                    <Message msg={msg}/>
+                </div>
             ))}
             {loading && (
-                <div className={styles.loaderWrapper}>
+                <div
+                    className={styles.loaderWrapper}
+                    data-testid="chat-message-list-loading"
+                >
                     <div className={styles.loader}/>
                 </div>
             )}
-            <div ref={endOfMessagesRef}/>
+            <div
+                ref={endOfMessagesRef}
+                data-testid="chat-message-list-scroll-anchor"
+            />
         </div>
     );
 };

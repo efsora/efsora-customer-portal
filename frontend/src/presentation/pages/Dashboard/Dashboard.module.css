@@ -1,3 +1,14 @@
+.welcomeMessage {
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 .pageLayout {
     display: flex;
     flex: 1;

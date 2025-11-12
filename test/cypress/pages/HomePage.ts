@@ -21,7 +21,7 @@ export class HomePage extends BasePage {
   };
 
   constructor() {
-    super('/home');
+    super('/');
   }
 
   /**
@@ -164,10 +164,10 @@ export class HomePage extends BasePage {
   }
 
   /**
-   * Verify user is logged in (by checking for user profile element)
+   * Verify user is logged in (by checking for welcome message)
    */
   verifyUserLoggedIn(): this {
-    this.waitForElement(this.selectors.userProfile);
+    this.waitForElement(this.selectors.welcomeMessage);
     return this;
   }
 

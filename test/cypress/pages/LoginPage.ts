@@ -2,19 +2,42 @@ import { BasePage } from './BasePage';
 
 /**
  * LoginPage - Page Object for Login functionality
- * Extends BasePage to inherit common functionality
+ * Maps to frontend/src/presentation/components/auth/LoginForm.tsx
+ * Uses data-testid selectors for better test resilience
  */
 export class LoginPage extends BasePage {
-  // Selectors
+  // Selectors using data-testid attributes
+  // These correspond to elements in frontend/src/presentation/components/auth/LoginForm.tsx
   private readonly selectors = {
-    usernameInput: '[data-testid="username"]',
-    passwordInput: '[data-testid="password"]',
-    loginButton: '[data-testid="login-button"]',
-    errorMessage: '[data-testid="error-message"]',
-    forgotPasswordLink: '[data-testid="forgot-password"]',
-    signupLink: '[data-testid="signup-link"]',
-    rememberMeCheckbox: '[data-testid="remember-me"]',
-    showPasswordButton: '[data-testid="show-password"]',
+    // Container elements
+    pageContainer: '[data-testid="login-page-container"]',
+    formWrapper: '[data-testid="login-form-wrapper"]',
+    form: '[data-testid="login-form"]',
+
+    // Title
+    title: '[data-testid="login-form-title"]',
+
+    // Error handling
+    errorAlert: '[data-testid="login-form-error-alert"]',
+    errorMessage: '[data-testid="login-form-error-message"]',
+
+    // Email field
+    emailField: '[data-testid="login-form-email-field"]',
+    emailInput: '[data-testid="login-form-email-input"]',
+    emailError: '[data-testid="login-form-email-error"]',
+
+    // Password field
+    passwordField: '[data-testid="login-form-password-field"]',
+    passwordInput: '[data-testid="login-form-password-input"]',
+    passwordError: '[data-testid="login-form-password-error"]',
+
+    // Submit button
+    submitContainer: '[data-testid="login-form-submit-container"]',
+    submitButton: '[data-testid="login-form-submit-button"]',
+
+    // Signup section
+    signupSection: '[data-testid="login-form-signup-section"]',
+    signUpLink: '[data-testid="login-form-signup-link"]',
   };
 
   constructor() {
@@ -22,17 +45,15 @@ export class LoginPage extends BasePage {
   }
 
   /**
-   * Enter username
-   * @param username - Username to enter
+   * Enter email address
    */
-  enterUsername(username: string): this {
-    this.type(this.selectors.usernameInput, username);
+  enterEmail(email: string): this {
+    this.type(this.selectors.emailInput, email);
     return this;
   }
 
   /**
    * Enter password
-   * @param password - Password to enter
    */
   enterPassword(password: string): this {
     this.type(this.selectors.passwordInput, password);
@@ -40,54 +61,28 @@ export class LoginPage extends BasePage {
   }
 
   /**
-   * Click login button
+   * Click sign in button
    */
-  clickLoginButton(): this {
-    this.click(this.selectors.loginButton);
+  clickSignIn(): this {
+    this.click(this.selectors.submitButton);
     return this;
   }
 
   /**
-   * Perform complete login
-   * @param username - Username
-   * @param password - Password
+   * Perform complete login flow
    */
-  login(username: string, password: string): this {
-    this.enterUsername(username);
+  login(email: string, password: string): this {
+    this.enterEmail(email);
     this.enterPassword(password);
-    this.clickLoginButton();
+    this.clickSignIn();
     return this;
   }
 
   /**
-   * Click forgot password link
+   * Click sign up link
    */
-  clickForgotPassword(): this {
-    this.click(this.selectors.forgotPasswordLink);
-    return this;
-  }
-
-  /**
-   * Click signup link
-   */
-  clickSignupLink(): this {
-    this.click(this.selectors.signupLink);
-    return this;
-  }
-
-  /**
-   * Check remember me checkbox
-   */
-  checkRememberMe(): this {
-    this.check(this.selectors.rememberMeCheckbox);
-    return this;
-  }
-
-  /**
-   * Toggle show/hide password
-   */
-  togglePasswordVisibility(): this {
-    this.click(this.selectors.showPasswordButton);
+  clickSignUp(): this {
+    this.click(this.selectors.signUpLink);
     return this;
   }
 
@@ -99,11 +94,18 @@ export class LoginPage extends BasePage {
   }
 
   /**
-   * Verify error message is displayed
-   * @param expectedMessage - Expected error message
+   * Verify error message is visible
    */
-  verifyErrorMessage(expectedMessage: string): this {
-    this.shouldContainText(this.selectors.errorMessage, expectedMessage);
+  verifyErrorMessageVisible(): this {
+    this.waitForElement(this.selectors.errorAlert);
+    return this;
+  }
+
+  /**
+   * Verify error message contains specific text
+   */
+  verifyErrorMessageContains(expectedText: string): this {
+    this.shouldContainText(this.selectors.errorMessage, expectedText);
     return this;
   }
 
@@ -111,33 +113,51 @@ export class LoginPage extends BasePage {
    * Verify login page is loaded
    */
   verifyPageLoaded(): this {
-    this.waitForElement(this.selectors.usernameInput);
+    // Wait for page container first
+    this.waitForElement(this.selectors.pageContainer);
+    // Wait for form wrapper
+    this.waitForElement(this.selectors.formWrapper);
+    // Wait for title
+    this.waitForElement(this.selectors.title);
+    // Wait for email input
+    this.waitForElement(this.selectors.emailInput);
+    // Wait for password input
     this.waitForElement(this.selectors.passwordInput);
-    this.waitForElement(this.selectors.loginButton);
+    // Wait for submit button
+    this.waitForElement(this.selectors.submitButton);
     return this;
   }
 
   /**
-   * Verify login button is disabled
+   * Verify page title is displayed
    */
-  verifyLoginButtonDisabled(): this {
-    this.getElement(this.selectors.loginButton).should('be.disabled');
+  verifyPageTitle(): this {
+    this.waitForElement(this.selectors.title);
+    this.shouldContainText(this.selectors.title, 'Sign in to your account');
     return this;
   }
 
   /**
-   * Verify login button is enabled
+   * Verify email field is visible
    */
-  verifyLoginButtonEnabled(): this {
-    this.getElement(this.selectors.loginButton).should('be.enabled');
+  verifyEmailFieldVisible(): this {
+    this.waitForElement(this.selectors.emailField);
     return this;
   }
 
   /**
-   * Clear username field
+   * Verify password field is visible
    */
-  clearUsername(): this {
-    this.getElement(this.selectors.usernameInput).clear();
+  verifyPasswordFieldVisible(): this {
+    this.waitForElement(this.selectors.passwordField);
+    return this;
+  }
+
+  /**
+   * Clear email field
+   */
+  clearEmail(): this {
+    this.getElement(this.selectors.emailInput).clear();
     return this;
   }
 
@@ -150,11 +170,80 @@ export class LoginPage extends BasePage {
   }
 
   /**
-   * Verify username field has value
-   * @param expectedValue - Expected username value
+   * Verify email error is displayed
    */
-  verifyUsernameValue(expectedValue: string): this {
-    this.getElement(this.selectors.usernameInput).should('have.value', expectedValue);
+  verifyEmailErrorVisible(): this {
+    this.waitForElement(this.selectors.emailError);
     return this;
+  }
+
+  /**
+   * Verify email error contains specific text
+   */
+  verifyEmailErrorContains(expectedText: string): this {
+    this.shouldContainText(this.selectors.emailError, expectedText);
+    return this;
+  }
+
+  /**
+   * Verify password error is displayed
+   */
+  verifyPasswordErrorVisible(): this {
+    this.waitForElement(this.selectors.passwordError);
+    return this;
+  }
+
+  /**
+   * Verify password error contains specific text
+   */
+  verifyPasswordErrorContains(expectedText: string): this {
+    this.shouldContainText(this.selectors.passwordError, expectedText);
+    return this;
+  }
+
+  /**
+   * Verify sign in button is disabled
+   */
+  verifySignInButtonDisabled(): this {
+    this.getElement(this.selectors.submitButton).should('be.disabled');
+    return this;
+  }
+
+  /**
+   * Verify sign in button is enabled
+   */
+  verifySignInButtonEnabled(): this {
+    this.getElement(this.selectors.submitButton).should('be.enabled');
+    return this;
+  }
+
+  /**
+   * Verify sign in button contains loading text
+   */
+  verifySignInButtonLoading(): this {
+    this.getElement(this.selectors.submitButton).should('contain', 'Signing in...');
+    return this;
+  }
+
+  /**
+   * Verify sign up link is visible
+   */
+  verifySignUpLinkVisible(): this {
+    this.waitForElement(this.selectors.signUpLink);
+    return this;
+  }
+
+  /**
+   * Get email input value
+   */
+  getEmailValue(): Cypress.Chainable<string> {
+    return this.getElement(this.selectors.emailInput).invoke('val') as Cypress.Chainable<string>;
+  }
+
+  /**
+   * Get password input value
+   */
+  getPasswordValue(): Cypress.Chainable<string> {
+    return this.getElement(this.selectors.passwordInput).invoke('val') as Cypress.Chainable<string>;
   }
 }

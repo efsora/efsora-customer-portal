@@ -1,5 +1,5 @@
 {
-  "baseUrl": "http://localhost:5173",
+  "baseUrl": "http://localhost:5174",
   "apiUrl": "http://localhost:3000/api",
   "environment": "dev",
   "testUser": {

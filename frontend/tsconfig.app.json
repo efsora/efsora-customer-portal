@@ -36,6 +36,7 @@
             "#pages": ["src/presentation/pages/index"],
             "#pages/*": ["src/presentation/pages/*"],
             "#layout/*": ["src/presentation/view/layout/*"],
+            "#api": ["src/api"],
             "#api/*": ["src/api/*"],
             "#hooks/*": ["src/api/hooks/*"],
             "#config/*": ["src/constants/*"],

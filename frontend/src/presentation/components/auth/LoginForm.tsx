@@ -54,10 +54,19 @@ export const LoginForm = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8">
+        <div
+            className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8"
+            data-testid="login-page-container"
+        >
+            <div
+                className="max-w-md w-full space-y-8"
+                data-testid="login-form-wrapper"
+            >
                 <div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    <h2
+                        className="mt-6 text-center text-3xl font-extrabold text-gray-900"
+                        data-testid="login-form-title"
+                    >
                         Sign in to your account
                     </h2>
                 </div>
@@ -65,12 +74,19 @@ export const LoginForm = () => {
                 <form
                     className="mt-8 space-y-6"
                     onSubmit={handleSubmit(onSubmit)}
+                    data-testid="login-form"
                 >
                     {serverError && (
-                        <div className="rounded-md bg-red-50 p-4">
+                        <div
+                            className="rounded-md bg-red-50 p-4"
+                            data-testid="login-form-error-alert"
+                        >
                             <div className="flex">
                                 <div className="ml-3">
-                                    <h3 className="text-sm font-medium text-red-800">
+                                    <h3
+                                        className="text-sm font-medium text-red-800"
+                                        data-testid="login-form-error-message"
+                                    >
                                         {serverError}
                                     </h3>
                                 </div>
@@ -78,9 +94,15 @@ export const LoginForm = () => {
                         </div>
                     )}
 
-                    <div className="rounded-md shadow-sm -space-y-px">
-                        <div>
-                            <label htmlFor="email" className="sr-only">
+                    <div
+                        className="rounded-md shadow-sm -space-y-px"
+                        data-testid="login-form-inputs-container"
+                    >
+                        <div data-testid="login-form-email-field">
+                            <label
+                                htmlFor="email"
+                                className="sr-only"
+                            >
                                 Email address
                             </label>
                             <input
@@ -89,19 +111,26 @@ export const LoginForm = () => {
                                 type="email"
                                 autoComplete="email"
                                 placeholder="Email address"
+                                data-testid="login-form-email-input"
                                 className={`appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm ${
                                     errors.email ? 'border-red-300' : ''
                                 }`}
                             />
                             {errors.email && (
-                                <p className="mt-1 text-sm text-red-600">
+                                <p
+                                    className="mt-1 text-sm text-red-600"
+                                    data-testid="login-form-email-error"
+                                >
                                     {errors.email.message}
                                 </p>
                             )}
                         </div>
 
-                        <div>
-                            <label htmlFor="password" className="sr-only">
+                        <div data-testid="login-form-password-field">
+                            <label
+                                htmlFor="password"
+                                className="sr-only"
+                            >
                                 Password
                             </label>
                             <input
@@ -110,34 +139,43 @@ export const LoginForm = () => {
                                 type="password"
                                 autoComplete="current-password"
                                 placeholder="Password"
+                                data-testid="login-form-password-input"
                                 className={`appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm ${
                                     errors.password ? 'border-red-300' : ''
                                 }`}
                             />
                             {errors.password && (
-                                <p className="mt-1 text-sm text-red-600">
+                                <p
+                                    className="mt-1 text-sm text-red-600"
+                                    data-testid="login-form-password-error"
+                                >
                                     {errors.password.message}
                                 </p>
                             )}
                         </div>
                     </div>
 
-                    <div>
+                    <div data-testid="login-form-submit-container">
                         <button
                             type="submit"
                             disabled={isPending}
+                            data-testid="login-form-submit-button"
                             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isPending ? 'Signing in...' : 'Sign in'}
                         </button>
                     </div>
 
-                    <div className="text-center">
+                    <div
+                        className="text-center"
+                        data-testid="login-form-signup-section"
+                    >
                         <p className="text-sm text-gray-600">
                             Don't have an account?{' '}
                             <a
                                 href="/register"
                                 className="font-medium text-indigo-600 hover:text-indigo-500"
+                                data-testid="login-form-signup-link"
                             >
                                 Sign up
                             </a>

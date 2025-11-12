@@ -75,11 +75,11 @@ Cypress.Commands.add('getLocalStorage', (key: string) => {
 });
 
 /**
- * Clear local storage
+ * Clear local storage (overwrite built-in command)
  * @example cy.clearLocalStorage()
  */
-Cypress.Commands.add('clearLocalStorage', () => {
-  cy.window().then((window) => {
+Cypress.Commands.overwrite('clearLocalStorage', (originalFn) => {
+  return cy.window().then((window) => {
     window.localStorage.clear();
   });
 });
