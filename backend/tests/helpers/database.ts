@@ -78,12 +78,99 @@ export async function applySchema(): Promise<void> {
   await db.execute(sql`
     CREATE TABLE IF NOT EXISTS session (
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-      user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      user_id uuid NOT NULL,
       token text NOT NULL UNIQUE,
       created_at timestamp DEFAULT now() NOT NULL,
       expires_at timestamp NOT NULL,
       last_active_at timestamp DEFAULT now() NOT NULL
     );
+  `);
+
+  // Create companies table
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS companies (
+      id serial PRIMARY KEY,
+      name text NOT NULL UNIQUE,
+      logo_url text,
+      admin_user_id uuid,
+      created_at timestamp DEFAULT now() NOT NULL,
+      updated_at timestamp DEFAULT now() NOT NULL
+    );
+  `);
+
+  // Create roles table
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS roles (
+      id serial PRIMARY KEY,
+      name text NOT NULL UNIQUE,
+      created_at timestamp DEFAULT now() NOT NULL
+    );
+  `);
+
+  // Create progress_status table
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS progress_status (
+      id serial PRIMARY KEY,
+      name text NOT NULL UNIQUE,
+      created_at timestamp DEFAULT now() NOT NULL
+    );
+  `);
+
+  // Create projects table
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS projects (
+      id serial PRIMARY KEY,
+      name text NOT NULL,
+      company_id integer,
+      status integer,
+      created_at timestamp DEFAULT now() NOT NULL,
+      updated_at timestamp DEFAULT now() NOT NULL,
+      UNIQUE(name, company_id)
+    );
+  `);
+
+  // Create milestones table
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS milestones (
+      id serial PRIMARY KEY,
+      project_id integer,
+      assignee_user_id uuid,
+      due_date timestamp,
+      description text,
+      created_at timestamp DEFAULT now() NOT NULL,
+      updated_at timestamp DEFAULT now() NOT NULL
+    );
+  `);
+
+  // Create events table
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS events (
+      id serial PRIMARY KEY,
+      event_datetime timestamp NOT NULL,
+      description text,
+      owner_user_id uuid,
+      milestone_id integer,
+      status integer,
+      created_at timestamp DEFAULT now() NOT NULL,
+      updated_at timestamp DEFAULT now() NOT NULL
+    );
+  `);
+
+  // Update users table with new fields
+  await db.execute(sql`
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS surname text;
+  `);
+  await db.execute(sql`
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS bio text;
+  `);
+  await db.execute(sql`
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS company_id integer;
+  `);
+  await db.execute(sql`
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS role_id integer;
+  `);
+  await db.execute(sql`
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS project_id integer;
   `);
 }
 
@@ -117,8 +204,17 @@ export async function cleanupDatabase(): Promise<void> {
 
   // Truncate all tables in the schema
   // CASCADE automatically handles foreign key constraints
-  // Order matters: session depends on users, so truncate in reverse dependency order
-  const tables = ["session", "users"]; // Add more tables as schema grows
+  // Order doesn't matter with CASCADE, but we list dependencies first for clarity
+  const tables = [
+    "events",
+    "milestones",
+    "projects",
+    "companies",
+    "roles",
+    "progress_status",
+    "session",
+    "users",
+  ];
 
   for (const table of tables) {
     await db.execute(sql.raw(`TRUNCATE TABLE "${table}" CASCADE`));

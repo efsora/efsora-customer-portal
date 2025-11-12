@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1761729923842,
-      "tag": "0000_superb_maelstrom",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1762160202474,
-      "tag": "0002_fast_shinko_yamashiro",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1762848382687,
-      "tag": "0002_thankful_nightcrawler",
+      "when": 1762958135140,
+      "tag": "0000_cheerful_lyja",
       "breakpoints": true
     }
   ]

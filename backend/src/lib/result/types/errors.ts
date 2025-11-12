@@ -13,6 +13,8 @@
  */
 
 import type { UserError } from "#core/users/types/errors";
+import type { CompanyError } from "#core/companies/types/errors";
+import type { ProjectError } from "#core/projects/types/errors";
 
 /**
  * Global application error union.
@@ -23,9 +25,14 @@ import type { UserError } from "#core/users/types/errors";
  * - CommandExecutionError: Effect execution failures
  * - InternalError: Unexpected server errors
  * - UnauthorizedError: Authentication required
+ * - NotFoundError: Resource not found
+ * - ConflictError: Resource conflict (duplicate)
+ * - ValidationError: Input validation failed
  *
  * Domain errors:
  * - UserError: User-related errors (USER_NOT_FOUND, USER_FORBIDDEN, etc.)
+ * - CompanyError: Company-related errors
+ * - ProjectError: Project-related errors
  *
  * To add new domains, import the domain error type and add to this union:
  * @example
@@ -38,7 +45,12 @@ export type AppError =
   | CommandExecutionError
   | InternalError
   | UnauthorizedError
-  | UserError;
+  | NotFoundError
+  | ConflictError
+  | ValidationError
+  | UserError
+  | CompanyError
+  | ProjectError;
 
 /**
  * Command execution error - effect execution failure.
@@ -83,7 +95,10 @@ export type ErrorBase = {
 export type ErrorCode =
   | "COMMAND_EXECUTION_ERROR" // Effect execution failure
   | "INTERNAL_ERROR" // Unexpected server error
-  | "UNAUTHORIZED"; // User not authenticated
+  | "UNAUTHORIZED" // User not authenticated
+  | "NOT_FOUND" // Resource not found
+  | "CONFLICT" // Resource conflict (duplicate)
+  | "VALIDATION_ERROR"; // Input validation failed
 
 /**
  * Internal error - unexpected server error.
@@ -121,6 +136,69 @@ export type InternalError = ErrorBase & {
  */
 export type UnauthorizedError = ErrorBase & {
   code: "UNAUTHORIZED";
+};
+
+/**
+ * Not found error - resource not found.
+ * Used when a requested resource doesn't exist.
+ *
+ * @property code - Always "NOT_FOUND"
+ * @property resourceType - Type of resource (optional)
+ * @property resourceId - ID of the resource (optional)
+ *
+ * @example
+ * ```typescript
+ * {
+ *   code: "NOT_FOUND",
+ *   message: "Company with ID 123 not found",
+ *   resourceType: "company",
+ *   resourceId: "123"
+ * }
+ * ```
+ */
+export type NotFoundError = ErrorBase & {
+  code: "NOT_FOUND";
+  resourceType?: string;
+  resourceId?: string | number;
+};
+
+/**
+ * Conflict error - resource conflict (duplicate).
+ * Used when trying to create a resource that already exists.
+ *
+ * @property code - Always "CONFLICT"
+ *
+ * @example
+ * ```typescript
+ * {
+ *   code: "CONFLICT",
+ *   message: "Company with name 'Acme' already exists"
+ * }
+ * ```
+ */
+export type ConflictError = ErrorBase & {
+  code: "CONFLICT";
+};
+
+/**
+ * Validation error - input validation failed.
+ * Used when request validation fails.
+ *
+ * @property code - Always "VALIDATION_ERROR"
+ * @property field - Field that failed validation (optional)
+ *
+ * @example
+ * ```typescript
+ * {
+ *   code: "VALIDATION_ERROR",
+ *   message: "Email format is invalid",
+ *   field: "email"
+ * }
+ * ```
+ */
+export type ValidationError = ErrorBase & {
+  code: "VALIDATION_ERROR";
+  field?: string;
 };
 
 /**
