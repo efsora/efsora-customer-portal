@@ -63,3 +63,12 @@ Thumbs.db
 
 # plans
 _plans/
+
+# weaviate data
+ai-service/src/weaviate_data
+
+# input data
+ai-service/src/data
+
+# output data
+ai-service/src/output
