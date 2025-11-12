@@ -16,7 +16,7 @@ repos:
     hooks:
       - id: mypy
         pass_filenames: false
-        args: ["."]
+        args: [".", "--disable-error-code=import-untyped"]
         additional_dependencies:
           - pydantic>=2
           - pydantic-settings>=2
@@ -32,6 +32,14 @@ repos:
           - pytest>=8.4.2
           - pytest-asyncio>=1.2.0
           - dependency-injector>=4.48.2
+          - langchain-aws>=1.0.0
+          - langchain-community>=0.4.1
+          - langchain-core>=1.0.4
+          - langchain-weaviate>=0.0.6
+          - langchain-openai>=1.0.2
+          - semantic-chunker>=0.2.0
+          - advanced-chunker>=0.1.4
+          - pypdf>=6.2.0
 
   - repo: https://github.com/PyCQA/bandit
     rev: 1.8.6

@@ -20,13 +20,13 @@ def load_documents(data_dir: str = settings.DATA_DIR) -> list[Document]:
 
     # Load .txt files
     for file_path in glob.glob(os.path.join(data_dir, "*.txt")):
-        loader = TextLoader(file_path, encoding="utf-8")
-        docs.extend(loader.load())
+        txt_loader = TextLoader(file_path, encoding="utf-8")
+        docs.extend(txt_loader.load())
 
     # Load .pdf files
     for file_path in glob.glob(os.path.join(data_dir, "*.pdf")):
-        loader = PyPDFLoader(file_path)
-        docs.extend(loader.load())
+        pdf_loader = PyPDFLoader(file_path)
+        docs.extend(pdf_loader.load())
 
     logging.info(f" Loaded {len(docs)} raw documents from '{data_dir}'")
     return docs
