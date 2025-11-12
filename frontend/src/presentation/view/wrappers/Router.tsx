@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 
 import Layout from '#layout/Layout/Layout';
-import { LoginPage } from '#pages/LoginPage';
+import { Login } from '#presentation/pages/Login/Login';
 import { RegisterPage } from '#pages/RegisterPage';
 import Users from '#pages/Users';
 import { ProtectedRoute } from '#presentation/components/auth/ProtectedRoute';
@@ -20,7 +20,7 @@ export default function Router() {
                 path="/login"
                 element={
                     <PublicRoute>
-                        <LoginPage />
+                        <Login />
                     </PublicRoute>
                 }
             />
