@@ -10,6 +10,7 @@ async def embed_text_in_weaviate(
     text: str,
     collection: str,
     embeddings: BedrockEmbeddings,
+    source: str = "api",
 ) -> dict[str, Any]:
     """
     Embed text in Weaviate with vector embeddings.
@@ -19,6 +20,7 @@ async def embed_text_in_weaviate(
         text: Text to embed
         collection: Collection name
         embeddings: Bedrock embeddings model for generating vectors
+        source: Source identifier for the document
 
     Returns:
         Dictionary with embedded text metadata
@@ -29,9 +31,9 @@ async def embed_text_in_weaviate(
         # Generate embedding vector
         embedding_vector = embeddings.embed_query(text)
 
-        # Create object with text property and vector
+        # Create object with content and source properties (matching schema)
         uuid = await col.data.insert(
-            properties={"text": text},
+            properties={"content": text, "source": source},
             vector=embedding_vector,
         )
 
@@ -39,6 +41,7 @@ async def embed_text_in_weaviate(
             "text": text,
             "collection": collection,
             "uuid": str(uuid),
+            "source": source,
         }
     except Exception as e:
         raise ValueError(f"Failed to embed text: {str(e)}") from e
@@ -83,7 +86,7 @@ async def search_in_weaviate(
                 results.append(
                     {
                         "uuid": str(obj.uuid),
-                        "text": obj.properties.get("text", "") or obj.properties.get("content", ""),
+                        "text": obj.properties.get("content", ""),
                         "source": obj.properties.get("source", ""),
                         "distance": obj.metadata.distance,
                         "properties": obj.properties,

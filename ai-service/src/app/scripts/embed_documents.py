@@ -30,6 +30,7 @@ async def embed_documents() -> None:
     # Get dependencies from container
     settings = container.settings()
     weaviate_client = container.weaviate_client()
+    embeddings = container.embeddings()
 
     try:
         # Connect to Weaviate
@@ -40,6 +41,7 @@ async def embed_documents() -> None:
         split_docs = await build_vectorstore(
             weaviate_client=weaviate_client,
             settings=settings,
+            embeddings=embeddings,
             save_chunks_txt=True,
             save_embeddings_json=True,
         )

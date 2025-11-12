@@ -1,6 +1,7 @@
 from typing import TypeAlias
 
 from dependency_injector import containers, providers
+from langchain_aws import BedrockEmbeddings
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 import weaviate
 
@@ -10,6 +11,14 @@ from app.infrastructure.db.engine import create_engine
 from app.infrastructure.weaviate.client import create_weaviate_client
 
 AsyncSessionMaker: TypeAlias = async_sessionmaker[AsyncSession]
+
+
+def create_embeddings(settings: Settings) -> BedrockEmbeddings:
+    """Create Bedrock embeddings model instance."""
+    return BedrockEmbeddings(
+        model_id=settings.EMBED_MODEL,
+        region_name=settings.BEDROCK_REGION,
+    )
 
 
 class Container(containers.DeclarativeContainer):
@@ -36,5 +45,11 @@ class Container(containers.DeclarativeContainer):
     # --- Weaviate ---
     weaviate_client: providers.Singleton[weaviate.WeaviateAsyncClient] = providers.Singleton(
         create_weaviate_client,
+        settings=settings,
+    )
+
+    # --- Embeddings ---
+    embeddings: providers.Singleton[BedrockEmbeddings] = providers.Singleton(
+        create_embeddings,
         settings=settings,
     )

@@ -4,27 +4,27 @@ from fastapi import Depends
 from langchain_aws import BedrockEmbeddings
 import weaviate
 
-from app.api.dependencies import get_context, get_weaviate_client
+from app.api.dependencies import get_context, get_embeddings, get_weaviate_client
 from app.core.context import Context
-from app.core.settings import Settings
 from app.db_ops.weaviate_db_ops import embed_text_in_weaviate, search_in_weaviate
 
 ContextDep = Annotated[Context, Depends(get_context)]
 WeaviateClientDep = Annotated[weaviate.WeaviateAsyncClient, Depends(get_weaviate_client)]
+EmbeddingsDep = Annotated[BedrockEmbeddings, Depends(get_embeddings)]
 
 
 class WeaviateService:
     """Service layer for Weaviate operations with vector embeddings."""
 
-    def __init__(self, ctx: ContextDep, weaviate_client: WeaviateClientDep) -> None:
+    def __init__(
+        self,
+        ctx: ContextDep,
+        weaviate_client: WeaviateClientDep,
+        embeddings: EmbeddingsDep,
+    ) -> None:
         self._ctx = ctx
         self._client = weaviate_client
-        # Initialize embeddings model (cached per service instance)
-        settings = Settings()
-        self._embeddings = BedrockEmbeddings(
-            model_id=settings.EMBED_MODEL,
-            region_name=settings.BEDROCK_REGION,
-        )
+        self._embeddings = embeddings
 
     @property
     def ctx(self) -> Context:

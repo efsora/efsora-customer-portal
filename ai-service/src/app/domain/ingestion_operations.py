@@ -4,7 +4,6 @@ import logging
 import os
 from typing import Any
 
-from langchain_aws import BedrockEmbeddings
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain_core.documents import Document
 from semantic_chunker.core import SemanticChunker
@@ -67,7 +66,7 @@ def build_semantic_chunks_per_doc(
 
 def save_chunks_and_embeddings(
     split_docs: list[Document],
-    embeddings: BedrockEmbeddings,
+    embedding_vectors: list[list[float]],
     output_dir: str,
     collection_name: str,
     embed_model: str,
@@ -77,7 +76,19 @@ def save_chunks_and_embeddings(
 ) -> dict[str, Any]:
     """
     Save chunks, embeddings and metadata to disk for debugging/inspection.
-    Returns metadata dict.
+
+    Args:
+        split_docs: List of chunked documents
+        embedding_vectors: Pre-computed embedding vectors (one per document)
+        output_dir: Directory to save outputs
+        collection_name: Name of the Weaviate collection
+        embed_model: Model ID used for embeddings
+        max_tokens: Max tokens per chunk
+        save_chunks_txt: Whether to save chunks text file
+        save_embeddings_json: Whether to save embeddings JSON file
+
+    Returns:
+        Metadata dictionary
     """
     os.makedirs(output_dir, exist_ok=True)
 
@@ -99,8 +110,7 @@ def save_chunks_and_embeddings(
 
     if save_embeddings_json:
         embedded_chunks = []
-        for i, doc in enumerate(split_docs):
-            emb_vector = embeddings.embed_query(doc.page_content)
+        for i, (doc, emb_vector) in enumerate(zip(split_docs, embedding_vectors, strict=False)):
             embedded_chunks.append(
                 {
                     "doc_name": f"merged_chunk_{i}",
