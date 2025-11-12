@@ -4,7 +4,8 @@
     justify-content: center;
     gap: 32px;
     color: var(--color-neutral-grey-600);
-    width: 35%;
+    width: 464px;
+    padding: 32px;
 }
 
 .formContainer {
