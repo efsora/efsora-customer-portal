@@ -9,12 +9,8 @@ from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain_core.documents import Document
 from semantic_chunker.core import SemanticChunker
 
-from app.core.settings import Settings
 
-settings = Settings()
-
-
-def load_documents(data_dir: str = settings.DATA_DIR) -> list[Document]:
+def load_documents(data_dir: str) -> list[Document]:
     """Load all .txt and .pdf files from data_dir into LangChain Documents."""
     docs: list[Document] = []
 
@@ -34,7 +30,7 @@ def load_documents(data_dir: str = settings.DATA_DIR) -> list[Document]:
 
 def build_semantic_chunks_per_doc(
     all_docs: list[Document],
-    max_tokens: int = settings.SEMANTIC_MAX_TOKENS,
+    max_tokens: int,
 ) -> list[Document]:
     """
     Use SemanticChunker (advanced-chunker) to merge/split docs semantically
@@ -72,7 +68,10 @@ def build_semantic_chunks_per_doc(
 def save_chunks_and_embeddings(
     split_docs: list[Document],
     embeddings: BedrockEmbeddings,
-    output_dir: str = settings.OUTPUT_DIR,
+    output_dir: str,
+    collection_name: str,
+    embed_model: str,
+    max_tokens: int,
     save_chunks_txt: bool = True,
     save_embeddings_json: bool = True,
 ) -> dict[str, Any]:
@@ -93,9 +92,9 @@ def save_chunks_and_embeddings(
 
     metadata = {
         "total_chunks": len(split_docs),
-        "embedding_model": settings.EMBED_MODEL,
-        "max_tokens": settings.SEMANTIC_MAX_TOKENS,
-        "collection_name": settings.WEAVIATE_COLLECTION_NAME,
+        "embedding_model": embed_model,
+        "max_tokens": max_tokens,
+        "collection_name": collection_name,
     }
 
     if save_embeddings_json:

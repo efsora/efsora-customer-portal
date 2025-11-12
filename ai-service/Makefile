@@ -5,7 +5,7 @@ APP_DIR = src
 PYTHONPATH ?= $(APP_DIR)
 
 # ---- Phony ----
-.PHONY: install install-hooks-force run test test-cov test-migrations lint type check pre-commit-install pre-commit format ruff ruff-fix mypy bandit qa
+.PHONY: install install-hooks-force run test test-cov test-migrations lint type check pre-commit-install pre-commit pre-commit-clean pre-commit-reinstall format ruff ruff-fix mypy bandit qa
 
 # ---- Setup ----
 install:
@@ -74,6 +74,21 @@ pre-commit-install:
 
 pre-commit:
 	$(PY) pre-commit run --all-files
+
+pre-commit-clean:
+	@echo "🧹 Cleaning pre-commit cache..."
+	$(PY) pre-commit clean
+	$(PY) pre-commit gc
+	@echo "✓ Pre-commit cache cleaned!"
+
+pre-commit-reinstall:
+	@echo "🔄 Reinstalling pre-commit environments..."
+	$(PY) pre-commit clean
+	$(PY) pre-commit gc
+	$(PY) pre-commit install --install-hooks
+	@echo "✓ Pre-commit environments reinstalled!"
+	@echo ""
+	@echo "💡 Now run: make pre-commit"
 
 ruff:
 	$(PY) ruff check --config pyproject.toml .

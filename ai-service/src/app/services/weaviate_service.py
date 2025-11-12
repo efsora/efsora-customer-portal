@@ -1,10 +1,12 @@
 from typing import Annotated, Any
 
 from fastapi import Depends
+from langchain_aws import BedrockEmbeddings
 import weaviate
 
 from app.api.dependencies import get_context, get_weaviate_client
 from app.core.context import Context
+from app.core.settings import Settings
 from app.db_ops.weaviate_db_ops import embed_text_in_weaviate, search_in_weaviate
 
 ContextDep = Annotated[Context, Depends(get_context)]
@@ -12,11 +14,17 @@ WeaviateClientDep = Annotated[weaviate.WeaviateAsyncClient, Depends(get_weaviate
 
 
 class WeaviateService:
-    """Service layer for Weaviate operations."""
+    """Service layer for Weaviate operations with vector embeddings."""
 
     def __init__(self, ctx: ContextDep, weaviate_client: WeaviateClientDep) -> None:
         self._ctx = ctx
         self._client = weaviate_client
+        # Initialize embeddings model (cached per service instance)
+        settings = Settings()
+        self._embeddings = BedrockEmbeddings(
+            model_id=settings.EMBED_MODEL,
+            region_name=settings.BEDROCK_REGION,
+        )
 
     @property
     def ctx(self) -> Context:
@@ -28,10 +36,15 @@ class WeaviateService:
         """Expose Weaviate client for advanced operations."""
         return self._client
 
+    @property
+    def embeddings(self) -> BedrockEmbeddings:
+        """Expose embeddings model."""
+        return self._embeddings
+
     async def embed_text(self, text: str, collection: str) -> dict[str, Any]:
-        """Embed text into Weaviate vector database."""
-        return await embed_text_in_weaviate(self._client, text, collection)
+        """Embed text into Weaviate vector database with semantic vectors."""
+        return await embed_text_in_weaviate(self._client, text, collection, self._embeddings)
 
     async def search(self, query: str, collection: str, limit: int = 10) -> dict[str, Any]:
-        """Search for similar objects in Weaviate using BM25."""
-        return await search_in_weaviate(self._client, query, collection, limit)
+        """Search for similar objects in Weaviate using vector similarity."""
+        return await search_in_weaviate(self._client, query, collection, self._embeddings, limit)

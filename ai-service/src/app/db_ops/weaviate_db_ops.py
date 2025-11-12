@@ -1,23 +1,38 @@
 from typing import Any
 
+from langchain_aws import BedrockEmbeddings
 import weaviate
 from weaviate.classes.query import MetadataQuery
 
 
 async def embed_text_in_weaviate(
-    client: weaviate.WeaviateAsyncClient, text: str, collection: str
+    client: weaviate.WeaviateAsyncClient,
+    text: str,
+    collection: str,
+    embeddings: BedrockEmbeddings,
 ) -> dict[str, Any]:
     """
-    Embed text in Weaviate without using a vectorizer.
-    Note: You must provide vectors manually or use a custom vectorizer.
-    This example stores the text as a property.
+    Embed text in Weaviate with vector embeddings.
+
+    Args:
+        client: Async Weaviate client
+        text: Text to embed
+        collection: Collection name
+        embeddings: Bedrock embeddings model for generating vectors
+
+    Returns:
+        Dictionary with embedded text metadata
     """
     try:
         col = client.collections.get(collection)
 
-        # Create object with text property
+        # Generate embedding vector
+        embedding_vector = embeddings.embed_query(text)
+
+        # Create object with text property and vector
         uuid = await col.data.insert(
             properties={"text": text},
+            vector=embedding_vector,
         )
 
         return {
@@ -30,18 +45,34 @@ async def embed_text_in_weaviate(
 
 
 async def search_in_weaviate(
-    client: weaviate.WeaviateAsyncClient, query: str, collection: str, limit: int = 10
+    client: weaviate.WeaviateAsyncClient,
+    query: str,
+    collection: str,
+    embeddings: BedrockEmbeddings,
+    limit: int = 10,
 ) -> dict[str, Any]:
     """
-    Search for similar objects in Weaviate using BM25.
-    Falls back to BM25 since no vectorizer is configured.
+    Search for similar objects in Weaviate using vector similarity.
+
+    Args:
+        client: Async Weaviate client
+        query: Search query text
+        collection: Collection name
+        embeddings: Bedrock embeddings model for generating query vector
+        limit: Maximum number of results
+
+    Returns:
+        Dictionary with search results
     """
     try:
         col = client.collections.get(collection)
 
-        # Use BM25 search since no vectorizer is configured
-        response = await col.query.bm25(
-            query=query,
+        # Generate query embedding vector
+        query_vector = embeddings.embed_query(query)
+
+        # Use vector similarity search
+        response = await col.query.near_vector(
+            near_vector=query_vector,
             limit=limit,
             return_metadata=MetadataQuery(distance=True),
         )
@@ -52,7 +83,8 @@ async def search_in_weaviate(
                 results.append(
                     {
                         "uuid": str(obj.uuid),
-                        "text": obj.properties.get("text", ""),
+                        "text": obj.properties.get("text", "") or obj.properties.get("content", ""),
+                        "source": obj.properties.get("source", ""),
                         "distance": obj.metadata.distance,
                         "properties": obj.properties,
                     }
