@@ -113,6 +113,7 @@ services:
     restart: unless-stopped
     ports:
       - "${AI_SERVICE_PORT:-8000}:8000"
+
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
@@ -123,11 +124,16 @@ services:
       BACKEND_SCHEMA: ${BACKEND_SCHEMA:-backend_schema}
       WEAVIATE_HOST: weaviate
       WEAVIATE_PORT: 8080
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY:  ${AWS_SECRET_ACCESS_KEY}
+
     depends_on:
       postgres:
         condition: service_healthy
       weaviate:
         condition: service_healthy
+    volumes:
+      - ./ai-service/src:/app
     networks:
       - app-network
 

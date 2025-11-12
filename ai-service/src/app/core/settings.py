@@ -33,6 +33,8 @@ class Settings(BaseSettings):
     EMBED_MODEL: str = Field(default="amazon.titan-embed-text-v2:0")
     BEDROCK_REGION: str = Field(default="us-east-1")
     LLM_MODEL: str = Field(default="global.anthropic.claude-sonnet-4-20250514-v1:0")
+    AWS_ACCESS_KEY_ID: str = Field(default="")
+    AWS_SECRET_ACCESS_KEY: str = Field(default="")
 
     @property
     def DATABASE_URL(self) -> str:
