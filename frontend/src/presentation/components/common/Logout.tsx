@@ -6,23 +6,26 @@ import { useLogout } from '#api/hooks/useAuth';
 export default function Logout() {
     const navigate = useNavigate();
     const isAuthenticated = useIsAuthenticated();
-    const logout = useLogout();
+    const { mutate: logout, isPending } = useLogout();
 
     const handleLogout = () => {
-        logout();
-        navigate('/login');
+        logout(undefined, {
+            onSuccess: () => {
+                navigate('/login');
+            },
+        });
     };
-
 
     return (
         <>
             {isAuthenticated && (
                 <button
                     onClick={handleLogout}
+                    disabled={isPending}
                 >
-                        Logout
+                    {isPending ? 'Logging out...' : 'Logout'}
                 </button>
             )}
-        </> 
-    ); 
+        </>
+    );
 }
