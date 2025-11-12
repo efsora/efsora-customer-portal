@@ -30,3 +30,7 @@ htmlcov/
 
 # OS
 .DS_Store
+
+#Necessary Documents
+# Ignore data directory inside ai-service/src
+ai-service/src/data/

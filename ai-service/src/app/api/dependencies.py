@@ -3,6 +3,7 @@ from typing import Annotated, Any, cast
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import Depends
+from langchain_aws import BedrockEmbeddings
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 import weaviate
 
@@ -33,3 +34,10 @@ async def get_weaviate_client(
     ],
 ) -> weaviate.WeaviateAsyncClient:
     return weaviate_client
+
+
+@inject
+async def get_embeddings(
+    embeddings: Annotated[BedrockEmbeddings, Depends(Provide[Container.embeddings])],
+) -> BedrockEmbeddings:
+    return embeddings

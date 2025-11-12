@@ -5,7 +5,7 @@ from app.core.settings import Settings
 
 
 def create_weaviate_client(settings: Settings) -> weaviate.WeaviateAsyncClient:
-    """Create and return an async Weaviate client instance."""
+    """Create and return an async Weaviate client instance for Docker container."""
     try:
         client = weaviate.WeaviateAsyncClient(
             connection_params=ConnectionParams.from_params(
