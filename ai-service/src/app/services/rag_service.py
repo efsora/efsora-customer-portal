@@ -2,8 +2,12 @@
 
 import logging
 
-from langchain_aws import BedrockEmbeddings
+from langchain_aws import BedrockEmbeddings, ChatBedrockConverse
 from langchain_core.documents import Document
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnableParallel, RunnablePassthrough
+from langchain_weaviate import WeaviateVectorStore
 import weaviate
 
 from app.core.settings import Settings
@@ -13,6 +17,61 @@ from app.domain.ingestion_operations import (
     save_chunks_and_embeddings,
 )
 from app.infrastructure.weaviate.collection import ensure_weaviate_collection
+
+
+def create_llm_by_bedrock(
+    model_name: str,
+    temperature: float,
+    max_tokens: int,
+    region_name: str,
+    settings: Settings,
+) -> ChatBedrockConverse:
+
+    return ChatBedrockConverse(
+        model=model_name,
+        region_name=region_name,
+        temperature=temperature,
+        max_tokens=max_tokens,
+    )
+
+
+def build_rag_chain(vectorstore: WeaviateVectorStore, settings: Settings):
+    retriever = vectorstore.as_retriever(k=5)
+
+    llm = create_llm_by_bedrock(
+        settings.LLM_MODEL,
+        temperature=0.3,
+        max_tokens=512,
+        region_name=settings.BEDROCK_REGION,
+        settings=settings,
+    )
+
+    template = """
+    You are a helpful assistant. Use ONLY the context below to answer the question.
+    If the answer is not in the context, say you don't know. You can answer greeting and closing sentences.
+
+    Context:
+    {context}
+
+    Question:
+    {question}
+
+    Answer in a clear and concise way.
+    """
+
+    prompt = ChatPromptTemplate.from_template(template)
+
+    rag_chain = (
+        RunnableParallel(
+            context=retriever,
+            question=RunnablePassthrough(),
+        )
+        | prompt
+        | llm
+        | StrOutputParser()
+    )
+
+    return rag_chain
 
 
 async def build_vectorstore(
