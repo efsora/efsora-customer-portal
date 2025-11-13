@@ -156,33 +156,108 @@ export default defineConfig({
       }
 
       // Add metadata collection hook FIRST (REQUIRED for qase() decorators to work)
-      console.log(`\n📍 Initializing Qase metadata collection hook...`);
-      require('cypress-qase-reporter/metadata')(on);
-      console.log(`✅ Qase metadata hook initialized\n`);
+      console.log(`\n${'═'.repeat(80)}`);
+      console.log(`📍 [SETUP] Initializing Qase metadata collection hook...`);
+      console.log(`${'═'.repeat(80)}`);
+
+      try {
+        require('cypress-qase-reporter/metadata')(on);
+        console.log(`✅ [SETUP] Qase metadata hook initialized successfully`);
+      } catch (error) {
+        console.error(`❌ [SETUP] Failed to initialize metadata hook:`, error);
+      }
 
       // Enable Qase reporter plugin
-      console.log(`📍 Initializing Qase reporter plugin...`);
-      require('cypress-qase-reporter/plugin')(on, config);
-      console.log(`✅ Qase reporter plugin initialized\n`);
+      console.log(`\n📍 [SETUP] Initializing Qase reporter plugin...`);
+      try {
+        require('cypress-qase-reporter/plugin')(on, config);
+        console.log(`✅ [SETUP] Qase reporter plugin initialized successfully`);
+      } catch (error) {
+        console.error(`❌ [SETUP] Failed to initialize reporter plugin:`, error);
+      }
+
+      console.log(`${'═'.repeat(80)}\n`);
+
+      // Track test file execution
+      on('file:preprocessor:success', (details: any) => {
+        console.log(`✅ [PREPROCESSOR] Loaded test file: ${details.filePath}`);
+      });
+
+      // Track before:run - tests about to start
+      on('before:run', (details: any) => {
+        console.log(`\n${'═'.repeat(80)}`);
+        console.log(`📝 [BEFORE_RUN] Starting test run`);
+        console.log(`   Specs to run: ${details.specs?.length || 'unknown'}`);
+        if (details.specs) {
+          details.specs.forEach((spec: any) => {
+            console.log(`     - ${spec.name || spec.relative}`);
+          });
+        }
+        console.log(`${'═'.repeat(80)}\n`);
+      });
+
+      // Track before each spec
+      on('before:spec', (spec: any) => {
+        console.log(`\n📄 [BEFORE_SPEC] Starting spec: ${spec.name}`);
+        console.log(`   Relative path: ${spec.relative}`);
+      });
 
       // Add after:spec hook to process and upload results (REQUIRED for test case reporting)
       on('after:spec', async (spec: any) => {
         try {
-          console.log(`\n📤 Processing spec results: ${spec.name}`);
+          console.log(`\n${'─'.repeat(80)}`);
+          console.log(`📤 [AFTER_SPEC] Processing spec results: ${spec.name}`);
+          console.log(`${'─'.repeat(80)}`);
+
           if (spec.stats) {
-            console.log(`   Total tests in spec: ${spec.stats.tests}`);
+            console.log(`   Tests: ${spec.stats.tests}`);
+            console.log(`   Passing: ${spec.stats.passes}`);
+            console.log(`   Failing: ${spec.stats.failures}`);
+            console.log(`   Duration: ${spec.stats.duration}ms`);
           }
+
+          if (!spec.stats) {
+            console.warn(`   ⚠️  No stats available - spec may have failed to load`);
+          }
+
+          // Log test results details
+          if (spec.results) {
+            console.log(`\n   📋 Test Results:`);
+            spec.results.tests?.forEach((test: any, index: number) => {
+              console.log(`      ${index + 1}. ${test.title} [${test.state || 'unknown'}]`);
+              if (test.err) {
+                console.log(`         Error: ${test.err.message}`);
+              }
+            });
+          }
+
+          console.log(`\n   Calling afterSpecHook...`);
           await afterSpecHook(spec, config);
-          console.log(`✅ Spec results processed and queued for upload: ${spec.name}\n`);
+          console.log(`✅ [AFTER_SPEC] Spec results processed and queued for upload: ${spec.name}`);
+          console.log(`${'─'.repeat(80)}\n`);
         } catch (error) {
-          console.error(`❌ Error processing spec results for ${spec.name}:`, error);
+          console.error(`❌ [AFTER_SPEC] Error processing spec results for ${spec.name}:`);
+          console.error(error);
           // Continue processing even if upload fails
         }
       });
 
+      // Track when tests are discovered/collected
+      on('cypress:run:finished', async (runResults: any) => {
+        console.log(`\n${'═'.repeat(80)}`);
+        console.log(`📊 [FINAL_RESULTS] Cypress run finished`);
+        console.log(`${'═'.repeat(80)}`);
+        console.log(`   Total specs run: ${runResults.stats?.specs || 'unknown'}`);
+        console.log(`   Total tests: ${runResults.stats?.tests || 'unknown'}`);
+        console.log(`   Passes: ${runResults.stats?.passes || 'unknown'}`);
+        console.log(`   Failures: ${runResults.stats?.failures || 'unknown'}`);
+        console.log(`   Duration: ${runResults.stats?.duration || 'unknown'}ms`);
+        console.log(`${'═'.repeat(80)}\n`);
+      });
+
       // Add test completion tracking
       on('after:run', async () => {
-        console.log(`✅ All tests completed - Qase run is being completed...`);
+        console.log(`✅ [COMPLETION] All tests completed`);
       });
 
       return config;
