@@ -32,3 +32,7 @@ class SearchRequest(BaseModel):
 
 class ChatRequest(BaseModel):
     message: str
+    session_id: str | None = Field(
+        default=None,
+        description="Client-provided identifier used to persist chat history across requests.",
+    )
