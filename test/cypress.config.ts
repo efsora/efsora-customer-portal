@@ -23,6 +23,9 @@ function loadEnvironmentVariables() {
       console.warn(`⚠️  Could not load .env.local: ${envResult.error.message}`);
     } else {
       console.log(`✅ Loaded ${Object.keys(envResult.parsed || {}).length} variables from .env.local`);
+      // Verify variables are in process.env
+      console.log(`   QASE_API_TOKEN in process.env: ${process.env.QASE_API_TOKEN ? '✅' : '❌'}`);
+      console.log(`   QASE_PROJECT in process.env: ${process.env.QASE_PROJECT ? '✅' : '❌'}`);
     }
   } else {
     console.log(`📋 No .env.local found. Using system environment variables (CI/CD mode)`);
@@ -87,17 +90,17 @@ export default defineConfig({
         outputFile: 'cypress/reports/spec-output.json',
       },
       cypressQaseReporterReporterOptions: {
-        mode: 'testops',
+        mode: process.env.QASE_API_TOKEN ? 'testops' : 'off',
         debug: true,
         testops: {
           api: {
-            token: qaseConfig.token,
+            token: process.env.QASE_API_TOKEN || '',
           },
-          project: qaseConfig.project,
+          project: process.env.QASE_PROJECT || 'ECP',
           uploadAttachments: true,
           autocreate: true,
-          run: qaseConfig.runId
-            ? { id: qaseConfig.runId, complete: false }
+          run: process.env.QASE_RUN_ID
+            ? { id: process.env.QASE_RUN_ID, complete: false }
             : {
                 title: `Automated run ${new Date().toISOString()}`,
                 description: 'Automated test run from Cypress',
