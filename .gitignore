@@ -19,7 +19,6 @@ build/
 .eggs/
 
 # IDE
-.vscode/
 .idea/
 *.swp
 *.swo
@@ -72,3 +71,5 @@ ai-service/src/data
 
 # output data
 ai-service/src/output
+
+*IMPLEMENTATION_PLAN*
