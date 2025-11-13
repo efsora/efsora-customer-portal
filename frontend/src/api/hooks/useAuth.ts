@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import {
     register as registerApi,
     login as loginApi,
+    logout as logoutApi,
 } from '#api/methods/auth.api';
 import type {
     RegisterRequest,
@@ -76,12 +77,27 @@ export const useLogin = () => {
 
 /**
  * Hook for user logout
- * Clears auth state
+ * Calls backend logout endpoint to invalidate session, then clears auth state
+ * Always clears local auth state even if backend call fails (token may be invalid)
  */
 export const useLogout = () => {
     const { clearAuth } = useAuthStore();
 
-    return () => {
-        clearAuth();
-    };
+    return useMutation({
+        mutationFn: async () => {
+            const response = await logoutApi();
+            if (!response.success) {
+                throw new Error(response.message || 'Logout failed');
+            }
+            return response.data;
+        },
+        onSuccess: () => {
+            clearAuth();
+        },
+        onError: () => {
+            // Always clear auth state even if backend logout fails
+            // The token may be invalid, so we should logout on client side
+            clearAuth();
+        },
+    });
 };

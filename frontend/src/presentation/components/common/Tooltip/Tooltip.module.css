@@ -1,0 +1,89 @@
+.wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 50;
+  white-space: nowrap;
+
+  padding: 4px 8px;
+  border-radius: 4px;
+
+  background: black;
+  color: white;
+  font-size: 0.875rem;
+
+  opacity: 1;
+}
+
+/* Arrow tip using ::before pseudo-element */
+.tooltip::before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+/* Positions */
+.top {
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    bottom: 100%;
+    margin-bottom: 8px;
+}
+
+.top::before {
+    left: 50%;
+    transform: translateX(-50%);
+    top: 100%;
+    border-width: 4px 4px 0 4px;
+    border-color: black transparent transparent transparent;
+}
+
+.bottom {
+    left: 50%;
+    transform: translateX(-50%) translateY(50%);
+    top: 100%;
+    margin-top: 8px;
+}
+
+.bottom::before {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 100%;
+    border-width: 0 4px 4px 4px;
+    border-color: transparent transparent black transparent;
+}
+
+.left {
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-right: 20px;
+}
+
+.left::before {
+    right: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-width: 4px 0 4px 4px;
+    border-color: transparent transparent transparent black;
+}
+
+.right {
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 20px;
+}
+
+.right::before {
+    left: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-width: 4px 4px 4px 0;
+    border-color: transparent black transparent transparent;
+}

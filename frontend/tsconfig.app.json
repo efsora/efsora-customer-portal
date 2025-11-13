@@ -42,7 +42,9 @@
             "#utils/*": ["src/utils/*"],
             "#types/*": ["src/api/types/*"],
             "#constants/*": ["src/constants/*"],
-            "#models/*": ["src/presentation/models/*"]
+            "#models/*": ["src/presentation/models/*"],
+            "#icons": ["src/icons"],
+            "#icons/*": ["src/icons/*"]
         }
     },
     "include": ["src"],
