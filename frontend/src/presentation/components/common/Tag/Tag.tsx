@@ -7,7 +7,17 @@ type TagStatus =
   | "internalReview"
   | "delivered"
   | "completed"
-  | "revision";
+  | "revision"
+  | "blocked"
+  | "management"
+  | "product"
+  | "legal"
+  | "financial"
+  | "dev"
+  | "testing"
+  | "signed"
+  | "sent"
+  | "paid";
 
 interface TagProps {
   status: TagStatus;
@@ -21,6 +31,16 @@ const LABELS: Record<TagStatus, string> = {
   delivered: "Delivered",
   completed: "Completed",
   revision: "Revision",
+  blocked: "Blocked",
+  management: "Management",
+  product: "Product",
+  legal: "Legal",
+  financial: "Financial",
+  dev: "Dev",
+  testing: "Testing",
+  signed: "Signed",
+  sent: "Sent",
+  paid: "Paid"
 };
 
 export default function Tag({ status }: TagProps) {
@@ -32,6 +52,16 @@ export default function Tag({ status }: TagProps) {
     delivered: styles.delivered,
     completed: styles.completed,
     revision: styles.revision,
+    blocked: styles.blocked,
+    management: styles.management,
+    product: styles.product,
+    legal: styles.legal,
+    financial: styles.financial,
+    dev: styles.dev,
+    testing: styles.testing,
+    signed: styles.signed,
+    sent: styles.sent,
+    paid: styles.paid,
   }[status];
 
   return (

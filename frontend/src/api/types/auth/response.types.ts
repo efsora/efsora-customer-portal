@@ -5,5 +5,10 @@ export type RegisterResponse = components['schemas']['RegisterResponse'];
 export type LoginResponse = components['schemas']['LoginResponse'];
 export type UserData = components['schemas']['UserData'];
 
+export type LogoutResponse = {
+    message: string;
+};
+
 export type AppResponse_RegisterResponse_ = AppResponse<RegisterResponse>;
 export type AppResponse_LoginResponse_ = AppResponse<LoginResponse>;
+export type AppResponse_LogoutResponse_ = AppResponse<LogoutResponse>;
