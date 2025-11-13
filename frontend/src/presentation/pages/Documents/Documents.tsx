@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import PageTitle from "#presentation/components/common/PageTitle/PageTitle";
 import styles from './Documents.module.css'
+import { Table } from '#presentation/components/common/Table/Table';
 
 const FILTER_TAGS = [
     { label: 'SoW', icon: '/documents/sow-g.svg', activeIcon: '/documents/sow-w.svg' },
@@ -86,7 +87,9 @@ export function Documents() {
 
                 </div>
 
-                <div>documents</div>
+                <div className={styles.documentTable}>
+                    <Table />
+                </div>
             </div>
       
         </div>

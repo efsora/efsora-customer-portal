@@ -136,3 +136,7 @@
     flex-direction: column;
     gap: 24px;
 }
+
+.documentTable {
+    width: 100%;
+}

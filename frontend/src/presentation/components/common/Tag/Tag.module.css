@@ -5,6 +5,7 @@
     font-weight: 700;
     white-space: nowrap;
     height: fit-content;
+    width: fit-content;
 }
 
 /* --- Status Variants --- */
@@ -77,4 +78,19 @@
 .testing {
     background-color: var(--color-info-900);
     color: var(--color-info-100)
+}
+
+.signed {
+    background-color: var(--color-success-100);
+    color: var(--color-success-600)
+}
+
+.paid {
+    background-color: var(--color-success-100);
+    color: var(--color-success-600)
+}
+
+.sent {
+    background-color: var(--color-info-300);
+    color: var(--color-info-800)
 }

@@ -3,7 +3,6 @@ import { Route, Routes } from 'react-router-dom';
 import Layout from '#layout/Layout/Layout';
 import { Login } from '#presentation/pages/Login/Login';
 import { RegisterPage } from '#pages/RegisterPage';
-import Users from '#pages/Users';
 import { ProtectedRoute } from '#presentation/components/auth/ProtectedRoute';
 import { PublicRoute } from '#presentation/components/auth/PublicRoute';
 import Dashboard from '#presentation/pages/Dashboard/Dashboard';
@@ -44,7 +43,6 @@ export default function Router() {
             >
                 <Route index element={<Dashboard />} />
                 <Route path="/timeline" element={<Timeline />} />
-                <Route path="/users" element={<Users />} />
                 <Route path="/documents" element={<Documents />} />
                 <Route path="/yourteam" element={<YourTeam />} />
                 <Route path="*" element={<NoPage />} />

@@ -14,7 +14,10 @@ type TagStatus =
   | "legal"
   | "financial"
   | "dev"
-  | "testing";
+  | "testing"
+  | "signed"
+  | "sent"
+  | "paid";
 
 interface TagProps {
   status: TagStatus;
@@ -34,7 +37,10 @@ const LABELS: Record<TagStatus, string> = {
   legal: "Legal",
   financial: "Financial",
   dev: "Dev",
-  testing: "Testing"
+  testing: "Testing",
+  signed: "Signed",
+  sent: "Sent",
+  paid: "Paid"
 };
 
 export default function Tag({ status }: TagProps) {
@@ -53,6 +59,9 @@ export default function Tag({ status }: TagProps) {
     financial: styles.financial,
     dev: styles.dev,
     testing: styles.testing,
+    signed: styles.signed,
+    sent: styles.sent,
+    paid: styles.paid,
   }[status];
 
   return (
