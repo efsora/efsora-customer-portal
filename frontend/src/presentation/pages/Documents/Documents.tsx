@@ -31,11 +31,15 @@ export function Documents() {
             <PageTitle title="Documents" description='Access and manage project documents.'/>
             
             <div className={styles.pageContainer}>
-                <input
-                    type="text"
-                    placeholder="Search document name or type..."
-                    className={styles.search}
-                />
+                <div className={styles.searchContainer}>
+                    <img src="/documents/search.svg" alt="search" />
+                    <input
+                        type="text"
+                        placeholder="Search document name or type..."
+                        className={styles.search}
+                    />
+                </div>
+                
 
                 <div className={styles.filterContainer}>
 
