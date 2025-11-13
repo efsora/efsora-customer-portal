@@ -108,6 +108,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         rag_chain = build_rag_chain(vectorstore, settings)
         cast(Any, app.state).rag_vectorstore = vectorstore
         cast(Any, app.state).rag_chain = rag_chain
+        cast(Any, app.state).chat_memory = {}
         logger.info("RAG chain initialized successfully")
     except Exception as e:
         logger.error("Failed to initialize RAG chain", error=str(e))
