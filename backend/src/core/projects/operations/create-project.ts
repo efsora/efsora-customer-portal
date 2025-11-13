@@ -5,7 +5,7 @@ import {
 } from "#infrastructure/repositories/drizzle";
 import type { CreateProjectInput } from "../types/inputs";
 import type { CreateProjectResult } from "../types/outputs";
-import { first } from "lodash";
+import first from "lodash/fp/first";
 
 /**
  * Check if company exists (required for project creation)

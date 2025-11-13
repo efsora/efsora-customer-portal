@@ -5,7 +5,7 @@ import type {
   FindProjectsByCompanyInput,
 } from "../types/inputs";
 import type { ProjectData } from "../types/outputs";
-import { first } from "lodash";
+import first from "lodash/fp/first";
 
 /**
  * Find project by ID

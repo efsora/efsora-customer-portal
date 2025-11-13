@@ -2,7 +2,7 @@ import { command, fail, success, type Result } from "#lib/result";
 import { milestoneRepository } from "#infrastructure/repositories/drizzle";
 import type { MilestoneIdInput } from "../types/inputs";
 import type { MilestoneData } from "../types/outputs";
-import { first } from "lodash";
+import first from "lodash/fp/first";
 
 /**
  * Find milestone by ID

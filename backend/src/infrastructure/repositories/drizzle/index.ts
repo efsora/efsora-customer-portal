@@ -10,6 +10,7 @@ import { createCompanyRepository } from "#infrastructure/repositories/drizzle/Co
 import { createProjectRepository } from "#infrastructure/repositories/drizzle/ProjectRepository";
 import { createRoleRepository } from "#infrastructure/repositories/drizzle/RoleRepository";
 import { createMilestoneRepository } from "#infrastructure/repositories/drizzle/MilestoneRepository";
+import { createEventRepository } from "#infrastructure/repositories/drizzle/EventRepository";
 
 export {
   createUserRepository,
@@ -40,6 +41,11 @@ export {
   createMilestoneRepository,
   type MilestoneRepository,
 } from "#infrastructure/repositories/drizzle/MilestoneRepository";
+
+export {
+  createEventRepository,
+  type EventRepository,
+} from "#infrastructure/repositories/drizzle/EventRepository";
 
 // Singleton Instances
 import { db } from "#db/client";
@@ -73,3 +79,8 @@ export const roleRepository = createRoleRepository(db);
  * Singleton milestone repository instance
  */
 export const milestoneRepository = createMilestoneRepository(db);
+
+/**
+ * Singleton event repository instance
+ */
+export const eventRepository = createEventRepository(db);

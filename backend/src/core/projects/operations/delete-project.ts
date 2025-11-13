@@ -2,7 +2,7 @@ import { command, fail, success, type Result } from "#lib/result";
 import { projectRepository } from "#infrastructure/repositories/drizzle";
 import type { ProjectIdInput } from "../types/inputs";
 import type { DeleteProjectResult } from "../types/outputs";
-import { first } from "lodash";
+import first from "lodash/fp/first";
 
 /**
  * Delete project from database

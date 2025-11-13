@@ -7,6 +7,7 @@ import usersRoutes from "./users/routes";
 import companiesRoutes from "./companies/routes";
 import projectsRoutes from "./projects/routes";
 import milestonesRoutes from "./milestones/routes";
+import eventsRoutes from "./events/routes";
 
 const router = Router();
 
@@ -16,6 +17,7 @@ router.use("/v1/users", usersRoutes);
 router.use("/v1/companies", companiesRoutes);
 router.use("/v1/projects", projectsRoutes);
 router.use("/v1/milestones", milestonesRoutes);
+router.use("/v1/events", eventsRoutes);
 router.use("/v1/ai-demo", aiDemoRoutes);
 
 export default router;

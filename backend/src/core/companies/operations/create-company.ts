@@ -2,7 +2,7 @@ import { command, fail, success, type Result } from "#lib/result";
 import { companyRepository } from "#infrastructure/repositories/drizzle";
 import type { CreateCompanyInput } from "../types/inputs";
 import type { CompanyData } from "../types/outputs";
-import { first } from "lodash";
+import first from "lodash/fp/first";
 
 /**
  * Check if company name already exists

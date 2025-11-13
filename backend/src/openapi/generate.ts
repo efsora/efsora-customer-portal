@@ -11,6 +11,7 @@ import "./paths/users.js";
 import "./paths/companies.js";
 import "./paths/projects.js";
 import "./paths/milestones.js";
+import "./paths/events.js";
 import { registry } from "./registry.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -64,6 +65,10 @@ function generateOpenApiSpec() {
       {
         description: "Milestone management endpoints",
         name: "Milestones",
+      },
+      {
+        description: "Event tracking endpoints",
+        name: "Events",
       },
     ],
   });

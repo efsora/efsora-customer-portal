@@ -39,6 +39,10 @@
     {
       "description": "Milestone management endpoints",
       "name": "Milestones"
+    },
+    {
+      "description": "Event tracking endpoints",
+      "name": "Events"
     }
   ],
   "components": {
@@ -893,6 +897,119 @@
             "type": ["string", "null"],
             "maxLength": 1000,
             "example": "Updated milestone description"
+          }
+        }
+      },
+      "EventResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "eventDatetime": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-01-15T10:00:00Z"
+          },
+          "description": {
+            "type": ["string", "null"],
+            "example": "Kickoff meeting completed"
+          },
+          "ownerUserId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "milestoneId": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "status": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 2
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-01-15T10:00:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-01-15T10:00:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "eventDatetime",
+          "description",
+          "ownerUserId",
+          "milestoneId",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateEventBody": {
+        "type": "object",
+        "properties": {
+          "eventDatetime": {
+            "type": ["string", "null"],
+            "format": "date",
+            "example": "2025-01-15T10:00:00Z"
+          },
+          "description": {
+            "type": ["string", "null"],
+            "example": "Kickoff meeting completed"
+          },
+          "ownerUserId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "milestoneId": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "status": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 2
+          }
+        },
+        "required": ["eventDatetime"]
+      },
+      "UpdateEventBody": {
+        "type": "object",
+        "properties": {
+          "eventDatetime": {
+            "type": ["string", "null"],
+            "format": "date",
+            "example": "2025-01-20T14:00:00Z"
+          },
+          "description": {
+            "type": ["string", "null"],
+            "example": "Updated event description"
+          },
+          "ownerUserId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "milestoneId": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "status": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 3
           }
         }
       }
@@ -3352,6 +3469,486 @@
                         }
                       },
                       "required": ["id"]
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events": {
+      "post": {
+        "summary": "Create event",
+        "description": "Create a new event",
+        "tags": ["Events"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEventBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Event created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/EventResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all events",
+        "description": "Retrieve all events",
+        "tags": ["Events"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Events retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/EventResponse"
+                      }
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events/{id}": {
+      "get": {
+        "summary": "Get event by ID",
+        "description": "Retrieve a specific event by ID",
+        "tags": ["Events"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/EventResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update event",
+        "description": "Update an existing event",
+        "tags": ["Events"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEventBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Event updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/EventResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete event",
+        "description": "Delete an event",
+        "tags": ["Events"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["id", "message"]
                     },
                     "error": {
                       "type": "null"

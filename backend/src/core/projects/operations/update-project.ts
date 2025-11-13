@@ -2,7 +2,7 @@ import { command, fail, success, type Result } from "#lib/result";
 import { projectRepository } from "#infrastructure/repositories/drizzle";
 import type { ProjectIdInput, UpdateProjectInput } from "../types/inputs";
 import type { ProjectData } from "../types/outputs";
-import { first } from "lodash";
+import first from "lodash/fp/first";
 
 /**
  * Update project in database
