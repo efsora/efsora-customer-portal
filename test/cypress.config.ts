@@ -136,6 +136,13 @@ export default defineConfig({
       // Update reporter options with Qase configuration
       if (config.reporterOptions && config.reporterOptions.cypressQaseReporterReporterOptions) {
         const reporterQaseConfig = config.reporterOptions.cypressQaseReporterReporterOptions;
+
+        // CRITICAL: Ensure mode is set to testops if token is available
+        if (qaseConfig.token) {
+          reporterQaseConfig.mode = 'testops';
+          console.log(`✅ Qase reporter mode set to: testops`);
+        }
+
         if (reporterQaseConfig.testops) {
           reporterQaseConfig.testops.api = {
             token: qaseConfig.token,
@@ -202,29 +209,36 @@ export default defineConfig({
       });
 
       // Add after:spec hook to process and upload results (REQUIRED for test case reporting)
-      on('after:spec', async (spec: any) => {
+      on('after:spec', async (spec: any, results: any) => {
         try {
           console.log(`\n${'─'.repeat(80)}`);
           console.log(`📤 [AFTER_SPEC] Processing spec results: ${spec.name}`);
           console.log(`${'─'.repeat(80)}`);
 
           console.log(`   spec object keys: ${Object.keys(spec).join(', ')}`);
+          console.log(`   results object keys: ${Object.keys(results || {}).join(', ')}`);
 
-          if (spec.stats) {
+          // Get stats from results object (second parameter)
+          if (results && results.stats) {
+            console.log(`   Tests: ${results.stats.tests}`);
+            console.log(`   Passing: ${results.stats.passes}`);
+            console.log(`   Failing: ${results.stats.failures}`);
+            console.log(`   Duration: ${results.stats.duration}ms`);
+          } else if (spec.stats) {
             console.log(`   Tests: ${spec.stats.tests}`);
             console.log(`   Passing: ${spec.stats.passes}`);
             console.log(`   Failing: ${spec.stats.failures}`);
             console.log(`   Duration: ${spec.stats.duration}ms`);
           } else {
-            console.warn(`   ⚠️  No stats available`);
-            console.log(`   spec.stats type: ${typeof spec.stats}`);
-            console.log(`   spec.stats value: ${JSON.stringify(spec.stats)}`);
+            console.warn(`   ⚠️  No stats available in either spec or results`);
+            console.log(`   spec.stats: ${JSON.stringify(spec.stats)}`);
+            console.log(`   results.stats: ${JSON.stringify(results?.stats)}`);
           }
 
           // Log test results details
-          if (spec.results) {
+          if (results && results.tests) {
             console.log(`\n   📋 Test Results:`);
-            spec.results.tests?.forEach((test: any, index: number) => {
+            results.tests?.forEach((test: any, index: number) => {
               console.log(`      ${index + 1}. ${test.title} [${test.state || 'unknown'}]`);
               if (test.err) {
                 console.log(`         Error: ${test.err.message}`);
@@ -232,8 +246,15 @@ export default defineConfig({
             });
           }
 
-          console.log(`\n   Calling afterSpecHook...`);
-          await afterSpecHook(spec, config);
+          // Prepare spec object with results data for afterSpecHook
+          const specWithResults = {
+            ...spec,
+            stats: results?.stats || spec.stats,
+            results: results?.tests ? { tests: results.tests } : spec.results,
+          };
+
+          console.log(`\n   Calling afterSpecHook with enriched spec...`);
+          await afterSpecHook(specWithResults, config);
           console.log(`✅ [AFTER_SPEC] Spec results processed and queued for upload: ${spec.name}`);
           console.log(`${'─'.repeat(80)}\n`);
         } catch (error) {
