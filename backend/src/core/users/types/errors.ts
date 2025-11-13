@@ -17,7 +17,11 @@ export type UserError =
   | UserInvalidEmailError
   | UserInvalidPasswordError
   | UserNotFoundError
-  | UserInvalidCredentialsError;
+  | UserInvalidCredentialsError
+  | UserCompanyNotFoundError
+  | UserProjectNotFoundError
+  | UserRoleNotFoundError
+  | UserCurrentPasswordInvalidError;
 
 /**
  * User not found error - requested user doesn't exist.
@@ -113,4 +117,68 @@ export type UserInvalidPasswordError = ErrorBase & {
  */
 export type UserInvalidCredentialsError = ErrorBase & {
   code: "USER_INVALID_CREDENTIALS";
+};
+
+/**
+ * User company not found error - referenced company doesn't exist.
+ * Used when attempting to assign a user to a non-existent company.
+ *
+ * @example
+ * ```typescript
+ * fail({
+ *   code: "USER_COMPANY_NOT_FOUND",
+ *   message: "Company not found"
+ * })
+ * ```
+ */
+export type UserCompanyNotFoundError = ErrorBase & {
+  code: "USER_COMPANY_NOT_FOUND";
+};
+
+/**
+ * User project not found error - referenced project doesn't exist.
+ * Used when attempting to assign a user to a non-existent project.
+ *
+ * @example
+ * ```typescript
+ * fail({
+ *   code: "USER_PROJECT_NOT_FOUND",
+ *   message: "Project not found"
+ * })
+ * ```
+ */
+export type UserProjectNotFoundError = ErrorBase & {
+  code: "USER_PROJECT_NOT_FOUND";
+};
+
+/**
+ * User role not found error - referenced role doesn't exist.
+ * Used when attempting to assign a non-existent role to a user.
+ *
+ * @example
+ * ```typescript
+ * fail({
+ *   code: "USER_ROLE_NOT_FOUND",
+ *   message: "Role not found"
+ * })
+ * ```
+ */
+export type UserRoleNotFoundError = ErrorBase & {
+  code: "USER_ROLE_NOT_FOUND";
+};
+
+/**
+ * User current password invalid error - current password is incorrect.
+ * Used when attempting to change password with wrong current password.
+ *
+ * @example
+ * ```typescript
+ * fail({
+ *   code: "USER_CURRENT_PASSWORD_INVALID",
+ *   message: "Current password is incorrect"
+ * })
+ * ```
+ */
+export type UserCurrentPasswordInvalidError = ErrorBase & {
+  code: "USER_CURRENT_PASSWORD_INVALID";
 };

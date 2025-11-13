@@ -11,17 +11,10 @@ import { first } from "lodash";
  * Find project by ID
  */
 export function findProjectById(input: ProjectIdInput): Result<ProjectData> {
-  return command(
-    async () => {
-      const projects = await projectRepository.findById(input.id);
-      return { projects, projectId: input.id };
-    },
-    handleFindProjectByIdResult,
-    {
-      operation: "findProjectById",
-      tags: { domain: "projects", action: "read" },
-    },
-  );
+  return command(async () => {
+    const projects = await projectRepository.findById(input.id);
+    return { projects, projectId: input.id };
+  }, handleFindProjectByIdResult);
 }
 
 export function handleFindProjectByIdResult(
@@ -51,16 +44,9 @@ export function handleFindProjectByIdResult(
 export function findAllProjects(
   input?: FindProjectsByCompanyInput,
 ): Result<ProjectData[]> {
-  return command(
-    async () => {
-      return await projectRepository.findAll(input?.companyId);
-    },
-    handleFindAllProjectsResult,
-    {
-      operation: "findAllProjects",
-      tags: { domain: "projects", action: "read" },
-    },
-  );
+  return command(async () => {
+    return await projectRepository.findAll(input?.companyId);
+  }, handleFindAllProjectsResult);
 }
 
 export function handleFindAllProjectsResult(

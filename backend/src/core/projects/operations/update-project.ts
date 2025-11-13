@@ -10,17 +10,10 @@ import { first } from "lodash";
 export function updateProjectById(
   input: ProjectIdInput & { updates: UpdateProjectInput },
 ): Result<ProjectData> {
-  return command(
-    async () => {
-      const projects = await projectRepository.update(input.id, input.updates);
-      return { projects, projectId: input.id };
-    },
-    handleUpdateProjectResult,
-    {
-      operation: "updateProjectById",
-      tags: { domain: "projects", action: "update" },
-    },
-  );
+  return command(async () => {
+    const projects = await projectRepository.update(input.id, input.updates);
+    return { projects, projectId: input.id };
+  }, handleUpdateProjectResult);
 }
 
 export function handleUpdateProjectResult(

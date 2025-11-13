@@ -15,10 +15,6 @@ export function updateCompanyById(
       return await companyRepository.update(input.id, input.updates);
     },
     (result) => handleUpdateCompanyResult(result, input.id),
-    {
-      operation: "updateCompanyById",
-      tags: { domain: "companies", action: "update" },
-    },
   );
 }
 

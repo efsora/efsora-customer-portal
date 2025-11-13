@@ -27,10 +27,6 @@ export function checkCompanyNameExists(
       }
       return success(result.input);
     },
-    {
-      operation: "checkCompanyNameExists",
-      tags: { domain: "companies", action: "validate" },
-    },
   );
 }
 
@@ -38,20 +34,13 @@ export function checkCompanyNameExists(
  * Save new company to database
  */
 export function saveNewCompany(input: CreateCompanyInput): Result<CompanyData> {
-  return command(
-    async () => {
-      return await companyRepository.create({
-        name: input.name,
-        logoUrl: input.logoUrl ?? null,
-        adminUserId: input.adminUserId ?? null,
-      });
-    },
-    handleSaveNewCompanyResult,
-    {
-      operation: "saveNewCompany",
-      tags: { domain: "companies", action: "create" },
-    },
-  );
+  return command(async () => {
+    return await companyRepository.create({
+      name: input.name,
+      logoUrl: input.logoUrl ?? null,
+      adminUserId: input.adminUserId ?? null,
+    });
+  }, handleSaveNewCompanyResult);
 }
 
 export function handleSaveNewCompanyResult(

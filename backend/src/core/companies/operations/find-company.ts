@@ -13,10 +13,6 @@ export function findCompanyById(input: CompanyIdInput): Result<CompanyData> {
       return await companyRepository.findById(input.id);
     },
     (result) => handleFindCompanyByIdResult(result, input.id),
-    {
-      operation: "findCompanyById",
-      tags: { domain: "companies", action: "read" },
-    },
   );
 }
 
@@ -43,16 +39,9 @@ export function handleFindCompanyByIdResult(
  * Find all companies
  */
 export function findAllCompanies(): Result<CompanyData[]> {
-  return command(
-    async () => {
-      return await companyRepository.findAll();
-    },
-    handleFindAllCompaniesResult,
-    {
-      operation: "findAllCompanies",
-      tags: { domain: "companies", action: "read" },
-    },
-  );
+  return command(async () => {
+    return await companyRepository.findAll();
+  }, handleFindAllCompaniesResult);
 }
 
 export function handleFindAllCompaniesResult(

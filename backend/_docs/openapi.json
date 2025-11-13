@@ -476,6 +476,159 @@
         },
         "required": ["message"]
       },
+      "ExtendedUserData": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "jane.doe@example.com"
+          },
+          "name": {
+            "type": ["string", "null"],
+            "example": "Jane Doe"
+          },
+          "surname": {
+            "type": ["string", "null"],
+            "example": "Smith"
+          },
+          "bio": {
+            "type": ["string", "null"],
+            "example": "Senior developer with 10 years experience"
+          },
+          "companyId": {
+            "type": ["integer", "null"],
+            "example": 1
+          },
+          "roleId": {
+            "type": ["integer", "null"],
+            "example": 3
+          },
+          "projectId": {
+            "type": ["integer", "null"],
+            "example": 5
+          },
+          "createdAt": {
+            "type": ["string", "null"],
+            "format": "date",
+            "example": "2025-10-29T10:30:00.000Z"
+          },
+          "updatedAt": {
+            "type": ["string", "null"],
+            "format": "date",
+            "example": "2025-10-29T10:30:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "name",
+          "surname",
+          "bio",
+          "companyId",
+          "roleId",
+          "projectId",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "AssignToCompanyBody": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "companyId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 1
+          }
+        },
+        "required": ["userId", "companyId"]
+      },
+      "AssignToProjectBody": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "projectId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 5
+          }
+        },
+        "required": ["userId", "projectId"]
+      },
+      "AssignRoleBody": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "roleId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 3
+          }
+        },
+        "required": ["userId", "roleId"]
+      },
+      "UpdateProfileBody": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "name": {
+            "type": "string",
+            "example": "Jane Doe"
+          },
+          "surname": {
+            "type": "string",
+            "example": "Smith"
+          },
+          "bio": {
+            "type": "string",
+            "example": "Senior developer with 10 years experience"
+          }
+        },
+        "required": ["userId"]
+      },
+      "UpdatePasswordBody": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "currentPassword": {
+            "type": "string",
+            "minLength": 1,
+            "example": "currentPassword123"
+          },
+          "newPassword": {
+            "type": "string",
+            "minLength": 8,
+            "example": "newPassword123"
+          }
+        },
+        "required": ["userId", "currentPassword", "newPassword"]
+      },
       "CompanyResponse": {
         "type": "object",
         "properties": {
@@ -1134,6 +1287,521 @@
           },
           "403": {
             "description": "Forbidden - Insufficient permissions for this resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/assign-company": {
+      "post": {
+        "description": "Assign a user to a company. Requires authentication.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Assign user to company",
+        "tags": ["Users"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignToCompanyBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User assigned to company successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ExtendedUserData"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/assign-project": {
+      "post": {
+        "description": "Assign a user to a project. Requires authentication.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Assign user to project",
+        "tags": ["Users"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignToProjectBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User assigned to project successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ExtendedUserData"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/assign-role": {
+      "post": {
+        "description": "Assign a role to a user. Requires authentication.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Assign role to user",
+        "tags": ["Users"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignRoleBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role assigned to user successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ExtendedUserData"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/profile": {
+      "put": {
+        "description": "Update user profile information. Requires authentication.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Update user profile",
+        "tags": ["Users"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ExtendedUserData"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/password": {
+      "put": {
+        "description": "Update user password. Requires current password for verification. Requires authentication.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Update user password",
+        "tags": ["Users"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePasswordBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ExtendedUserData"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
             "content": {
               "application/json": {
                 "schema": {

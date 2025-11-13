@@ -8,6 +8,7 @@ import { createUserRepository } from "#infrastructure/repositories/drizzle/UserR
 import { createSessionRepository } from "#infrastructure/repositories/drizzle/SessionRepository";
 import { createCompanyRepository } from "#infrastructure/repositories/drizzle/CompanyRepository";
 import { createProjectRepository } from "#infrastructure/repositories/drizzle/ProjectRepository";
+import { createRoleRepository } from "#infrastructure/repositories/drizzle/RoleRepository";
 
 export {
   createUserRepository,
@@ -28,6 +29,11 @@ export {
   createProjectRepository,
   type ProjectRepository,
 } from "#infrastructure/repositories/drizzle/ProjectRepository";
+
+export {
+  createRoleRepository,
+  type RoleRepository,
+} from "#infrastructure/repositories/drizzle/RoleRepository";
 
 // Singleton Instances
 import { db } from "#db/client";
@@ -51,3 +57,8 @@ export const companyRepository = createCompanyRepository(db);
  * Singleton project repository instance
  */
 export const projectRepository = createProjectRepository(db);
+
+/**
+ * Singleton role repository instance
+ */
+export const roleRepository = createRoleRepository(db);

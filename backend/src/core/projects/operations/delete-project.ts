@@ -10,17 +10,10 @@ import { first } from "lodash";
 export function deleteProjectById(
   input: ProjectIdInput,
 ): Result<DeleteProjectResult> {
-  return command(
-    async () => {
-      const projects = await projectRepository.delete(input.id);
-      return { projects, projectId: input.id };
-    },
-    handleDeleteProjectResult,
-    {
-      operation: "deleteProjectById",
-      tags: { domain: "projects", action: "delete" },
-    },
-  );
+  return command(async () => {
+    const projects = await projectRepository.delete(input.id);
+    return { projects, projectId: input.id };
+  }, handleDeleteProjectResult);
 }
 
 export function handleDeleteProjectResult(

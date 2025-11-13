@@ -13,17 +13,10 @@ import { first } from "lodash";
 export function checkCompanyExists(
   input: CreateProjectInput,
 ): Result<CreateProjectInput> {
-  return command(
-    async () => {
-      const companies = await companyRepository.findById(input.companyId);
-      return { companyExists: companies.length > 0, input };
-    },
-    handleCheckCompanyExistsResult,
-    {
-      operation: "checkCompanyExists",
-      tags: { domain: "projects", action: "validate" },
-    },
-  );
+  return command(async () => {
+    const companies = await companyRepository.findById(input.companyId);
+    return { companyExists: companies.length > 0, input };
+  }, handleCheckCompanyExistsResult);
 }
 
 export function handleCheckCompanyExistsResult(
@@ -52,20 +45,13 @@ export function handleCheckCompanyExistsResult(
 export function checkProjectNameExists(
   input: CreateProjectInput,
 ): Result<CreateProjectInput> {
-  return command(
-    async () => {
-      const existingProjects = await projectRepository.findByNameInCompany(
-        input.name,
-        input.companyId,
-      );
-      return { duplicate: existingProjects.length > 0, input };
-    },
-    handleCheckProjectNameExistsResult,
-    {
-      operation: "checkProjectNameExists",
-      tags: { domain: "projects", action: "validate" },
-    },
-  );
+  return command(async () => {
+    const existingProjects = await projectRepository.findByNameInCompany(
+      input.name,
+      input.companyId,
+    );
+    return { duplicate: existingProjects.length > 0, input };
+  }, handleCheckProjectNameExistsResult);
 }
 
 export function handleCheckProjectNameExistsResult(
@@ -94,20 +80,13 @@ export function handleCheckProjectNameExistsResult(
 export function saveNewProject(
   input: CreateProjectInput,
 ): Result<CreateProjectResult> {
-  return command(
-    async () => {
-      return await projectRepository.create({
-        name: input.name,
-        companyId: input.companyId,
-        status: input.status,
-      });
-    },
-    handleSaveNewProjectResult,
-    {
-      operation: "saveNewProject",
-      tags: { domain: "projects", action: "create" },
-    },
-  );
+  return command(async () => {
+    return await projectRepository.create({
+      name: input.name,
+      companyId: input.companyId,
+      status: input.status,
+    });
+  }, handleSaveNewProjectResult);
 }
 
 export function handleSaveNewProjectResult(

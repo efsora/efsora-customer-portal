@@ -1,7 +1,7 @@
 import type { NewUser, User } from "#db/schema";
 
 import { db } from "#db/client";
-import { users } from "#db/schema";
+import { users, session } from "#db/schema";
 import { eq } from "drizzle-orm";
 
 export type UserRepository = ReturnType<typeof createUserRepository>;
@@ -19,8 +19,16 @@ export function createUserRepository(dbInstance: typeof db) {
       return dbInstance.insert(users).values(data).returning();
     },
 
-    delete: (id: string) => {
-      return dbInstance.delete(users).where(eq(users.id, id)).returning();
+    delete: async (id: string) => {
+      // Manually cascade delete sessions (ORM-only relations, no DB-level FK)
+      await dbInstance.delete(session).where(eq(session.userId, id));
+
+      // Delete user
+      const result = await dbInstance
+        .delete(users)
+        .where(eq(users.id, id))
+        .returning();
+      return result;
     },
 
     findAll: () => {

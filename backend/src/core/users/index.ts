@@ -3,17 +3,32 @@
  * Public API for user operations
  */
 
-// Workflows
+// Workflows - Core operations
 export { createUser } from "./workflows/create-user";
 export { login } from "./workflows/login";
 export { getUserById } from "./workflows/get-user";
 export { getAllUsers } from "./workflows/get-user";
+
+// Workflows - Assignment operations
+export {
+  assignUserToCompany,
+  assignUserToProject,
+  assignUserRole,
+} from "./workflows/assignments";
+
+// Workflows - Profile operations
+export { updateUserProfile, updateUserPassword } from "./workflows/profile";
 
 // Public types - Inputs
 export type {
   CreateUserInput,
   UpdateUserInput,
   LoginInput,
+  AssignToCompanyInput,
+  AssignToProjectInput,
+  AssignRoleInput,
+  UpdateProfileInput,
+  UpdatePasswordInput,
 } from "./types/inputs";
 
 // Public types - Outputs
@@ -22,6 +37,9 @@ export type {
   UpdateUserResult,
   UserData,
   LoginResult,
+  ExtendedUserData,
+  AssignmentResult,
+  ProfileUpdateResult,
 } from "./types/outputs";
 
 // Public types - Errors
@@ -33,6 +51,10 @@ export type {
   UserInvalidPasswordError,
   UserNotFoundError,
   UserInvalidCredentialsError,
+  UserCompanyNotFoundError,
+  UserProjectNotFoundError,
+  UserRoleNotFoundError,
+  UserCurrentPasswordInvalidError,
 } from "./types/errors";
 
 // Value objects

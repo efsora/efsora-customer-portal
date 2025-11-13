@@ -15,10 +15,6 @@ export function deleteCompanyById(
       return await companyRepository.delete(input.id);
     },
     (result) => handleDeleteCompanyResult(result, input.id),
-    {
-      operation: "deleteCompanyById",
-      tags: { domain: "companies", action: "delete" },
-    },
   );
 }
 
