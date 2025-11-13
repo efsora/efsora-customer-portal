@@ -237,8 +237,8 @@ export default defineConfig({
         }
       });
 
-      // Track when tests are discovered/collected
-      on('cypress:run:finished', async (runResults: any) => {
+      // Add test completion tracking
+      on('after:run', async (runResults: any) => {
         console.log(`\n${'═'.repeat(80)}`);
         console.log(`📊 [FINAL_RESULTS] Cypress run finished`);
         console.log(`${'═'.repeat(80)}`);
@@ -248,10 +248,6 @@ export default defineConfig({
         console.log(`   Failures: ${runResults.stats?.failures || 'unknown'}`);
         console.log(`   Duration: ${runResults.stats?.duration || 'unknown'}ms`);
         console.log(`${'═'.repeat(80)}\n`);
-      });
-
-      // Add test completion tracking
-      on('after:run', async () => {
         console.log(`✅ [COMPLETION] All tests completed`);
       });
 
