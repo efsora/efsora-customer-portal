@@ -35,6 +35,10 @@
     {
       "description": "Project management endpoints",
       "name": "Projects"
+    },
+    {
+      "description": "Milestone management endpoints",
+      "name": "Milestones"
     }
   ],
   "components": {
@@ -791,6 +795,104 @@
             "type": ["integer", "null"],
             "exclusiveMinimum": 0,
             "example": 2
+          }
+        }
+      },
+      "MilestoneResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "projectId": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "assigneeUserId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "dueDate": {
+            "type": ["string", "null"],
+            "format": "date",
+            "example": "2025-03-01T00:00:00Z"
+          },
+          "description": {
+            "type": ["string", "null"],
+            "example": "Complete initial design phase"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-01-15T10:00:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-01-15T10:00:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "projectId",
+          "assigneeUserId",
+          "dueDate",
+          "description",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateMilestoneBody": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "assigneeUserId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "dueDate": {
+            "type": ["string", "null"],
+            "format": "date",
+            "example": "2025-03-01T00:00:00Z"
+          },
+          "description": {
+            "type": ["string", "null"],
+            "maxLength": 1000,
+            "example": "Complete initial design phase"
+          }
+        }
+      },
+      "UpdateMilestoneBody": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "assigneeUserId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "dueDate": {
+            "type": ["string", "null"],
+            "format": "date",
+            "example": "2025-03-15T00:00:00Z"
+          },
+          "description": {
+            "type": ["string", "null"],
+            "maxLength": 1000,
+            "example": "Updated milestone description"
           }
         }
       }
@@ -2756,6 +2858,485 @@
         "responses": {
           "200": {
             "description": "Project deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "example": 1
+                        }
+                      },
+                      "required": ["id"]
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/milestones": {
+      "post": {
+        "summary": "Create milestone",
+        "description": "Create a new milestone with the provided data",
+        "tags": ["Milestones"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMilestoneBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Milestone created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/MilestoneResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all milestones",
+        "description": "Retrieve all milestones",
+        "tags": ["Milestones"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Milestones retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/MilestoneResponse"
+                      }
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/milestones/{id}": {
+      "get": {
+        "summary": "Get milestone by ID",
+        "description": "Retrieve milestone information by ID",
+        "tags": ["Milestones"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Milestone retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/MilestoneResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update milestone",
+        "description": "Update milestone information",
+        "tags": ["Milestones"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMilestoneBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Milestone updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/MilestoneResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete milestone",
+        "description": "Delete a milestone by ID",
+        "tags": ["Milestones"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Milestone deleted successfully",
             "content": {
               "application/json": {
                 "schema": {

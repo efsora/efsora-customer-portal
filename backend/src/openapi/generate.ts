@@ -10,6 +10,7 @@ import "./paths/auth.js";
 import "./paths/users.js";
 import "./paths/companies.js";
 import "./paths/projects.js";
+import "./paths/milestones.js";
 import { registry } from "./registry.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -59,6 +60,10 @@ function generateOpenApiSpec() {
       {
         description: "Project management endpoints",
         name: "Projects",
+      },
+      {
+        description: "Milestone management endpoints",
+        name: "Milestones",
       },
     ],
   });

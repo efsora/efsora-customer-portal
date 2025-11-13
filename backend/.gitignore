@@ -17,4 +17,4 @@ node_modules/
 .DS_Store
 .DS_Store?
 
-*IMPLEMENTATION_PLAN*
+.claude/*
