@@ -33,6 +33,7 @@ describe("Milestones Module Integration Tests", () => {
       const input: CreateMilestoneInput = {
         projectId: 1,
         assigneeUserId: "550e8400-e29b-41d4-a716-446655440000",
+        status: 1,
         dueDate: new Date("2025-03-01T00:00:00Z"),
         description: "Complete initial design phase",
       };
@@ -47,6 +48,7 @@ describe("Milestones Module Integration Tests", () => {
         expect(result.value).toMatchObject({
           projectId: 1,
           assigneeUserId: "550e8400-e29b-41d4-a716-446655440000",
+          status: 1,
           description: "Complete initial design phase",
         });
         expect(result.value.id).toBeDefined();
@@ -67,6 +69,7 @@ describe("Milestones Module Integration Tests", () => {
           "Complete initial design phase",
         );
         expect(milestoneRecords[0].projectId).toBe(1);
+        expect(milestoneRecords[0].status).toBe(1);
       }
     });
 
@@ -83,9 +86,39 @@ describe("Milestones Module Integration Tests", () => {
       if (result.status === "Success") {
         expect(result.value.projectId).toBeNull();
         expect(result.value.assigneeUserId).toBeNull();
+        expect(result.value.status).toBeNull();
         expect(result.value.dueDate).toBeNull();
         expect(result.value.description).toBeNull();
         expect(result.value.id).toBeDefined();
+      }
+    });
+
+    it("should create milestone with status field", async () => {
+      // Arrange
+      const input: CreateMilestoneInput = {
+        status: 2,
+        description: "Milestone with status",
+      };
+
+      // Act
+      const result = await run(createMilestone(input));
+
+      // Assert
+      expect(result.status).toBe("Success");
+
+      if (result.status === "Success") {
+        expect(result.value.status).toBe(2);
+        expect(result.value.description).toBe("Milestone with status");
+
+        // Verify in database
+        const db = getTestDb();
+        const milestoneRecords = await db
+          .select()
+          .from(milestones)
+          .where(eq(milestones.id, result.value.id));
+
+        expect(milestoneRecords).toHaveLength(1);
+        expect(milestoneRecords[0].status).toBe(2);
       }
     });
 
@@ -265,6 +298,7 @@ describe("Milestones Module Integration Tests", () => {
       if (result.status === "Success") {
         expect(result.value.projectId).toBeNull();
         expect(result.value.assigneeUserId).toBeNull();
+        expect(result.value.status).toBeNull();
         expect(result.value.dueDate).toBeNull();
         expect(result.value.description).toBeNull();
       }
@@ -277,6 +311,7 @@ describe("Milestones Module Integration Tests", () => {
       const createResult = await run(
         createMilestone({
           projectId: 1,
+          status: 1,
           description: "Original description",
         }),
       );
@@ -288,6 +323,7 @@ describe("Milestones Module Integration Tests", () => {
       const updates: UpdateMilestoneInput = {
         projectId: 2,
         assigneeUserId: "123e4567-e89b-12d3-a456-426614174000",
+        status: 3,
         dueDate: new Date("2025-08-30T00:00:00Z"),
         description: "Updated description",
       };
@@ -304,6 +340,7 @@ describe("Milestones Module Integration Tests", () => {
         expect(result.value.assigneeUserId).toBe(
           "123e4567-e89b-12d3-a456-426614174000",
         );
+        expect(result.value.status).toBe(3);
         expect(result.value.description).toBe("Updated description");
         expect(result.value.dueDate).toBeInstanceOf(Date);
         expect(result.value.updatedAt.getTime()).toBeGreaterThan(
@@ -443,6 +480,46 @@ describe("Milestones Module Integration Tests", () => {
       }
     });
 
+    it("should update only status field", async () => {
+      // Arrange
+      const createResult = await run(
+        createMilestone({
+          status: 1,
+          description: "Status update test",
+        }),
+      );
+      expect(createResult.status).toBe("Success");
+      if (createResult.status !== "Success") return;
+
+      const milestoneId = createResult.value.id;
+
+      // Act
+      const result = await run(
+        updateMilestone({
+          id: milestoneId,
+          updates: { status: 4 },
+        }),
+      );
+
+      // Assert
+      expect(result.status).toBe("Success");
+
+      if (result.status === "Success") {
+        expect(result.value.status).toBe(4);
+        expect(result.value.description).toBe("Status update test");
+
+        // Verify in database
+        const db = getTestDb();
+        const milestoneRecords = await db
+          .select()
+          .from(milestones)
+          .where(eq(milestones.id, milestoneId));
+
+        expect(milestoneRecords).toHaveLength(1);
+        expect(milestoneRecords[0].status).toBe(4);
+      }
+    });
+
     it("should fail when updating non-existent milestone", async () => {
       // Act
       const result = await run(
@@ -466,6 +543,7 @@ describe("Milestones Module Integration Tests", () => {
         createMilestone({
           projectId: 5,
           assigneeUserId: "550e8400-e29b-41d4-a716-446655440000",
+          status: 2,
           dueDate: new Date("2025-05-01T00:00:00Z"),
           description: "To be cleared",
         }),
@@ -482,6 +560,7 @@ describe("Milestones Module Integration Tests", () => {
           updates: {
             projectId: null,
             assigneeUserId: null,
+            status: null,
             dueDate: null,
             description: null,
           },
@@ -494,6 +573,7 @@ describe("Milestones Module Integration Tests", () => {
       if (result.status === "Success") {
         expect(result.value.projectId).toBeNull();
         expect(result.value.assigneeUserId).toBeNull();
+        expect(result.value.status).toBeNull();
         expect(result.value.dueDate).toBeNull();
         expect(result.value.description).toBeNull();
       }

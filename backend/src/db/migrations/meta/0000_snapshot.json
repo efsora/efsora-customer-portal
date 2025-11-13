@@ -1,5 +1,5 @@
 {
-  "id": "cca1d47b-f1d4-4a22-a06b-ae5ddd0427aa",
+  "id": "f0fcf746-30dd-460c-9e90-acc5b2beda4a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -143,6 +143,12 @@
         "assignee_user_id": {
           "name": "assignee_user_id",
           "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },

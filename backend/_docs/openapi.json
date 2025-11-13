@@ -820,6 +820,12 @@
             "format": "uuid",
             "example": "123e4567-e89b-12d3-a456-426614174000"
           },
+          "status": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1,
+            "description": "Progress status ID"
+          },
           "dueDate": {
             "type": ["string", "null"],
             "format": "date",
@@ -844,6 +850,7 @@
           "id",
           "projectId",
           "assigneeUserId",
+          "status",
           "dueDate",
           "description",
           "createdAt",
@@ -862,6 +869,12 @@
             "type": ["string", "null"],
             "format": "uuid",
             "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "status": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1,
+            "description": "Progress status ID"
           },
           "dueDate": {
             "type": ["string", "null"],
@@ -887,6 +900,12 @@
             "type": ["string", "null"],
             "format": "uuid",
             "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "status": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1,
+            "description": "Progress status ID"
           },
           "dueDate": {
             "type": ["string", "null"],

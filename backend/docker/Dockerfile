@@ -11,7 +11,7 @@ WORKDIR /app
 COPY backend/package*.json ./
 
 # Install backend dependencies (includes dev deps for tsx, drizzle-kit, etc.)
-RUN npm ci
+RUN npm i
 
 # Copy backend source code
 COPY backend/ ./

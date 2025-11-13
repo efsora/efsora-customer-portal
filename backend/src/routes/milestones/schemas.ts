@@ -14,6 +14,10 @@ export const createMilestoneBodySchema = z
     assigneeUserId: z.uuid().optional().nullable().openapi({
       example: "123e4567-e89b-12d3-a456-426614174000",
     }),
+    status: z.number().int().positive().optional().nullable().openapi({
+      example: 1,
+      description: "Progress status ID",
+    }),
     dueDate: z.coerce.date().optional().nullable().openapi({
       example: "2025-03-01T00:00:00Z",
     }),
@@ -35,6 +39,10 @@ export const updateMilestoneBodySchema = z
     }),
     assigneeUserId: z.uuid().optional().nullable().openapi({
       example: "123e4567-e89b-12d3-a456-426614174000",
+    }),
+    status: z.number().int().positive().optional().nullable().openapi({
+      example: 1,
+      description: "Progress status ID",
     }),
     dueDate: z.coerce.date().optional().nullable().openapi({
       example: "2025-03-15T00:00:00Z",
@@ -89,6 +97,10 @@ export const milestoneResponseSchema = z
     projectId: z.number().int().positive().nullable().openapi({ example: 1 }),
     assigneeUserId: z.uuid().nullable().openapi({
       example: "123e4567-e89b-12d3-a456-426614174000",
+    }),
+    status: z.number().int().positive().nullable().openapi({
+      example: 1,
+      description: "Progress status ID",
     }),
     dueDate: z.date().nullable().openapi({ example: "2025-03-01T00:00:00Z" }),
     description: z.string().nullable().openapi({

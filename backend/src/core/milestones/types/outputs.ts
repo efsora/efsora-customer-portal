@@ -6,6 +6,7 @@ export type MilestoneData = {
   id: number;
   projectId: number | null;
   assigneeUserId: string | null;
+  status: number | null;
   dueDate: Date | null;
   description: string | null;
   createdAt: Date;

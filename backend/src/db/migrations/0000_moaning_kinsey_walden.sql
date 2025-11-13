@@ -23,6 +23,7 @@ CREATE TABLE "milestones" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"project_id" integer,
 	"assignee_user_id" uuid,
+	"status" integer,
 	"due_date" timestamp,
 	"description" text,
 	"created_at" timestamp DEFAULT now() NOT NULL,

@@ -5,6 +5,7 @@
 export type CreateMilestoneInput = {
   projectId?: number | null;
   assigneeUserId?: string | null;
+  status?: number | null;
   dueDate?: Date | null;
   description?: string | null;
 };
@@ -12,6 +13,7 @@ export type CreateMilestoneInput = {
 export type UpdateMilestoneInput = {
   projectId?: number | null;
   assigneeUserId?: string | null;
+  status?: number | null;
   dueDate?: Date | null;
   description?: string | null;
 };

@@ -14,6 +14,7 @@ export function saveNewMilestone(
     return await milestoneRepository.create({
       projectId: input.projectId ?? null,
       assigneeUserId: input.assigneeUserId ?? null,
+      status: input.status ?? null,
       dueDate: input.dueDate ?? null,
       description: input.description ?? null,
     });
@@ -37,6 +38,7 @@ export function handleSaveNewMilestoneResult(
     id: milestone.id,
     projectId: milestone.projectId,
     assigneeUserId: milestone.assigneeUserId,
+    status: milestone.status,
     dueDate: milestone.dueDate,
     description: milestone.description,
     createdAt: milestone.createdAt,

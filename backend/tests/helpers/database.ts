@@ -10,7 +10,13 @@ import {
   StartedPostgreSqlContainer,
 } from "@testcontainers/postgresql";
 import { sql } from "drizzle-orm";
+import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { getDb, resetDatabase } from "#db/client";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Shared testcontainer instance for all tests (started once)
 let testContainer: StartedPostgreSqlContainer | null = null;
@@ -22,156 +28,62 @@ let testContainer: StartedPostgreSqlContainer | null = null;
  * @returns Connection string for the test database
  */
 export async function setupTestDatabase(): Promise<string> {
-  // Return existing connection if already setup
-  if (testContainer) {
-    return testContainer.getConnectionUri();
+  let connectionUri: string;
+
+  // Start container if not already running
+  if (!testContainer) {
+    testContainer = await new PostgreSqlContainer("postgres:18-alpine")
+      .withDatabase("test_db")
+      .withUsername("test_user")
+      .withPassword("test_password")
+      // .withReuse() // Disabled temporarily to ensure fresh schema
+      .start();
+
+    connectionUri = testContainer.getConnectionUri();
+
+    // Set DATABASE_URL for the lazy-initialized client
+    process.env.DATABASE_URL = connectionUri;
+
+    // Reset any existing database connection to force recreation with new URL
+    resetDatabase();
+
+    // Run migrations on test database (only on first setup)
+    await runMigrations();
+  } else {
+    connectionUri = testContainer.getConnectionUri();
   }
-
-  // Start PostgreSQL testcontainer
-  testContainer = await new PostgreSqlContainer("postgres:18-alpine")
-    .withDatabase("test_db")
-    .withUsername("test_user")
-    .withPassword("test_password")
-    .withReuse() // Reuse container across test runs for speed
-    .start();
-
-  const connectionUri = testContainer.getConnectionUri();
-
-  // Set DATABASE_URL for the lazy-initialized client
-  process.env.DATABASE_URL = connectionUri;
-
-  // Reset any existing database connection to force recreation with new URL
-  resetDatabase();
-
-  // Apply schema directly to test database (simpler than migrations)
-  await applySchema();
 
   return connectionUri;
 }
 
 /**
- * Apply schema directly to test database
- * Uses the Drizzle schema to create tables without migrations
- * Note: Uses gen_random_uuid() instead of uuidv7() for simplicity in tests
+ * Run Drizzle migrations on test database
+ * Uses the same migration files as production for consistency
  */
-export async function applySchema(): Promise<void> {
-  // Use the lazy-initialized database client
+export async function runMigrations(): Promise<void> {
   const db = getDb();
 
-  // Enable pgcrypto extension for gen_random_uuid()
+  // Enable pgcrypto extension (for UUID generation)
   await db.execute(sql`CREATE EXTENSION IF NOT EXISTS pgcrypto;`);
 
-  // Create users table directly from schema
-  // Note: Using gen_random_uuid() instead of uuidv7() for test simplicity
-  await db.execute(sql`
-    CREATE TABLE IF NOT EXISTS users (
-      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-      email text NOT NULL UNIQUE,
-      name text,
-      password text NOT NULL,
-      created_at timestamp DEFAULT now() NOT NULL,
-      updated_at timestamp DEFAULT now() NOT NULL
+  // Install pg_uuidv7 extension if available (for uuidv7() function)
+  // This will fail silently if the extension is not available
+  try {
+    await db.execute(sql`CREATE EXTENSION IF NOT EXISTS pg_uuidv7;`);
+  } catch {
+    // Extension not available, migrations will use gen_random_uuid() as fallback
+    console.log(
+      "⚠️  pg_uuidv7 extension not available, using gen_random_uuid()",
     );
-  `);
+  }
 
-  // Create session table directly from schema
-  await db.execute(sql`
-    CREATE TABLE IF NOT EXISTS session (
-      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-      user_id uuid NOT NULL,
-      token text NOT NULL UNIQUE,
-      created_at timestamp DEFAULT now() NOT NULL,
-      expires_at timestamp NOT NULL,
-      last_active_at timestamp DEFAULT now() NOT NULL
-    );
-  `);
+  // Run Drizzle migrations from the migrations folder
+  const migrationsFolder = join(__dirname, "../../src/db/migrations");
+  console.log("📂 Running migrations from:", migrationsFolder);
 
-  // Create companies table
-  await db.execute(sql`
-    CREATE TABLE IF NOT EXISTS companies (
-      id serial PRIMARY KEY,
-      name text NOT NULL UNIQUE,
-      logo_url text,
-      admin_user_id uuid,
-      created_at timestamp DEFAULT now() NOT NULL,
-      updated_at timestamp DEFAULT now() NOT NULL
-    );
-  `);
+  await migrate(db, { migrationsFolder });
 
-  // Create roles table
-  await db.execute(sql`
-    CREATE TABLE IF NOT EXISTS roles (
-      id serial PRIMARY KEY,
-      name text NOT NULL UNIQUE,
-      created_at timestamp DEFAULT now() NOT NULL
-    );
-  `);
-
-  // Create progress_status table
-  await db.execute(sql`
-    CREATE TABLE IF NOT EXISTS progress_status (
-      id serial PRIMARY KEY,
-      name text NOT NULL UNIQUE,
-      created_at timestamp DEFAULT now() NOT NULL
-    );
-  `);
-
-  // Create projects table
-  await db.execute(sql`
-    CREATE TABLE IF NOT EXISTS projects (
-      id serial PRIMARY KEY,
-      name text NOT NULL,
-      company_id integer,
-      status integer,
-      created_at timestamp DEFAULT now() NOT NULL,
-      updated_at timestamp DEFAULT now() NOT NULL,
-      UNIQUE(name, company_id)
-    );
-  `);
-
-  // Create milestones table
-  await db.execute(sql`
-    CREATE TABLE IF NOT EXISTS milestones (
-      id serial PRIMARY KEY,
-      project_id integer,
-      assignee_user_id uuid,
-      due_date timestamp,
-      description text,
-      created_at timestamp DEFAULT now() NOT NULL,
-      updated_at timestamp DEFAULT now() NOT NULL
-    );
-  `);
-
-  // Create events table
-  await db.execute(sql`
-    CREATE TABLE IF NOT EXISTS events (
-      id serial PRIMARY KEY,
-      event_datetime timestamp NOT NULL,
-      description text,
-      owner_user_id uuid,
-      milestone_id integer,
-      status integer,
-      created_at timestamp DEFAULT now() NOT NULL,
-      updated_at timestamp DEFAULT now() NOT NULL
-    );
-  `);
-
-  // Update users table with new fields
-  await db.execute(sql`
-    ALTER TABLE users ADD COLUMN IF NOT EXISTS surname text;
-  `);
-  await db.execute(sql`
-    ALTER TABLE users ADD COLUMN IF NOT EXISTS bio text;
-  `);
-  await db.execute(sql`
-    ALTER TABLE users ADD COLUMN IF NOT EXISTS company_id integer;
-  `);
-  await db.execute(sql`
-    ALTER TABLE users ADD COLUMN IF NOT EXISTS role_id integer;
-  `);
-  await db.execute(sql`
-    ALTER TABLE users ADD COLUMN IF NOT EXISTS project_id integer;
-  `);
+  console.log("✅ Test database migrations completed");
 }
 
 /**

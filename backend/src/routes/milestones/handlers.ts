@@ -38,6 +38,7 @@ export async function handleCreateMilestone(
     createMilestone({
       projectId: body.projectId,
       assigneeUserId: body.assigneeUserId,
+      status: body.status,
       dueDate: body.dueDate,
       description: body.description,
     }),

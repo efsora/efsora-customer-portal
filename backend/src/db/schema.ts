@@ -140,6 +140,7 @@ export const milestones = pgTable("milestones", {
   id: serial("id").primaryKey(),
   projectId: integer("project_id"),
   assigneeUserId: uuid("assignee_user_id"),
+  status: integer("status"),
   dueDate: timestamp("due_date"),
   description: text("description"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -217,6 +218,7 @@ export const progressStatusRelations = relations(
   progressStatus,
   ({ many }) => ({
     projects: many(projects),
+    milestones: many(milestones),
     events: many(events),
   }),
 );
@@ -244,6 +246,10 @@ export const milestonesRelations = relations(milestones, ({ one, many }) => ({
   assigneeUser: one(users, {
     fields: [milestones.assigneeUserId],
     references: [users.id],
+  }),
+  statusRef: one(progressStatus, {
+    fields: [milestones.status],
+    references: [progressStatus.id],
   }),
   events: many(events),
 }));
