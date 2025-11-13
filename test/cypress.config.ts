@@ -178,11 +178,6 @@ export default defineConfig({
 
       console.log(`${'═'.repeat(80)}\n`);
 
-      // Track test file execution
-      on('file:preprocessor:success', (details: any) => {
-        console.log(`✅ [PREPROCESSOR] Loaded test file: ${details.filePath}`);
-      });
-
       // Track before:run - tests about to start
       on('before:run', (details: any) => {
         console.log(`\n${'═'.repeat(80)}`);
