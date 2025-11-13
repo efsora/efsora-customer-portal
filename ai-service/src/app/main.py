@@ -23,7 +23,7 @@ from app.core.settings import Settings
 from app.core.version import APP_NAME, APP_VERSION
 from app.dependency_injection.container import Container
 from app.middleware.logging import RequestLoggingMiddleware
-from app.services.rag_service import build_rag_chain
+from app.services.rag_service import build_rag_chain, build_vectorstore
 
 logger = get_logger(__name__)
 
@@ -90,7 +90,20 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         logger.error(f"Failed to connect to Weaviate: {str(e)}", error=str(e))
         raise
 
-    # Initialize vectorstore + RAG chain for chat endpoints
+    # Embed documents and initialize vectorstore + RAG chain for chat endpoints
+    try:
+        await build_vectorstore(
+            weaviate_client=weaviate_client,
+            settings=settings,
+            embeddings=embeddings,
+            save_chunks_txt=True,
+            save_embeddings_json=True,
+        )
+        logger.info("Vectorstore built and embeddings stored successfully")
+    except Exception as e:
+        logger.error("Failed to embed documents and build vectorstore", error=str(e))
+        raise
+
     try:
         vectorstore_client = connect_to_local(
             host=settings.WEAVIATE_HOST,
