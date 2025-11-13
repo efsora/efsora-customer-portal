@@ -9,9 +9,6 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
-// Import Qase reporter - MUST be imported before any tests
-import 'cypress-qase-reporter/dist/mocha';
-
 // Import commands.ts using ES2015 syntax:
 import './commands';
 

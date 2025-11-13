@@ -182,11 +182,6 @@ Cypress.Commands.add('elementExists', (selector: string) => {
   });
 });
 
-/**
- * Link test case ID from Qase
- * @example cy.qaseId(123)
- */
-Cypress.Commands.add('qaseId', (caseId: number) => {
-  cy.log(`Linking Qase test case: ${caseId}`);
-  return cy.task('log', `@qaseId ${caseId}`);
-});
+// Note: Test case IDs are now linked using the qase() function wrapper
+// Example: qase(123, it('test name', () => { ... }))
+// See: cypress/e2e/ui/login.cy.ts for examples

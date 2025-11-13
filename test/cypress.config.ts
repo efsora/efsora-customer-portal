@@ -169,7 +169,9 @@ export default defineConfig({
       on('after:spec', async (spec: any) => {
         try {
           console.log(`\n📤 Processing spec results: ${spec.name}`);
-          console.log(`   Total tests in spec: ${spec.stats.tests}`);
+          if (spec.stats) {
+            console.log(`   Total tests in spec: ${spec.stats.tests}`);
+          }
           await afterSpecHook(spec, config);
           console.log(`✅ Spec results processed and queued for upload: ${spec.name}\n`);
         } catch (error) {
