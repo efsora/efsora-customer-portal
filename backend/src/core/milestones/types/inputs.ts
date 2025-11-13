@@ -3,6 +3,7 @@
  */
 
 export type CreateMilestoneInput = {
+  title: string;
   projectId?: number | null;
   assigneeUserId?: string | null;
   status?: number | null;
@@ -11,6 +12,7 @@ export type CreateMilestoneInput = {
 };
 
 export type UpdateMilestoneInput = {
+  title?: string;
   projectId?: number | null;
   assigneeUserId?: string | null;
   status?: number | null;

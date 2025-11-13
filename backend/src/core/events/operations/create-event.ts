@@ -10,6 +10,7 @@ import first from "lodash/fp/first";
 export function saveNewEvent(input: CreateEventInput): Result<EventData> {
   return command(async () => {
     return await eventRepository.create({
+      title: input.title,
       eventDatetime: input.eventDatetime,
       description: input.description ?? null,
       ownerUserId: input.ownerUserId ?? null,
@@ -32,6 +33,7 @@ export function handleSaveNewEventResult(result: unknown): Result<EventData> {
 
   return success({
     id: event.id,
+    title: event.title,
     eventDatetime: event.eventDatetime,
     description: event.description,
     ownerUserId: event.ownerUserId,

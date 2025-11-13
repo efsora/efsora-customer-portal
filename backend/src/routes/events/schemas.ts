@@ -8,6 +8,10 @@ extendZodWithOpenApi(z);
  */
 export const createEventBodySchema = z
   .object({
+    title: z.string().min(1).max(255).openapi({
+      example: "Kickoff Meeting",
+      description: "Event title",
+    }),
     eventDatetime: z.coerce.date().openapi({
       example: "2025-01-15T10:00:00Z",
     }),
@@ -33,6 +37,10 @@ export type CreateEventBody = z.infer<typeof createEventBodySchema>;
  */
 export const updateEventBodySchema = z
   .object({
+    title: z.string().min(1).max(255).optional().openapi({
+      example: "Updated Kickoff Meeting",
+      description: "Event title",
+    }),
     eventDatetime: z.coerce.date().optional().openapi({
       example: "2025-01-20T14:00:00Z",
     }),
@@ -70,6 +78,10 @@ export type EventIdParam = z.infer<typeof eventIdParamSchema>;
 export const eventResponseSchema = z
   .object({
     id: z.number().int().positive().openapi({ example: 1 }),
+    title: z.string().openapi({
+      example: "Kickoff Meeting",
+      description: "Event title",
+    }),
     eventDatetime: z.date().openapi({ example: "2025-01-15T10:00:00Z" }),
     description: z.string().nullable().openapi({
       example: "Kickoff meeting completed",

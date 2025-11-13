@@ -31,6 +31,7 @@ describe("Milestones Module Integration Tests", () => {
     it("should create milestone successfully with all fields", async () => {
       // Arrange
       const input: CreateMilestoneInput = {
+        title: "Q1 Design Milestone",
         projectId: 1,
         assigneeUserId: "550e8400-e29b-41d4-a716-446655440000",
         status: 1,
@@ -46,6 +47,7 @@ describe("Milestones Module Integration Tests", () => {
 
       if (result.status === "Success") {
         expect(result.value).toMatchObject({
+          title: "Q1 Design Milestone",
           projectId: 1,
           assigneeUserId: "550e8400-e29b-41d4-a716-446655440000",
           status: 1,
@@ -73,9 +75,11 @@ describe("Milestones Module Integration Tests", () => {
       }
     });
 
-    it("should create milestone with minimal fields (all optional)", async () => {
+    it("should create milestone with minimal fields (only title required)", async () => {
       // Arrange
-      const input: CreateMilestoneInput = {};
+      const input: CreateMilestoneInput = {
+        title: "Minimal Milestone",
+      };
 
       // Act
       const result = await run(createMilestone(input));
@@ -84,6 +88,7 @@ describe("Milestones Module Integration Tests", () => {
       expect(result.status).toBe("Success");
 
       if (result.status === "Success") {
+        expect(result.value.title).toBe("Minimal Milestone");
         expect(result.value.projectId).toBeNull();
         expect(result.value.assigneeUserId).toBeNull();
         expect(result.value.status).toBeNull();
@@ -96,6 +101,7 @@ describe("Milestones Module Integration Tests", () => {
     it("should create milestone with status field", async () => {
       // Arrange
       const input: CreateMilestoneInput = {
+        title: "Status Milestone",
         status: 2,
         description: "Milestone with status",
       };
@@ -122,9 +128,10 @@ describe("Milestones Module Integration Tests", () => {
       }
     });
 
-    it("should create milestone with only project ID", async () => {
+    it("should create milestone with title and project ID", async () => {
       // Arrange
       const input: CreateMilestoneInput = {
+        title: "Project Milestone",
         projectId: 5,
       };
 
@@ -142,9 +149,10 @@ describe("Milestones Module Integration Tests", () => {
       }
     });
 
-    it("should create milestone with only assignee", async () => {
+    it("should create milestone with title and assignee", async () => {
       // Arrange
       const input: CreateMilestoneInput = {
+        title: "Assigned Milestone",
         assigneeUserId: "123e4567-e89b-12d3-a456-426614174000",
         description: "Assigned milestone",
       };
@@ -167,6 +175,7 @@ describe("Milestones Module Integration Tests", () => {
       // Arrange
       const dueDate = new Date("2025-12-31T23:59:59Z");
       const input: CreateMilestoneInput = {
+        title: "Year-end Milestone",
         dueDate,
         description: "Year-end milestone",
       };
@@ -189,6 +198,7 @@ describe("Milestones Module Integration Tests", () => {
       // Arrange - Create a milestone
       const createResult = await run(
         createMilestone({
+          title: "Test Milestone",
           projectId: 10,
           assigneeUserId: "550e8400-e29b-41d4-a716-446655440000",
           dueDate: new Date("2025-06-15T00:00:00Z"),
@@ -210,6 +220,7 @@ describe("Milestones Module Integration Tests", () => {
       if (result.status === "Success") {
         expect(result.value).toMatchObject({
           id: milestoneId,
+          title: "Test Milestone",
           projectId: 10,
           assigneeUserId: "550e8400-e29b-41d4-a716-446655440000",
           description: "Test milestone",
@@ -235,18 +246,21 @@ describe("Milestones Module Integration Tests", () => {
       // Arrange - Create multiple milestones
       await run(
         createMilestone({
+          title: "Milestone 1",
           projectId: 1,
           description: "Milestone 1",
         }),
       );
       await run(
         createMilestone({
+          title: "Milestone 2",
           projectId: 2,
           description: "Milestone 2",
         }),
       );
       await run(
         createMilestone({
+          title: "Milestone 3",
           projectId: 3,
           description: "Milestone 3",
         }),
@@ -283,7 +297,9 @@ describe("Milestones Module Integration Tests", () => {
 
     it("should retrieve milestones with null fields", async () => {
       // Arrange - Create milestone with minimal fields
-      const createResult = await run(createMilestone({}));
+      const createResult = await run(
+        createMilestone({ title: "Minimal Test" }),
+      );
       expect(createResult.status).toBe("Success");
       if (createResult.status !== "Success") return;
 
@@ -296,6 +312,7 @@ describe("Milestones Module Integration Tests", () => {
       expect(result.status).toBe("Success");
 
       if (result.status === "Success") {
+        expect(result.value.title).toBe("Minimal Test");
         expect(result.value.projectId).toBeNull();
         expect(result.value.assigneeUserId).toBeNull();
         expect(result.value.status).toBeNull();
@@ -310,6 +327,7 @@ describe("Milestones Module Integration Tests", () => {
       // Arrange - Create a milestone
       const createResult = await run(
         createMilestone({
+          title: "Original Title",
           projectId: 1,
           status: 1,
           description: "Original description",
@@ -321,6 +339,7 @@ describe("Milestones Module Integration Tests", () => {
       const milestoneId = createResult.value.id;
 
       const updates: UpdateMilestoneInput = {
+        title: "Updated Title",
         projectId: 2,
         assigneeUserId: "123e4567-e89b-12d3-a456-426614174000",
         status: 3,
@@ -336,6 +355,7 @@ describe("Milestones Module Integration Tests", () => {
 
       if (result.status === "Success") {
         expect(result.value.id).toBe(milestoneId);
+        expect(result.value.title).toBe("Updated Title");
         expect(result.value.projectId).toBe(2);
         expect(result.value.assigneeUserId).toBe(
           "123e4567-e89b-12d3-a456-426614174000",
@@ -353,6 +373,7 @@ describe("Milestones Module Integration Tests", () => {
       // Arrange - Create milestone with all fields
       const createResult = await run(
         createMilestone({
+          title: "Original Milestone",
           projectId: 5,
           assigneeUserId: "550e8400-e29b-41d4-a716-446655440000",
           dueDate: new Date("2025-05-01T00:00:00Z"),
@@ -388,6 +409,7 @@ describe("Milestones Module Integration Tests", () => {
       // Arrange
       const createResult = await run(
         createMilestone({
+          title: "Project Update Test",
           projectId: 10,
           description: "Keep this description",
         }),
@@ -421,6 +443,7 @@ describe("Milestones Module Integration Tests", () => {
 
       const createResult = await run(
         createMilestone({
+          title: "Date Update Test",
           dueDate: oldDate,
           description: "Date update test",
         }),
@@ -452,6 +475,7 @@ describe("Milestones Module Integration Tests", () => {
       // Arrange
       const createResult = await run(
         createMilestone({
+          title: "Reassignment Test",
           assigneeUserId: "550e8400-e29b-41d4-a716-446655440000",
           description: "Reassignment test",
         }),
@@ -484,6 +508,7 @@ describe("Milestones Module Integration Tests", () => {
       // Arrange
       const createResult = await run(
         createMilestone({
+          title: "Status Update Test",
           status: 1,
           description: "Status update test",
         }),
@@ -541,6 +566,7 @@ describe("Milestones Module Integration Tests", () => {
       // Arrange - Create milestone with all fields
       const createResult = await run(
         createMilestone({
+          title: "To Be Cleared",
           projectId: 5,
           assigneeUserId: "550e8400-e29b-41d4-a716-446655440000",
           status: 2,
@@ -585,6 +611,7 @@ describe("Milestones Module Integration Tests", () => {
       // Arrange - Create a milestone
       const createResult = await run(
         createMilestone({
+          title: "To Be Deleted",
           description: "To be deleted",
         }),
       );
@@ -630,6 +657,7 @@ describe("Milestones Module Integration Tests", () => {
       // Arrange
       const createResult = await run(
         createMilestone({
+          title: "Temporary Milestone",
           description: "Temporary milestone",
         }),
       );
@@ -656,13 +684,13 @@ describe("Milestones Module Integration Tests", () => {
     it("should delete multiple milestones independently", async () => {
       // Arrange - Create 3 milestones
       const result1 = await run(
-        createMilestone({ description: "Milestone 1" }),
+        createMilestone({ title: "Milestone 1", description: "Milestone 1" }),
       );
       const result2 = await run(
-        createMilestone({ description: "Milestone 2" }),
+        createMilestone({ title: "Milestone 2", description: "Milestone 2" }),
       );
       const result3 = await run(
-        createMilestone({ description: "Milestone 3" }),
+        createMilestone({ title: "Milestone 3", description: "Milestone 3" }),
       );
 
       expect(result1.status).toBe("Success");

@@ -8,6 +8,10 @@ extendZodWithOpenApi(z);
  */
 export const createMilestoneBodySchema = z
   .object({
+    title: z.string().min(1).max(255).openapi({
+      example: "Q1 Milestone",
+      description: "Milestone title",
+    }),
     projectId: z.number().int().positive().optional().nullable().openapi({
       example: 1,
     }),
@@ -34,6 +38,10 @@ export type CreateMilestoneBody = z.infer<typeof createMilestoneBodySchema>;
  */
 export const updateMilestoneBodySchema = z
   .object({
+    title: z.string().min(1).max(255).optional().openapi({
+      example: "Updated Q1 Milestone",
+      description: "Milestone title",
+    }),
     projectId: z.number().int().positive().optional().nullable().openapi({
       example: 1,
     }),
@@ -94,6 +102,10 @@ export const deleteMilestoneSchema = {
 export const milestoneResponseSchema = z
   .object({
     id: z.number().int().positive().openapi({ example: 1 }),
+    title: z.string().openapi({
+      example: "Q1 Milestone",
+      description: "Milestone title",
+    }),
     projectId: z.number().int().positive().nullable().openapi({ example: 1 }),
     assigneeUserId: z.uuid().nullable().openapi({
       example: "123e4567-e89b-12d3-a456-426614174000",

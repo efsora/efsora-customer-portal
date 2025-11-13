@@ -36,6 +36,7 @@ export async function handleCreateMilestone(
 
   const result = await run(
     createMilestone({
+      title: body.title,
       projectId: body.projectId,
       assigneeUserId: body.assigneeUserId,
       status: body.status,

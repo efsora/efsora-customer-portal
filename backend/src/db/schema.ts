@@ -138,6 +138,7 @@ export type NewProject = typeof projects.$inferInsert;
  */
 export const milestones = pgTable("milestones", {
   id: serial("id").primaryKey(),
+  title: text("title").notNull(),
   projectId: integer("project_id"),
   assigneeUserId: uuid("assignee_user_id"),
   status: integer("status"),
@@ -159,6 +160,7 @@ export type NewMilestone = typeof milestones.$inferInsert;
  */
 export const events = pgTable("events", {
   id: serial("id").primaryKey(),
+  title: text("title").notNull(),
   eventDatetime: timestamp("event_datetime").notNull(),
   description: text("description"),
   ownerUserId: uuid("owner_user_id"),

@@ -32,6 +32,7 @@ export async function handleCreateEvent(
 
   const result = await run(
     createEvent({
+      title: body.title,
       eventDatetime: body.eventDatetime,
       description: body.description,
       ownerUserId: body.ownerUserId,

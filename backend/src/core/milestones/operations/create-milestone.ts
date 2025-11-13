@@ -12,6 +12,7 @@ export function saveNewMilestone(
 ): Result<MilestoneData> {
   return command(async () => {
     return await milestoneRepository.create({
+      title: input.title,
       projectId: input.projectId ?? null,
       assigneeUserId: input.assigneeUserId ?? null,
       status: input.status ?? null,
@@ -36,6 +37,7 @@ export function handleSaveNewMilestoneResult(
 
   return success({
     id: milestone.id,
+    title: milestone.title,
     projectId: milestone.projectId,
     assigneeUserId: milestone.assigneeUserId,
     status: milestone.status,

@@ -3,6 +3,7 @@
  */
 
 export type CreateEventInput = {
+  title: string;
   eventDatetime: Date;
   description?: string | null;
   ownerUserId?: string | null;
@@ -11,6 +12,7 @@ export type CreateEventInput = {
 };
 
 export type UpdateEventInput = {
+  title?: string;
   eventDatetime?: Date;
   description?: string | null;
   ownerUserId?: string | null;

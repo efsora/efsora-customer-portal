@@ -4,6 +4,7 @@
 
 export type MilestoneData = {
   id: number;
+  title: string;
   projectId: number | null;
   assigneeUserId: string | null;
   status: number | null;

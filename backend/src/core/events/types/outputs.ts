@@ -4,6 +4,7 @@
 
 export type EventData = {
   id: number;
+  title: string;
   eventDatetime: Date;
   description: string | null;
   ownerUserId: string | null;

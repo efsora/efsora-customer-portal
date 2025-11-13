@@ -43,6 +43,7 @@ describe("Events Module Integration Tests", () => {
   describe("createEvent", () => {
     it("should create event successfully with all fields", async () => {
       const input = {
+        title: "Kickoff Meeting",
         eventDatetime: new Date("2025-01-15T10:00:00Z"),
         description: "Kickoff meeting completed",
         ownerUserId: "550e8400-e29b-12d3-a456-426614174000",
@@ -55,6 +56,7 @@ describe("Events Module Integration Tests", () => {
       expect(result.status).toBe("Success");
       if (result.status === "Success") {
         expect(result.value.id).toBeTypeOf("number");
+        expect(result.value.title).toBe(input.title);
         expect(result.value.eventDatetime).toEqual(input.eventDatetime);
         expect(result.value.description).toBe(input.description);
         expect(result.value.ownerUserId).toBe(input.ownerUserId);
@@ -65,8 +67,9 @@ describe("Events Module Integration Tests", () => {
       }
     });
 
-    it("should create event with only required field (eventDatetime)", async () => {
+    it("should create event with only required fields (title and eventDatetime)", async () => {
       const input = {
+        title: "Test Event",
         eventDatetime: new Date("2025-01-20T14:00:00Z"),
       };
 
@@ -74,6 +77,7 @@ describe("Events Module Integration Tests", () => {
 
       expect(result.status).toBe("Success");
       if (result.status === "Success") {
+        expect(result.value.title).toBe(input.title);
         expect(result.value.eventDatetime).toEqual(input.eventDatetime);
         expect(result.value.description).toBeNull();
         expect(result.value.ownerUserId).toBeNull();
@@ -84,6 +88,7 @@ describe("Events Module Integration Tests", () => {
 
     it("should create event with partial fields", async () => {
       const input = {
+        title: "Design Review",
         eventDatetime: new Date("2025-02-01T09:00:00Z"),
         description: "Design review meeting",
         status: 4,
@@ -93,6 +98,7 @@ describe("Events Module Integration Tests", () => {
 
       expect(result.status).toBe("Success");
       if (result.status === "Success") {
+        expect(result.value.title).toBe(input.title);
         expect(result.value.eventDatetime).toEqual(input.eventDatetime);
         expect(result.value.description).toBe(input.description);
         expect(result.value.status).toBe(input.status);
@@ -103,6 +109,7 @@ describe("Events Module Integration Tests", () => {
 
     it("should persist event and be retrievable", async () => {
       const input = {
+        title: "Sprint Planning",
         eventDatetime: new Date("2025-01-25T11:00:00Z"),
         description: "Sprint planning completed",
       };
@@ -118,6 +125,7 @@ describe("Events Module Integration Tests", () => {
 
         expect(getResult.status).toBe("Success");
         if (getResult.status === "Success") {
+          expect(getResult.value.title).toBe(input.title);
           expect(getResult.value.description).toBe(input.description);
         }
       }
@@ -129,6 +137,7 @@ describe("Events Module Integration Tests", () => {
       // Create test event
       const createResult = await run(
         createEvent({
+          title: "Test Event",
           eventDatetime: new Date("2025-01-15T10:00:00Z"),
           description: "Test event",
           status: 2,
@@ -145,6 +154,7 @@ describe("Events Module Integration Tests", () => {
         expect(result.status).toBe("Success");
         if (result.status === "Success") {
           expect(result.value.id).toBe(eventId);
+          expect(result.value.title).toBe("Test Event");
           expect(result.value.description).toBe("Test event");
           expect(result.value.status).toBe(2);
         }
@@ -165,6 +175,7 @@ describe("Events Module Integration Tests", () => {
       // Create event with all fields
       const createResult = await run(
         createEvent({
+          title: "Complete Event",
           eventDatetime: new Date("2025-02-01T09:00:00Z"),
           description: "Complete event data",
           ownerUserId: "550e8400-e29b-12d3-a456-426614174000",
@@ -179,6 +190,7 @@ describe("Events Module Integration Tests", () => {
 
         expect(result.status).toBe("Success");
         if (result.status === "Success") {
+          expect(result.value.title).toBe("Complete Event");
           expect(result.value.description).toBe("Complete event data");
           expect(result.value.ownerUserId).toBe(
             "550e8400-e29b-12d3-a456-426614174000",
@@ -195,18 +207,21 @@ describe("Events Module Integration Tests", () => {
       // Create multiple events
       await run(
         createEvent({
+          title: "Event 1",
           eventDatetime: new Date("2025-01-15T10:00:00Z"),
           description: "Event 1",
         }),
       );
       await run(
         createEvent({
+          title: "Event 2",
           eventDatetime: new Date("2025-01-20T14:00:00Z"),
           description: "Event 2",
         }),
       );
       await run(
         createEvent({
+          title: "Event 3",
           eventDatetime: new Date("2025-01-25T09:00:00Z"),
           description: "Event 3",
         }),
@@ -217,9 +232,9 @@ describe("Events Module Integration Tests", () => {
       expect(result.status).toBe("Success");
       if (result.status === "Success") {
         expect(result.value).toHaveLength(3);
-        expect(result.value[0].description).toBe("Event 1");
-        expect(result.value[1].description).toBe("Event 2");
-        expect(result.value[2].description).toBe("Event 3");
+        expect(result.value[0].title).toBe("Event 1");
+        expect(result.value[1].title).toBe("Event 2");
+        expect(result.value[2].title).toBe("Event 3");
       }
     });
 
@@ -236,6 +251,7 @@ describe("Events Module Integration Tests", () => {
     it("should retrieve events with different statuses", async () => {
       await run(
         createEvent({
+          title: "Scheduled Event",
           eventDatetime: new Date("2025-01-15T10:00:00Z"),
           description: "Scheduled",
           status: 1,
@@ -243,6 +259,7 @@ describe("Events Module Integration Tests", () => {
       );
       await run(
         createEvent({
+          title: "In Progress Event",
           eventDatetime: new Date("2025-01-20T14:00:00Z"),
           description: "In Progress",
           status: 2,
@@ -250,6 +267,7 @@ describe("Events Module Integration Tests", () => {
       );
       await run(
         createEvent({
+          title: "Completed Event",
           eventDatetime: new Date("2025-01-25T09:00:00Z"),
           description: "Completed",
           status: 6,
@@ -275,6 +293,7 @@ describe("Events Module Integration Tests", () => {
       // Create test event
       const createResult = await run(
         createEvent({
+          title: "Original Event",
           eventDatetime: new Date("2025-01-15T10:00:00Z"),
           description: "Original description",
         }),
@@ -297,6 +316,7 @@ describe("Events Module Integration Tests", () => {
         expect(result.status).toBe("Success");
         if (result.status === "Success") {
           expect(result.value.id).toBe(eventId);
+          expect(result.value.title).toBe("Original Event");
           expect(result.value.description).toBe("Updated description");
           expect(result.value.eventDatetime).toEqual(
             createResult.value.eventDatetime,
@@ -311,6 +331,7 @@ describe("Events Module Integration Tests", () => {
 
       const createResult = await run(
         createEvent({
+          title: "Test Event",
           eventDatetime: originalDate,
           description: "Test event",
         }),
@@ -337,6 +358,7 @@ describe("Events Module Integration Tests", () => {
     it("should update multiple fields simultaneously", async () => {
       const createResult = await run(
         createEvent({
+          title: "Original Event",
           eventDatetime: new Date("2025-01-15T10:00:00Z"),
           description: "Original",
           status: 1,
@@ -372,6 +394,7 @@ describe("Events Module Integration Tests", () => {
     it("should update event status to null", async () => {
       const createResult = await run(
         createEvent({
+          title: "Test Event",
           eventDatetime: new Date("2025-01-15T10:00:00Z"),
           status: 2,
         }),
@@ -415,6 +438,7 @@ describe("Events Module Integration Tests", () => {
     it("should update updatedAt timestamp", async () => {
       const createResult = await run(
         createEvent({
+          title: "Test Event",
           eventDatetime: new Date("2025-01-15T10:00:00Z"),
           description: "Test",
         }),
@@ -451,6 +475,7 @@ describe("Events Module Integration Tests", () => {
       // Create test event
       const createResult = await run(
         createEvent({
+          title: "To Be Deleted",
           eventDatetime: new Date("2025-01-15T10:00:00Z"),
           description: "To be deleted",
         }),
@@ -491,6 +516,7 @@ describe("Events Module Integration Tests", () => {
     it("should remove event and not be retrievable", async () => {
       const createResult = await run(
         createEvent({
+          title: "Test Event",
           eventDatetime: new Date("2025-01-15T10:00:00Z"),
           description: "Test event",
         }),
@@ -515,12 +541,14 @@ describe("Events Module Integration Tests", () => {
       // Create multiple events
       const result1 = await run(
         createEvent({
+          title: "Event 1",
           eventDatetime: new Date("2025-01-15T10:00:00Z"),
           description: "Event 1",
         }),
       );
       const result2 = await run(
         createEvent({
+          title: "Event 2",
           eventDatetime: new Date("2025-01-20T14:00:00Z"),
           description: "Event 2",
         }),
@@ -538,6 +566,7 @@ describe("Events Module Integration Tests", () => {
 
         expect(getResult.status).toBe("Success");
         if (getResult.status === "Success") {
+          expect(getResult.value.title).toBe("Event 2");
           expect(getResult.value.description).toBe("Event 2");
         }
 
@@ -556,6 +585,7 @@ describe("Events Module Integration Tests", () => {
       // 1. Create event
       const createResult = await run(
         createEvent({
+          title: "Lifecycle Event",
           eventDatetime: new Date("2025-01-15T10:00:00Z"),
           description: "Initial event",
           status: 1,
@@ -587,6 +617,7 @@ describe("Events Module Integration Tests", () => {
       const getUpdatedResult = await run(getEventById({ id: eventId }));
       expect(getUpdatedResult.status).toBe("Success");
       if (getUpdatedResult.status === "Success") {
+        expect(getUpdatedResult.value.title).toBe("Lifecycle Event");
         expect(getUpdatedResult.value.description).toBe("Updated event");
         expect(getUpdatedResult.value.status).toBe(2);
       }
