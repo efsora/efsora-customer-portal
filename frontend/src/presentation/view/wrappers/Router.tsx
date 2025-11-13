@@ -9,7 +9,7 @@ import Dashboard from '#presentation/pages/Dashboard/Dashboard';
 import Timeline from '#presentation/pages/Timeline';
 import { NoPage } from '#presentation/pages/NoPage';
 import { Documents } from '#presentation/pages/Documents/Documents';
-import { YourTeam } from '#presentation/pages/YourTeam';
+import { YourTeam } from '#presentation/pages/YourTeam/YourTeam';
 
 export default function Router() {
     return (
