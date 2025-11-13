@@ -18,7 +18,7 @@ interface RegisterPayload {
  */
 export const registerUser = (user: RegisterPayload): Cypress.Chainable<any> => {
   const apiUrl = getApiUrl();
-  const registerUrl = `${apiUrl}/v1/auth/register`;
+  const registerUrl = `${apiUrl}/auth/register`;
 
   return cy.request({
     method: 'POST',
@@ -39,7 +39,7 @@ export const loginUser = (
   password: string,
 ): Cypress.Chainable<any> => {
   const apiUrl = getApiUrl();
-  const loginUrl = `${apiUrl}/v1/auth/login`;
+  const loginUrl = `${apiUrl}/auth/login`;
 
   return cy.request({
     method: 'POST',

@@ -19,10 +19,11 @@ export default function Logout() {
             {isAuthenticated && (
                 <button
                     onClick={handleLogout}
+                    data-testid="logout-button"
                 >
                         Logout
                 </button>
             )}
-        </> 
-    ); 
+        </>
+    );
 }

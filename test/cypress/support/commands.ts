@@ -181,3 +181,12 @@ Cypress.Commands.add('elementExists', (selector: string) => {
     return $body.find(selector).length > 0;
   });
 });
+
+/**
+ * Link test case ID from Qase
+ * @example cy.qaseId(123)
+ */
+Cypress.Commands.add('qaseId', (caseId: number) => {
+  cy.log(`Linking Qase test case: ${caseId}`);
+  return cy.task('log', `@qaseId ${caseId}`);
+});

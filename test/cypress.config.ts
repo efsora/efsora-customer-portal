@@ -2,6 +2,25 @@ import { defineConfig } from 'cypress';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import * as dotenv from 'dotenv';
+import { afterSpecHook } from 'cypress-qase-reporter/hooks';
+
+// Load environment variables from .env.local with absolute path
+const envPath = path.resolve(__dirname, '.env.local');
+console.log(`Loading environment variables from: ${envPath}`);
+const envResult = dotenv.config({ path: envPath });
+if (envResult.error) {
+  console.warn(`Warning: Could not load .env.local: ${envResult.error.message}`);
+} else {
+  console.log(`Successfully loaded .env.local with ${Object.keys(envResult.parsed || {}).length} variables`);
+}
+
+// Log loaded variables (for debugging)
+console.log(`QASE_API_TOKEN: ${process.env.QASE_API_TOKEN ? 'SET' : 'NOT SET'}`);
+console.log(`QASE_PROJECT: ${process.env.QASE_PROJECT || 'NOT SET'}`);
+console.log(`QASE_PROJECT_CODE: ${process.env.QASE_PROJECT_CODE || 'NOT SET'}`);
+
+
 export default defineConfig({
   e2e: {
     baseUrl: 'http://localhost:5174',
@@ -27,33 +46,37 @@ export default defineConfig({
     reporter: 'cypress-multi-reporters',
     reporterOptions: {
       reporterEnabled: 'spec, cypress-qase-reporter',
-      cypressQaseReporterReporterOptions: {
-      mode: 'testops',
-      debug: false,
-      testops: {
-         api: {
-           // API token from environment variable
-           token: process.env.QASE_API_TOKEN
-         },
-         project: process.env.QASE_PROJECT || 'ECP',
-        uploadAttachments: true,
-        run: {
-          complete: true
-        }
+      specReporter: {
+        suitesFormat: 'indent',
+        outputFile: 'cypress/reports/spec-output.json',
       },
-      framework: {
-        cypress: {
-          screenshotsFolder: 'cypress/screenshots',
-          videosFolder: 'cypress/videos',
-          uploadDelay: 10
+      cypressQaseReporterReporterOptions: {
+        mode: 'testops',
+        debug: true,
+        testops: {
+          api: {
+            token: process.env.QASE_API_TOKEN || ''
+          },
+          project: process.env.QASE_PROJECT || 'ECP',
+          uploadAttachments: true,
+          autocreate: true,
+          run: {
+            complete: true
+          }
+        },
+        framework: {
+          cypress: {
+            screenshotsFolder: 'cypress/screenshots',
+            videosFolder: 'cypress/videos',
+            uploadDelay: 10
+          }
         }
       }
-    }
-  },
-    env: {
-      apiUrl: 'http://localhost:3000/api',
     },
-    setupNodeEvents(on, config) {
+    env: {
+      apiUrl: 'http://localhost:3000/api/v1',
+    },
+    setupNodeEvents(on: any, config: any) {
       // Load environment-specific configuration
       const environment = config.env.environment || 'dev';
       const configFile = path.join(__dirname, 'cypress', 'config', `${environment}.json`);
@@ -70,27 +93,30 @@ export default defineConfig({
         console.warn(`Config file not found: ${configFile}, using default configuration`);
       }
 
-      // TODO: Add Qase.io reporter configuration here
-      // Example:
-      // require('cypress-qase-reporter/plugin')(on, config);
+      // Update reporter options with current environment variables
+      if (config.reporterOptions && config.reporterOptions.cypressQaseReporterReporterOptions) {
+        const qaseConfig = config.reporterOptions.cypressQaseReporterReporterOptions;
+        if (qaseConfig.testops) {
+          qaseConfig.testops.api = {
+            token: process.env.QASE_API_TOKEN || '',
+          };
+          qaseConfig.testops.project = process.env.QASE_PROJECT || 'ECP';
+          console.log(`Qase reporter configured - Token: ${process.env.QASE_API_TOKEN ? 'SET' : 'NOT SET'}, Project: ${process.env.QASE_PROJECT || 'ECP'}`);
+        }
+      }
+
+      // Enable Qase reporter plugin
+      require('cypress-qase-reporter/plugin')(on, config);
+
+      // Add metadata collection hook (REQUIRED for qase() decorators to work)
+      require('cypress-qase-reporter/metadata')(on);
+
+      // Add after:spec hook to process results (REQUIRED for test case reporting)
+      on('after:spec', async (spec, results) => {
+        await afterSpecHook(spec, config);
+      });
 
       return config;
     },
   },
-  component: {
-    devServer: {
-      framework: 'react',
-      bundler: 'vite',
-    },
-    specPattern: 'cypress/component/**/*.cy.{js,jsx,ts,tsx}',
-  },
-  // Reporter configuration
-  // TODO: Configure Qase.io reporter
-  // reporter: 'cypress-qase-reporter',
-  // reporterOptions: {
-  //   apiToken: process.env.QASE_API_TOKEN,
-  //   projectCode: process.env.QASE_PROJECT_CODE,
-  //   runComplete: true,
-  //   basePath: 'https://api.qase.io/v1',
-  // },
 });
