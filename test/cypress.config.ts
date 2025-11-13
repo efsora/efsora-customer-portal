@@ -35,6 +35,8 @@ function loadEnvironmentVariables() {
 
   console.log(`🔑 Qase Configuration:`);
   console.log(`   Token: ${qaseToken ? '✅ SET' : '❌ NOT SET'}`);
+  console.log(`   Token Length: ${qaseToken?.length || 0}`);
+  console.log(`   Token First 10 chars: ${qaseToken?.substring(0, 10) || 'N/A'}`);
   console.log(`   Project: ${qaseProject}`);
   console.log(`   Run ID: ${qaseRunId ? `✅ ${qaseRunId}` : '(auto-create new run)'}`);
 
@@ -169,6 +171,8 @@ export default defineConfig({
 
       // Enable Qase reporter plugin
       console.log(`\n📍 [SETUP] Initializing Qase reporter plugin...`);
+      console.log(`   Token in process.env: ${process.env.QASE_API_TOKEN ? '✅ YES' : '❌ NO'}`);
+      console.log(`   Token from qaseConfig: ${qaseConfig.token ? '✅ YES' : '❌ NO'}`);
       try {
         require('cypress-qase-reporter/plugin')(on, config);
         console.log(`✅ [SETUP] Qase reporter plugin initialized successfully`);
@@ -204,15 +208,17 @@ export default defineConfig({
           console.log(`📤 [AFTER_SPEC] Processing spec results: ${spec.name}`);
           console.log(`${'─'.repeat(80)}`);
 
+          console.log(`   spec object keys: ${Object.keys(spec).join(', ')}`);
+
           if (spec.stats) {
             console.log(`   Tests: ${spec.stats.tests}`);
             console.log(`   Passing: ${spec.stats.passes}`);
             console.log(`   Failing: ${spec.stats.failures}`);
             console.log(`   Duration: ${spec.stats.duration}ms`);
-          }
-
-          if (!spec.stats) {
-            console.warn(`   ⚠️  No stats available - spec may have failed to load`);
+          } else {
+            console.warn(`   ⚠️  No stats available`);
+            console.log(`   spec.stats type: ${typeof spec.stats}`);
+            console.log(`   spec.stats value: ${JSON.stringify(spec.stats)}`);
           }
 
           // Log test results details
