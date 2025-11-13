@@ -6,7 +6,7 @@ from langchain_aws import BedrockEmbeddings, ChatBedrockConverse
 from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnableParallel, RunnablePassthrough
+from langchain_core.runnables import RunnableLambda, RunnableParallel, RunnableSerializable
 from langchain_weaviate import WeaviateVectorStore
 import weaviate
 
@@ -27,7 +27,7 @@ def create_llm_by_bedrock(
     settings: Settings,
 ) -> ChatBedrockConverse:
 
-    return ChatBedrockConverse(
+    return ChatBedrockConverse(  # type: ignore
         model=model_name,
         region_name=region_name,
         temperature=temperature,
@@ -35,7 +35,10 @@ def create_llm_by_bedrock(
     )
 
 
-def build_rag_chain(vectorstore: WeaviateVectorStore, settings: Settings):
+def build_rag_chain(
+    vectorstore: WeaviateVectorStore,
+    settings: Settings,
+) -> RunnableSerializable[dict[str, str], str]:
     retriever = vectorstore.as_retriever(k=5)
 
     llm = create_llm_by_bedrock(
@@ -47,13 +50,17 @@ def build_rag_chain(vectorstore: WeaviateVectorStore, settings: Settings):
     )
 
     template = """
-    You are a helpful assistant. Use ONLY the context below to answer the question.
+    You are a helpful assistant. Prefer the retrieved context for factual information,
+    and use the conversation history only to maintain continuity and tone.
     If the answer is not in the context, say you don't know. You can answer greeting and closing sentences.
 
-    Context:
+    Conversation history (oldest to newest):
+    {history}
+
+    Retrieved context:
     {context}
 
-    Question:
+    Current question:
     {question}
 
     Answer in a clear and concise way.
@@ -61,10 +68,14 @@ def build_rag_chain(vectorstore: WeaviateVectorStore, settings: Settings):
 
     prompt = ChatPromptTemplate.from_template(template)
 
+    question_input = RunnableLambda(lambda x: x["question"])
+    history_input = RunnableLambda(lambda x: x.get("history", ""))
+
     rag_chain = (
         RunnableParallel(
-            context=retriever,
-            question=RunnablePassthrough(),
+            context=question_input | retriever,
+            question=question_input,
+            history=history_input,
         )
         | prompt
         | llm
