@@ -1,38 +1,43 @@
 from collections import deque
 from collections.abc import AsyncGenerator
 
-from fastapi import APIRouter, HTTPException, Request
+from dependency_injector.wiring import Provide, inject
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
+from langchain_core.runnables import RunnableSerializable
 import structlog
 
 from app.api.schemas.request import ChatRequest
+from app.dependency_injection.container import Container
 
 router = APIRouter(prefix="/api/v1/chat", tags=["chat"])
 
 logger = structlog.get_logger()
 
-MAX_HISTORY_MESSAGES = 10
+MAX_HISTORY_MESSAGES = 5  # Keep last 5 exchanges (10 messages total)
 
 
 def format_history(history: deque[dict[str, str]]) -> str:
+    """Format conversation history for prompt."""
     if not history:
-        return "No previous conversation history."
+        return "No previous conversation."
     return "\n".join(f"{item['role'].capitalize()}: {item['content']}" for item in history)
 
 
 @router.post("/stream")
+@inject
 async def chat_stream(
     request: Request,
     payload: ChatRequest,
+    rag_chain: RunnableSerializable[dict[str, str], str] = Depends(  # noqa: B008
+        Provide[Container.rag_chain]
+    ),
 ) -> StreamingResponse:
     """
     Stream chat responses from the RAG chain as Server-Sent Events (SSE).
+    Supports simple session-based history management.
     """
-
-    rag_chain = getattr(request.app.state, "rag_chain", None)
-    if rag_chain is None:
-        raise HTTPException(status_code=500, detail="RAG chain is not initialized")
-
+    # Lazy initialization of chat memory
     chat_memory = getattr(request.app.state, "chat_memory", None)
     if chat_memory is None:
         chat_memory = {}
@@ -43,7 +48,7 @@ async def chat_stream(
     # Get or create conversation history for this session
     conversation_history = chat_memory.setdefault(
         session_id,
-        deque(maxlen=MAX_HISTORY_MESSAGES * 2),  # define max length of the history
+        deque(maxlen=MAX_HISTORY_MESSAGES * 2),  # user + assistant pairs
     )
     history_context = format_history(conversation_history)
 
@@ -51,6 +56,7 @@ async def chat_stream(
     logger.info(
         "Chat stream request received",
         trace_id=trace_id,
+        session_id=session_id,
         message=payload.message,
     )
 
@@ -68,20 +74,27 @@ async def chat_stream(
                     logger.warning(
                         "Client disconnected during chat stream",
                         trace_id=trace_id,
+                        session_id=session_id,
                     )
                     client_disconnected = True
                     break
+
                 text = chunk if isinstance(chunk, str) else str(chunk)
                 assistant_chunks.append(text)
-                yield f"{text}"
+                # Proper SSE format
+                yield f"data: {text}\n\n"
+
         except Exception as exc:
             logger.exception(
                 "Error in chat stream",
                 trace_id=trace_id,
+                session_id=session_id,
                 error=str(exc),
             )
+            # Proper SSE format for errors
             yield f"data: [Error] {str(exc)}\n\n"
         else:
+            # Only update history if we got a complete response
             if assistant_chunks and not client_disconnected:
                 response_text = "".join(assistant_chunks)
                 conversation_history.append(
@@ -96,7 +109,11 @@ async def chat_stream(
                         "content": response_text,
                     }
                 )
-        finally:
-            chat_memory[session_id] = conversation_history
+                logger.info(
+                    "Chat stream completed",
+                    trace_id=trace_id,
+                    session_id=session_id,
+                    chunks_sent=len(assistant_chunks),
+                )
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")

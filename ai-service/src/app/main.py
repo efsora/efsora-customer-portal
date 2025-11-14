@@ -7,12 +7,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from langchain_weaviate import WeaviateVectorStore
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import Response as SstarletteResponse
-import weaviate
-from weaviate import connect_to_local
 
 from app.api.schemas.base_response import AppResponse, FieldError
 from app.api.schemas.errors import ErrorCode
@@ -23,7 +20,6 @@ from app.core.settings import Settings
 from app.core.version import APP_NAME, APP_VERSION
 from app.dependency_injection.container import Container
 from app.middleware.logging import RequestLoggingMiddleware
-from app.services.rag_service import build_rag_chain, build_vectorstore
 
 logger = get_logger(__name__)
 
@@ -79,70 +75,26 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
     logger.info("Dependency injection container wired successfully")
 
-    # Connect Weaviate client
-    weaviate_client = container.weaviate_client()
-    embeddings = container.embeddings()
-    vectorstore_client: weaviate.WeaviateClient | None = None
+    # Initialize RAG chain (triggers all dependencies: sync client, vectorstore, llm, chain)
+    # This validates that Weaviate is accessible and embeddings exist
     try:
-        await weaviate_client.connect()
-        logger.debug("Weaviate async client connected successfully")
-    except Exception as e:
-        logger.error(f"Failed to connect to Weaviate: {str(e)}", error=str(e))
-        raise
-
-    # Embed documents and initialize vectorstore + RAG chain for chat endpoints
-    try:
-        await build_vectorstore(
-            weaviate_client=weaviate_client,
-            settings=settings,
-            embeddings=embeddings,
-            save_chunks_txt=True,
-            save_embeddings_json=True,
-        )
-        logger.info("Vectorstore built and embeddings stored successfully")
-    except Exception as e:
-        logger.error("Failed to embed documents and build vectorstore", error=str(e))
-        raise
-
-    try:
-        vectorstore_client = connect_to_local(
-            host=settings.WEAVIATE_HOST,
-            port=settings.WEAVIATE_PORT,
-            grpc_port=settings.WEAVIATE_GRPC_PORT,
-            headers=None,
-        )
-
-        vectorstore = WeaviateVectorStore(
-            client=vectorstore_client,
-            index_name=settings.WEAVIATE_COLLECTION_NAME,
-            text_key="content",
-            embedding=embeddings,
-        )
-        rag_chain = build_rag_chain(vectorstore, settings)
-        cast(Any, app.state).rag_vectorstore = vectorstore
-        cast(Any, app.state).rag_chain = rag_chain
-        cast(Any, app.state).chat_memory = {}
+        _ = container.rag_chain()
         logger.info("RAG chain initialized successfully")
     except Exception as e:
         logger.error("Failed to initialize RAG chain", error=str(e))
-        if vectorstore_client is not None:
-            vectorstore_client.close()
         raise
 
     try:
         yield
     finally:
         logger.info("Shutting down application")
-        # Close Weaviate client
+        # Close sync Weaviate client
         try:
-            await weaviate_client.close()
-            logger.debug("Weaviate async client closed successfully")
+            sync_client = container.weaviate_sync_client()
+            sync_client.close()
+            logger.debug("Weaviate sync client closed successfully")
         except Exception as e:
             logger.error(f"Error closing Weaviate client: {str(e)}", error=str(e))
-        if vectorstore_client is not None:
-            vectorstore_client.close()
-        # Dispose database engine
-        # await engine.dispose()
         container.unwire()
 
 
