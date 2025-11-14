@@ -13,6 +13,7 @@
     "type-check": "tsc --noEmit",
     "generate:openapi": "tsx src/openapi/generate.ts",
     "seed": "tsx --env-file .env scripts/seed-data.ts",
+    "seed:demo": "tsx --env-file .env scripts/seed-demo-data.ts",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix --max-warnings=0",
     "format": "prettier --write .",
