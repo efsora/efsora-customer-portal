@@ -4,7 +4,6 @@
  */
 import { AuthService } from '../../api/AuthService';
 import { generateUniqueEmail } from '../../api/authApi';
-import { qase } from 'cypress-qase-reporter/mocha';
 
 describe('API > Authentication API Tests', () => {
   let authService: AuthService;
@@ -14,7 +13,7 @@ describe('API > Authentication API Tests', () => {
   });
 
   describe('POST /api/v1/auth/register', () => {
-    qase(18, it('should successfully register a new user', () => {
+    it('should successfully register a new user', () => {
       const newUser = {
         name: 'Register Test User',
         email: generateUniqueEmail('register-test'),
@@ -26,9 +25,9 @@ describe('API > Authentication API Tests', () => {
         expect(response.body.data.user.email).to.equal(newUser.email);
         expect(response.body.data.user.name).to.equal(newUser.name);
       });
-    }));
+    });
 
-    qase(19, it('should return error when email already exists', () => {
+    it('should return error when email already exists', () => {
       const email = generateUniqueEmail('duplicate-test');
       const firstUser = {
         name: 'First User',
@@ -49,9 +48,9 @@ describe('API > Authentication API Tests', () => {
             authService.verifyConflict(response);
           });
       });
-    }));
+    });
 
-    qase(20, it('should return error when name is missing', () => {
+    it('should return error when name is missing', () => {
       authService
         .register({
           name: '',
@@ -61,9 +60,9 @@ describe('API > Authentication API Tests', () => {
         .then((response) => {
           authService.verifyBadRequest(response);
         });
-    }));
+    });
 
-    qase(21, it('should return error when email is missing', () => {
+    it('should return error when email is missing', () => {
       authService
         .register({
           name: 'Test User',
@@ -73,9 +72,9 @@ describe('API > Authentication API Tests', () => {
         .then((response) => {
           authService.verifyBadRequest(response);
         });
-    }));
+    });
 
-    qase(22, it('should return error when password is missing', () => {
+    it('should return error when password is missing', () => {
       authService
         .register({
           name: 'Test User',
@@ -85,9 +84,9 @@ describe('API > Authentication API Tests', () => {
         .then((response) => {
           authService.verifyBadRequest(response);
         });
-    }));
+    });
 
-    qase(23, it('should return error for invalid email format', () => {
+    it('should return error for invalid email format', () => {
       authService
         .register({
           name: 'Test User',
@@ -97,9 +96,9 @@ describe('API > Authentication API Tests', () => {
         .then((response) => {
           authService.verifyBadRequest(response);
         });
-    }));
+    });
 
-    qase(24, it('should return token in registration response', () => {
+    it('should return token in registration response', () => {
       const newUser = {
         name: 'Token Test User',
         email: generateUniqueEmail('token-test'),
@@ -111,9 +110,9 @@ describe('API > Authentication API Tests', () => {
         expect(response.body.data.token).to.be.a('string');
         expect(response.body.data.token.length).to.be.greaterThan(0);
       });
-    }));
+    });
 
-    qase(25, it('should return user ID in registration response', () => {
+    it('should return user ID in registration response', () => {
       const newUser = {
         name: 'ID Test User',
         email: generateUniqueEmail('id-test'),
@@ -125,7 +124,7 @@ describe('API > Authentication API Tests', () => {
         expect(response.body.data.user.id).to.be.a('string');
         expect(response.body.data.user.id.length).to.be.greaterThan(0);
       });
-    }));
+    });
   });
 
   describe('POST /api/v1/auth/login', () => {
@@ -140,7 +139,7 @@ describe('API > Authentication API Tests', () => {
       authService.register(loginTestUser);
     });
 
-    qase(26, it('should successfully login with valid credentials', () => {
+    it('should successfully login with valid credentials', () => {
       authService
         .login({
           email: loginTestUser.email,
@@ -150,9 +149,9 @@ describe('API > Authentication API Tests', () => {
           authService.verifyLoginSuccess(response);
           expect(response.body.data.user.email).to.equal(loginTestUser.email);
         });
-    }));
+    });
 
-    qase(27, it('should return error with invalid password', () => {
+    it('should return error with invalid password', () => {
       authService
         .login({
           email: loginTestUser.email,
@@ -161,9 +160,9 @@ describe('API > Authentication API Tests', () => {
         .then((response) => {
           authService.verifyInvalidCredentials(response);
         });
-    }));
+    });
 
-    qase(28, it('should return error with non-existent email', () => {
+    it('should return error with non-existent email', () => {
       authService
         .login({
           email: 'nonexistent@example.com',
@@ -172,9 +171,9 @@ describe('API > Authentication API Tests', () => {
         .then((response) => {
           authService.verifyInvalidCredentials(response);
         });
-    }));
+    });
 
-    qase(29, it('should return error when email is missing', () => {
+    it('should return error when email is missing', () => {
       authService
         .login({
           email: '',
@@ -183,9 +182,9 @@ describe('API > Authentication API Tests', () => {
         .then((response) => {
           authService.verifyBadRequest(response);
         });
-    }));
+    });
 
-    qase(30, it('should return error when password is missing', () => {
+    it('should return error when password is missing', () => {
       authService
         .login({
           email: loginTestUser.email,
@@ -194,9 +193,9 @@ describe('API > Authentication API Tests', () => {
         .then((response) => {
           authService.verifyBadRequest(response);
         });
-    }));
+    });
 
-    qase(31, it('should return token on successful login', () => {
+    it('should return token on successful login', () => {
       authService
         .login({
           email: loginTestUser.email,
@@ -207,9 +206,9 @@ describe('API > Authentication API Tests', () => {
           expect(response.body.data.token).to.be.a('string');
           expect(response.body.data.token.length).to.be.greaterThan(0);
         });
-    }));
+    });
 
-    qase(32, it('should return user information on successful login', () => {
+    it('should return user information on successful login', () => {
       authService
         .login({
           email: loginTestUser.email,
@@ -221,9 +220,9 @@ describe('API > Authentication API Tests', () => {
           expect(response.body.data.user).to.have.property('email', loginTestUser.email);
           expect(response.body.data.user).to.have.property('name');
         });
-    }));
+    });
 
-    qase(33, it('should respond within acceptable time', () => {
+    it('should respond within acceptable time', () => {
       authService
         .login({
           email: loginTestUser.email,
@@ -233,7 +232,7 @@ describe('API > Authentication API Tests', () => {
           authService.verifyLoginSuccess(response);
           authService.verifyResponseTime(response, 2000); // Max 2 seconds
         });
-    }));
+    });
   });
 
   describe('GET /api/v1/users/:id', () => {
@@ -254,39 +253,39 @@ describe('API > Authentication API Tests', () => {
       });
     });
 
-    qase(34, it('should return user by ID with valid token', () => {
+    it('should return user by ID with valid token', () => {
       authService.getUser(userId).then((response) => {
         authService.verifyStatus(response, 200);
         expect(response.body.data).to.have.property('email', profileTestUser.email);
         expect(response.body.data).to.have.property('name', profileTestUser.name);
         expect(response.body.data).to.have.property('id', userId);
       });
-    }));
+    });
 
-    qase(35, it('should return 401 without authentication token', () => {
+    it('should return 401 without authentication token', () => {
       authService.clearToken();
       authService.getUser(userId).then((response) => {
         authService.verifyUnauthorized(response);
       });
-    }));
+    });
 
-    qase(36, it('should return 401 with invalid token', () => {
+    it('should return 401 with invalid token', () => {
       authService.setToken('invalid.jwt.token');
       authService.getUser(userId).then((response) => {
         authService.verifyUnauthorized(response);
       });
-    }));
+    });
 
-    qase(37, it('should return 404 for non-existent user', () => {
+    it('should return 404 for non-existent user', () => {
       authService.setToken(authToken); // Reset valid token
       authService.getUser('00000000-0000-0000-0000-000000000000').then((response) => {
         authService.verifyStatus(response, 404);
       });
-    }));
+    });
   });
 
   describe('Authentication Flow Integration', () => {
-    qase(38, it('should complete full registration and get user flow', () => {
+    it('should complete full registration and get user flow', () => {
       const newUser = {
         name: 'Integration Test User',
         email: generateUniqueEmail('integration'),
@@ -306,9 +305,9 @@ describe('API > Authentication API Tests', () => {
           expect(profileResponse.body.data.email).to.equal(newUser.email);
         });
       });
-    }));
+    });
 
-    qase(39, it('should allow login with newly registered user', () => {
+    it('should allow login with newly registered user', () => {
       const newUser = {
         name: 'New Login Test User',
         email: generateUniqueEmail('new-login'),
@@ -327,6 +326,6 @@ describe('API > Authentication API Tests', () => {
             authService.verifyLoginSuccess(loginResponse);
           });
       });
-    }));
+    });
   });
 });

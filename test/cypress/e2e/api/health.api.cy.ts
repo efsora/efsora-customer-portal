@@ -3,7 +3,6 @@
  * Tests the backend service health endpoint
  */
 import { HealthService } from '../../api/HealthService';
-import { qase } from 'cypress-qase-reporter/mocha';
 
 describe('API > Health Check API Tests', () => {
   let healthService: HealthService;
@@ -13,28 +12,28 @@ describe('API > Health Check API Tests', () => {
   });
 
   describe('GET /health', () => {
-    qase(40, it('should return healthy status', () => {
+    it('should return healthy status', () => {
       healthService.getHealth().then((response) => {
         healthService.verifyHealthy(response);
         healthService.logResponse(response, 'Health Check');
       });
-    }));
+    });
 
-    qase(41, it('should include timestamp in response', () => {
+    it('should include timestamp in response', () => {
       healthService.getHealth().then((response) => {
         healthService.verifyHealthy(response);
         healthService.verifyHasTimestamp(response);
       });
-    }));
+    });
 
-    qase(42, it('should respond within acceptable time', () => {
+    it('should respond within acceptable time', () => {
       healthService.getHealth().then((response) => {
         healthService.verifyHealthy(response);
         healthService.verifyHealthResponseTime(response, 1000); // 1 second max
       });
-    }));
+    });
 
-    qase(43, it('should have proper response structure', () => {
+    it('should have proper response structure', () => {
       healthService.getHealth().then((response) => {
         healthService.verifyStatus(response, 200);
 
@@ -51,9 +50,9 @@ describe('API > Health Check API Tests', () => {
         // Verify status is 'ok'
         expect(response.body.status).to.equal('ok');
       });
-    }));
+    });
 
-    qase(44, it('should return consistent status', () => {
+    it('should return consistent status', () => {
       // Call health endpoint multiple times
       cy.wrap(null).then(() => {
         return healthService.getHealth();
@@ -66,6 +65,6 @@ describe('API > Health Check API Tests', () => {
       }).then((response2) => {
         healthService.verifyHealthy(response2);
       });
-    }));
+    });
   });
 });

@@ -51,7 +51,6 @@ export const loginUser = (
 
 /**
  * Register a user and store token in localStorage for authenticated requests
- * Automatically tracks created user for cleanup
  * @param user - User registration data
  * @param storageKey - Key to store token in localStorage (default: 'authToken')
  */
@@ -65,10 +64,6 @@ export const registerUserAndLogin = (
     expect(response.body.success).to.be.true;
 
     const token = response.body.data.token;
-    const userId = response.body.data.id;
-
-    // Track user for cleanup
-    trackCreatedUser(userId);
 
     // Return the cy.window chain properly to avoid mixing sync/async
     return cy.window().then((win) => {
@@ -80,7 +75,6 @@ export const registerUserAndLogin = (
 
 /**
  * Login a user and store token in localStorage for authenticated requests
- * Automatically tracks created user for cleanup
  * @param email - User email
  * @param password - User password
  * @param storageKey - Key to store token in localStorage (default: 'authToken')
@@ -95,12 +89,6 @@ export const loginUserAndStoreToken = (
     expect(response.body.success).to.be.true;
 
     const token = response.body.data.token;
-    const userId = response.body.data.user?.id;
-
-    // Track user for cleanup if it's a new registration
-    if (userId) {
-      trackCreatedUser(userId);
-    }
 
     // Return the cy.window chain properly to avoid mixing sync/async
     return cy.window().then((win) => {
@@ -121,67 +109,3 @@ export const generateUniqueEmail = (prefix: string = 'testuser'): string => {
   return `${prefix}.${timestamp}.${random}@example.com`;
 };
 
-/**
- * Cleanup test users by their IDs
- * Only works in development environment
- * @param userIds - Array of user IDs to delete
- * @returns Cypress chainable with cleanup response
- */
-export const cleanupTestUsers = (
-  userIds: string[]
-): Cypress.Chainable<any> => {
-  if (userIds.length === 0) {
-    return cy.log('No users to cleanup').then(() => ({
-      success: true,
-      deletedCount: 0,
-    }));
-  }
-
-  const apiUrl = getApiUrl();
-  const cleanupUrl = `${apiUrl}/v1/test/cleanup`;
-
-  return cy
-    .log(`Starting cleanup for ${userIds.length} users`)
-    .then(() =>
-      cy.request({
-        method: 'DELETE',
-        url: cleanupUrl,
-        body: { userIds },
-        failOnStatusCode: false,
-      })
-    )
-    .then((response) => {
-      const message =
-        response.status === 200
-          ? `✓ Cleaned up ${response.body.data.deletedCount} test users successfully`
-          : `✗ Cleanup failed (${response.status}): ${response.body.message || JSON.stringify(response.body)}`;
-      return cy.log(message).then(() => response);
-    });
-};
-
-/**
- * Global tracker for created users in current test run
- * Used for cleanup after tests complete
- */
-let createdUserIds: string[] = [];
-
-/**
- * Get the list of created user IDs
- */
-export const getCreatedUserIds = (): string[] => {
-  return createdUserIds;
-};
-
-/**
- * Add a user ID to the created users list
- */
-export const trackCreatedUser = (userId: string): void => {
-  createdUserIds.push(userId);
-};
-
-/**
- * Clear the created users list
- */
-export const clearCreatedUserIds = (): void => {
-  createdUserIds = [];
-};

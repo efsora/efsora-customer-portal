@@ -1,6 +1,6 @@
 {
-  "baseUrl": "https://example.com",
-  "apiUrl": "https://api.example.com/v1",
+  "baseUrl": "http://localhost:5173",
+  "apiUrl": "http://localhost:3000/api/v1",
   "environment": "prod",
   "testUser": {
     "username": "prod_testuser",
