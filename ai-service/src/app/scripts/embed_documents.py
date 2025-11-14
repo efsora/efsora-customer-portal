@@ -29,7 +29,7 @@ async def embed_documents() -> None:
 
     # Get dependencies from container
     settings = container.settings()
-    weaviate_client = container.weaviate_client()
+    weaviate_client = container.weaviate_async_client()
     embeddings = container.embeddings()
 
     try:

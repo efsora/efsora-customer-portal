@@ -33,4 +33,5 @@ htmlcov/
 
 #Necessary Documents
 # Ignore data directory inside ai-service/src
-ai-service/src/data/
+data/
+output/

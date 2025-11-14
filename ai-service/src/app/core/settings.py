@@ -27,17 +27,21 @@ class Settings(BaseSettings):
     WEAVIATE_PORT: int = Field(default=8080)
     WEAVIATE_GRPC_PORT: int = Field(default=50051)
     WEAVIATE_COLLECTION_NAME: str = Field(default="EfsoraDocs")
-    DATA_DIR: str = Field(default="data/")
-    OUTPUT_DIR: str = Field(default="output/")
+    DATA_DIR: str = Field(default="/app/data/")
+    OUTPUT_DIR: str = Field(default="/app/output/")
     SEMANTIC_MAX_TOKENS: int = Field(default=512)
     EMBED_MODEL: str = Field(default="amazon.titan-embed-text-v2:0")
     BEDROCK_REGION: str = Field(default="us-east-1")
+    LLM_MODEL: str = Field(default="global.anthropic.claude-sonnet-4-20250514-v1:0")
+    AWS_ACCESS_KEY_ID: str = Field(default="")
+    AWS_SECRET_ACCESS_KEY: str = Field(default="")
 
     @property
     def DATABASE_URL(self) -> str:
         return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
     model_config = SettingsConfigDict(
+        env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",

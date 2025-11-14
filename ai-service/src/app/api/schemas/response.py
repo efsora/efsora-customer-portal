@@ -29,3 +29,8 @@ class SearchResponse(BaseModel):
     collection: str
     results: list[SearchResult]
     count: int
+
+
+class ChatResponse(BaseModel):
+    question: str
+    answer: str

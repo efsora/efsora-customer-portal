@@ -28,3 +28,11 @@ class SearchRequest(BaseModel):
     query: str = Field(..., min_length=1, max_length=10000)
     collection: str = Field(..., min_length=1, max_length=100)
     limit: int = Field(default=10, ge=1, le=100)
+
+
+class ChatRequest(BaseModel):
+    message: str
+    session_id: str | None = Field(
+        default=None,
+        description="Client-provided identifier used to persist chat history across requests.",
+    )

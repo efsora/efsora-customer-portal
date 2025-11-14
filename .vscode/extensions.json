@@ -1,0 +1,27 @@
+{
+    "recommendations": [
+        // === Backend & Frontend (TypeScript/JavaScript) ===
+        "dbaeumer.vscode-eslint",           // ESLint linting
+        "esbenp.prettier-vscode",           // Code formatting
+        "yoavbls.pretty-ts-errors",         // Better TypeScript error messages
+        "usernamehw.errorlens",             // Inline error highlighting
+
+        // === AI Service (Python) ===
+        "ms-python.python",                 // Python language support
+        "ms-python.black-formatter",        // Black formatter
+        "charliermarsh.ruff",               // Ruff linter (fast Python linter)
+        "ms-python.mypy-type-checker",      // MyPy type checking
+
+        // === Debugging ===
+        "ms-vscode.js-debug",               // JavaScript/Node.js debugger
+        "ms-python.debugpy",                // Python debugger
+
+        // === Docker & DevOps ===
+        "ms-azuretools.vscode-docker",      // Docker support
+
+        // === General Productivity ===
+        "editorconfig.editorconfig",        // EditorConfig support
+        "gruntfuggly.todo-tree",            // TODO highlighting
+        "wayou.vscode-todo-highlight"       // TODO/FIXME highlighting
+    ]
+}
