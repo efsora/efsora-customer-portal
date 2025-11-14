@@ -4,6 +4,8 @@ import {
   projectIdParamSchema,
   projectResponseSchema,
   getProjectsQuerySchema,
+  getYourTeamQuerySchema,
+  getYourTeamResponseSchema,
 } from "#routes/projects/schemas";
 import { registry } from "../registry.js";
 import { commonErrorResponses, successResponseSchema } from "../schemas.js";
@@ -98,6 +100,37 @@ registry.registerPath({
       },
     },
     401: commonErrorResponses[401],
+    500: commonErrorResponses[500],
+  },
+});
+
+/**
+ * GET /api/v1/projects/team
+ * Get team members for a project (customer and efsora teams)
+ */
+registry.registerPath({
+  method: "get",
+  path: "/api/v1/projects/team",
+  summary: "Get project team members",
+  description:
+    "Retrieve team members for a project, split into customer team and efsora team. Automatically uses the authenticated user's company ID.",
+  tags: ["Projects"],
+  security: [{ BearerAuth: [] }],
+  request: {
+    query: getYourTeamQuerySchema,
+  },
+  responses: {
+    200: {
+      description: "Team members retrieved successfully",
+      content: {
+        "application/json": {
+          schema: successResponseSchema(getYourTeamResponseSchema),
+        },
+      },
+    },
+    400: commonErrorResponses[400],
+    401: commonErrorResponses[401],
+    404: commonErrorResponses[404],
     500: commonErrorResponses[500],
   },
 });

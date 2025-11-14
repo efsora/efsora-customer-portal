@@ -33,3 +33,11 @@ export type ProjectIdInput = {
 export type FindProjectsByCompanyInput = {
   companyId: number;
 };
+
+/**
+ * Input for getting team members by project
+ */
+export type GetYourTeamInput = {
+  projectId: number;
+  userId: string;
+};

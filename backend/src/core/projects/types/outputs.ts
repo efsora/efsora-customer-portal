@@ -3,6 +3,8 @@
  * Define output structures for project operations
  */
 
+import type { ExtendedUserData } from "#core/users";
+
 /**
  * Project data returned from operations
  */
@@ -26,4 +28,13 @@ export type CreateProjectResult = ProjectData;
 export type DeleteProjectResult = {
   id: number;
   message: string;
+};
+
+/**
+ * Result for get your team operation
+ * Uses ExtendedUserData from users module
+ */
+export type GetYourTeamResult = {
+  customerTeam: ExtendedUserData[];
+  efsoraTeam: ExtendedUserData[];
 };

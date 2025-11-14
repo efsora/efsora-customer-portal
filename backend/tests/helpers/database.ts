@@ -109,6 +109,7 @@ export function getTestDb() {
 /**
  * Cleanup database by truncating all tables
  * Uses CASCADE to handle foreign key constraints
+ * Uses RESTART IDENTITY to reset auto-increment sequences
  * Uses the lazy-initialized database client
  */
 export async function cleanupDatabase(): Promise<void> {
@@ -116,6 +117,7 @@ export async function cleanupDatabase(): Promise<void> {
 
   // Truncate all tables in the schema
   // CASCADE automatically handles foreign key constraints
+  // RESTART IDENTITY resets serial/auto-increment sequences to 1
   // Order doesn't matter with CASCADE, but we list dependencies first for clarity
   const tables = [
     "events",
@@ -129,7 +131,9 @@ export async function cleanupDatabase(): Promise<void> {
   ];
 
   for (const table of tables) {
-    await db.execute(sql.raw(`TRUNCATE TABLE "${table}" CASCADE`));
+    await db.execute(
+      sql.raw(`TRUNCATE TABLE "${table}" RESTART IDENTITY CASCADE`),
+    );
   }
 }
 

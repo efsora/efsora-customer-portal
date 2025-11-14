@@ -8,6 +8,7 @@ import {
   handleGetAllProjects,
   handleUpdateProject,
   handleDeleteProject,
+  handleGetYourTeam,
 } from "./handlers";
 import {
   createProjectSchema,
@@ -15,6 +16,7 @@ import {
   getAllProjectsSchema,
   updateProjectSchema,
   deleteProjectSchema,
+  getYourTeamSchema,
 } from "./schemas";
 
 const router = Router();
@@ -29,6 +31,18 @@ router.post(
   auth,
   validate(createProjectSchema),
   handleResult(handleCreateProject),
+);
+
+/**
+ * @route GET /api/v1/projects/team
+ * @desc Get team members for a project (customer and efsora teams)
+ * @access Private
+ */
+router.get(
+  "/team",
+  auth,
+  validate(getYourTeamSchema),
+  handleResult(handleGetYourTeam),
 );
 
 /**

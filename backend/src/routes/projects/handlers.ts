@@ -5,11 +5,13 @@ import {
 } from "#lib/types/response";
 import { run, matchResponse } from "#lib/result";
 import type { ValidatedRequest } from "#middlewares/validate";
+import type { AuthenticatedRequest } from "#middlewares/auth";
 import type {
   CreateProjectBody,
   UpdateProjectBody,
   ProjectIdParam,
   GetProjectsQuery,
+  GetYourTeamQuery,
 } from "./schemas";
 import {
   createProject,
@@ -17,9 +19,11 @@ import {
   getAllProjects,
   updateProject,
   deleteProject,
+  getYourTeam,
   type CreateProjectResult,
   type ProjectData,
   type DeleteProjectResult,
+  type GetYourTeamResult,
 } from "#core/projects";
 
 /**
@@ -117,6 +121,32 @@ export async function handleDeleteProject(
   const { id } = req.validated.params;
 
   const result = await run(deleteProject({ id }));
+
+  return matchResponse(result, {
+    onSuccess: (data) => createSuccessResponse(data),
+    onFailure: (error) => createFailureResponse(error),
+  });
+}
+
+/**
+ * Handler for GET /api/v1/projects/team
+ * Get team members for a project (customer team and efsora team)
+ */
+export async function handleGetYourTeam(
+  req: ValidatedRequest<{ query: GetYourTeamQuery }> & AuthenticatedRequest,
+): Promise<AppResponse<GetYourTeamResult>> {
+  const { projectId } = req.validated.query;
+  const userId = req.userId;
+
+  // userId is guaranteed by auth middleware
+  if (!userId) {
+    return createFailureResponse({
+      code: "UNAUTHORIZED",
+      message: "User authentication required",
+    });
+  }
+
+  const result = await run(getYourTeam({ projectId, userId }));
 
   return matchResponse(result, {
     onSuccess: (data) => createSuccessResponse(data),
