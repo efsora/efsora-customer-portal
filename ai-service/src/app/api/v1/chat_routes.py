@@ -73,7 +73,7 @@ async def chat_stream(
                     break
                 text = chunk if isinstance(chunk, str) else str(chunk)
                 assistant_chunks.append(text)
-                yield f"data: {text}\n\n"
+                yield f"{text}"
         except Exception as exc:
             logger.exception(
                 "Error in chat stream",
