@@ -8,7 +8,7 @@ type Props = {
 interface MessageType {
     user: string;
     content: string;
-    timestamp: Date;
+    timestamp?: Date;
     error?: boolean;
 }
 
@@ -22,14 +22,13 @@ const Message: React.FC<Props> = ({ msg }) => {
     return (
         <div className={`${styles.message} ${styles[isUser ? "user" : "bot"]}`}>
             <div className={styles.messageWrapper}>
-                <div className={styles.name}>{msg.user}</div>
                 <div
                     className={`${styles.messageBubble} ${styles[isUser ? "userMessage" : "botMessage"]}${msg.error ? ` ${styles.errorMessage}` : ""}`}
                 >
                     {msg.content}
                 </div>
                 <small className={styles.timestamp}>
-                    {msg.timestamp.toLocaleTimeString([], {
+                    {msg.timestamp?.toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
                     })}

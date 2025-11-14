@@ -4,6 +4,9 @@
     height: 100%;
     overflow-y: auto;
     scrollbar-gutter: stable;
+    padding-left: 24px;
+    padding-right: 8px;
+    padding-top: 24px;
 }
 
 .loader {

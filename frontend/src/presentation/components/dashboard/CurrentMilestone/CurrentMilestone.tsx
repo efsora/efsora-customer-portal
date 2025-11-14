@@ -11,7 +11,7 @@ export function CurrentMilestone() {
 
                     <div className={styles.milestoneItem}> 
                         <div className='flex items-center gap-2 text-gray-500 text-sm'>
-                            <div className='iconPlaceholder'/>
+                            <img src="check.svg" alt="previous" />
                             <div>Previous</div>
                         </div>
                         <p className={styles.milestoneItemDescription}>Kickoff Meeting Completed</p>
@@ -22,7 +22,7 @@ export function CurrentMilestone() {
 
                     <div className={styles.milestoneItem}> 
                         <div className='flex items-center gap-2 text-gray-500 text-sm'>
-                            <div className='iconPlaceholder'/>
+                            <img src="circle.svg" alt="next" />
                             <div>Next</div>
                         </div>
                         <p className={styles.milestoneItemDescription}>Development Sprint 1</p>

@@ -6,7 +6,7 @@ export default function LeftBar() {
     return (
         <div className={styles.leftBarContainer}>
             <div className={styles.brandContainer}>
-                <img src="efsora-brand.svg" alt="EfsoraBrand" className={styles.efsoraBrand} />
+                <img src="efsora-labs-brand.svg" alt="EfsoraBrand" className={styles.efsoraBrand} />
             </div>
             <NavigationMenu />
         </div>

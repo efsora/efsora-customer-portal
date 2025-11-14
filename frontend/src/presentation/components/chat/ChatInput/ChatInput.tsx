@@ -30,7 +30,7 @@ export function ChatInput({
                     onChange={(e) => onInputChange(e.target.value)}
                     onKeyDown={handleKeyDown}
                     className={styles.inputAreaInput}
-                    placeholder="Type your message..."
+                    placeholder="Ask a question..."
                     disabled={disabled}
                 />
                 <button
@@ -38,7 +38,7 @@ export function ChatInput({
                     className={styles.button}
                     disabled={isInputEmpty || disabled}
                 >
-                    <img src="/dropdown-up-white.svg" alt="placeholder" />
+                    <img src="/send.svg" alt="send" />
                 </button>
             </div>
         </div>

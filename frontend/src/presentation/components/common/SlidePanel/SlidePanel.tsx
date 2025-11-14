@@ -30,7 +30,7 @@ export default function SlidePanel() {
         {/* Add your panel content here */}
         <div className={styles.content}>
           <button
-          className={styles.closeButton}
+            className={styles.closeButton}
             onClick={handleBackdropClick}
             aria-label="Close panel"
           >

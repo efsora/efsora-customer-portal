@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { ChatInput } from "#components/chat/ChatInput/ChatInput";
 import { MessageList } from "#components/chat/MessageList/MessageList";
 import styles from "./Chat.module.css";
+import Message from "#presentation/components/chat/Message/Message";
 
 
 interface MessageType {
@@ -47,10 +48,19 @@ const Chat: React.FC = () => {
     return (
         <div className={styles.content}>
             <div className={styles.chatContainer}>
+                <ChatHeader />
                 <MessageList
                     messages={messages}
                     loading={loading}
-                    emptyContent={<div>empty content</div>}
+                    emptyContent={
+                        <div>
+                            <Message msg={{
+                            user: "bot",
+                            content: "Hello! I can help you find documents, answer questions about project status, and more. What would you like to know?",
+                    }
+                    } />
+                    </div>
+                    }
                 />
                 <ChatInput
                     input={input}
@@ -64,3 +74,14 @@ const Chat: React.FC = () => {
 };
 
 export default Chat;
+
+
+
+export function ChatHeader() {
+    return (
+        <div className={styles.chatHeaderContainer}>
+            <div className={styles.chatHeaderHeader}>AI Assistant</div>
+            <div>Ask questions about your documents.</div>
+        </div>
+    );
+}
