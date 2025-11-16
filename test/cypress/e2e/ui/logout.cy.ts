@@ -25,6 +25,15 @@ describe('UI > Logout Functionality', () => {
     homePage = new HomePage();
   });
 
+    /**
+     * @qaseId 210
+     */
+    /**
+     * @qaseId 210
+     */
+    /**
+     * @qaseId 252
+     */
   it('should successfully logout and redirect to login page', () => {
     loginPage
       .visit()
@@ -37,6 +46,15 @@ describe('UI > Logout Functionality', () => {
     cy.url().should('include', '/login');
   });
 
+    /**
+     * @qaseId 211
+     */
+    /**
+     * @qaseId 211
+     */
+    /**
+     * @qaseId 253
+     */
   it('should handle logout button loading state', () => {
     loginPage
       .visit()
@@ -74,6 +92,15 @@ describe('UI > Logout Functionality', () => {
     cy.url().should('include', '/login');
   });
 
+    /**
+     * @qaseId 212
+     */
+    /**
+     * @qaseId 212
+     */
+    /**
+     * @qaseId 254
+     */
   it('should prevent access to protected routes after logout', () => {
     loginPage
       .visit()

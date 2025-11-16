@@ -26,6 +26,15 @@ describe('UI > Login Functionality', () => {
     loginPage.visit();
   });
 
+    /**
+     * @qaseId 202
+     */
+    /**
+     * @qaseId 202
+     */
+    /**
+     * @qaseId 244
+     */
   it('should successfully login with valid credentials', () => {
     loginPage
       .verifyPageLoaded()
@@ -36,6 +45,15 @@ describe('UI > Login Functionality', () => {
       .verifyUserLoggedIn();
   });
 
+    /**
+     * @qaseId 203
+     */
+    /**
+     * @qaseId 203
+     */
+    /**
+     * @qaseId 245
+     */
   it('should display error message with invalid credentials', () => {
     loginPage
       .verifyPageLoaded()
@@ -43,6 +61,15 @@ describe('UI > Login Functionality', () => {
       .verifyErrorMessageVisible();
   });
 
+    /**
+     * @qaseId 204
+     */
+    /**
+     * @qaseId 204
+     */
+    /**
+     * @qaseId 246
+     */
   it('should display error message when email is empty', () => {
     loginPage
       .verifyPageLoaded()
@@ -52,6 +79,15 @@ describe('UI > Login Functionality', () => {
       .verifyEmailErrorContains('Email is required');
   });
 
+    /**
+     * @qaseId 205
+     */
+    /**
+     * @qaseId 205
+     */
+    /**
+     * @qaseId 247
+     */
   it('should display error message when password is empty', () => {
     loginPage
       .verifyPageLoaded()
@@ -61,6 +97,15 @@ describe('UI > Login Functionality', () => {
       .verifyPasswordErrorContains('Password is required');
   });
 
+    /**
+     * @qaseId 206
+     */
+    /**
+     * @qaseId 206
+     */
+    /**
+     * @qaseId 248
+     */
   it('should navigate to signup page', () => {
     loginPage
       .verifyPageLoaded()
@@ -69,6 +114,15 @@ describe('UI > Login Functionality', () => {
     cy.url().should('include', '/register');
   });
 
+    /**
+     * @qaseId 207
+     */
+    /**
+     * @qaseId 207
+     */
+    /**
+     * @qaseId 249
+     */
   it('should clear input fields', () => {
     loginPage
       .verifyPageLoaded()
@@ -87,6 +141,15 @@ describe('UI > Login Functionality', () => {
     loginPage.getPasswordValue().should('equal', '');
   });
 
+    /**
+     * @qaseId 208
+     */
+    /**
+     * @qaseId 208
+     */
+    /**
+     * @qaseId 250
+     */
   it('should display loading text on submit button while signing in', () => {
     loginPage
       .verifyPageLoaded()
@@ -96,6 +159,15 @@ describe('UI > Login Functionality', () => {
       .verifySignInButtonLoading();
   });
 
+    /**
+     * @qaseId 209
+     */
+    /**
+     * @qaseId 209
+     */
+    /**
+     * @qaseId 251
+     */
   it('should display page title and form elements', () => {
     loginPage
       .verifyPageLoaded()

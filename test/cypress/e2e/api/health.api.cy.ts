@@ -12,6 +12,7 @@ describe('API > Health Check API Tests', () => {
   });
 
   describe('GET /health', () => {
+
     it('should return healthy status', () => {
       healthService.getHealth().then((response) => {
         healthService.verifyHealthy(response);
@@ -19,6 +20,7 @@ describe('API > Health Check API Tests', () => {
       });
     });
 
+    
     it('should include timestamp in response', () => {
       healthService.getHealth().then((response) => {
         healthService.verifyHealthy(response);
@@ -26,6 +28,7 @@ describe('API > Health Check API Tests', () => {
       });
     });
 
+   
     it('should respond within acceptable time', () => {
       healthService.getHealth().then((response) => {
         healthService.verifyHealthy(response);
@@ -33,6 +36,7 @@ describe('API > Health Check API Tests', () => {
       });
     });
 
+  
     it('should have proper response structure', () => {
       healthService.getHealth().then((response) => {
         healthService.verifyStatus(response, 200);
@@ -52,6 +56,7 @@ describe('API > Health Check API Tests', () => {
       });
     });
 
+   
     it('should return consistent status', () => {
       // Call health endpoint multiple times
       cy.wrap(null).then(() => {

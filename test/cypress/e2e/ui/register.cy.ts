@@ -13,6 +13,15 @@ describe('UI > Register Functionality', () => {
     registerPage.visit();
   });
 
+    /**
+     * @qaseId 213
+     */
+    /**
+     * @qaseId 213
+     */
+    /**
+     * @qaseId 255
+     */
   it('should successfully register with valid credentials', () => {
     registerPage
       .verifyPageLoaded()
@@ -22,6 +31,15 @@ describe('UI > Register Functionality', () => {
     cy.url().should('include', '/', { timeout: 10000 });
   });
 
+    /**
+     * @qaseId 214
+     */
+    /**
+     * @qaseId 214
+     */
+    /**
+     * @qaseId 256
+     */
   it('should display validation error for empty fields', () => {
     registerPage
       .verifyPageLoaded()
@@ -31,6 +49,15 @@ describe('UI > Register Functionality', () => {
       .verifyPasswordErrorVisible();
   });
 
+    /**
+     * @qaseId 215
+     */
+    /**
+     * @qaseId 215
+     */
+    /**
+     * @qaseId 257
+     */
   it('should display error when email already exists', () => {
     // Try to register with an email that was already registered
     registerPage
@@ -41,6 +68,15 @@ describe('UI > Register Functionality', () => {
     registerPage.getErrorMessage().should('contain', 'Email already in use');
   });
 
+    /**
+     * @qaseId 216
+     */
+    /**
+     * @qaseId 216
+     */
+    /**
+     * @qaseId 258
+     */
   it('should navigate to login page', () => {
     registerPage
       .verifyPageLoaded()

@@ -9,9 +9,6 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
-// Import Qase logger for debugging
-import './qase-logger';
-
 // Import commands.ts using ES2015 syntax:
 import './commands';
 
