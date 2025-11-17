@@ -1,7 +1,7 @@
-import { useNavigate } from "react-router-dom";
 import Dropdown from "#components/common/Dropdown/Dropdown";
 import { useGetUserSummaryById } from "#hooks/useUser";
 import { useCurrentUser } from "#store/authStore";
+import { useNavigate } from "react-router-dom";
 import Logout from "../../common/Logout";
 import styles from "./UserProfile.module.css";
 
@@ -35,6 +35,7 @@ export default function UserProfile() {
                     />
                 )}
             >
+                {/* 
                 <div className='text-lg'>Quick Actions</div>
                 <div className={styles.dropdownItem}>
                     <img src="new-event.svg" alt="new-event" />
@@ -71,6 +72,7 @@ export default function UserProfile() {
                     <img src="settings.svg" alt="settings" />
                     <button>Settings</button>
                 </div>
+                */}
                 <div className={styles.dropdownItem}>
                     <img src="help.svg" alt="help" />
                     <button onClick={() => navigate("/help")}>Help & Support</button>
