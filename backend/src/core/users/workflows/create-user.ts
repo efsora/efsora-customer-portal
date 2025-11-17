@@ -9,10 +9,11 @@ import {
   hashPasswordForCreation,
   saveNewUser,
   mapRegisterDataToUser,
+  createRegisterSession,
 } from "../operations/create-user";
 
 /**
- * Create User Workflow
+ * Create User Workflow - Session-based authentication
  *
  * Orchestrates the creation of a new user account.
  * This is a public operation that creates users via the /api/v1/users endpoint.
@@ -23,6 +24,7 @@ import {
  * 3. Hash password
  * 4. Save user to database
  * 5. Generate authentication token
+ * 6. Create session in database (enables proper logout and token invalidation)
  *
  * @param input - User creation data (email, password, optional name)
  * @returns Result containing user data with authentication token
@@ -34,5 +36,6 @@ export function createUser(input: CreateUserInput): Result<CreateUserResult> {
     hashPasswordForCreation,
     saveNewUser,
     addAuthToken,
+    createRegisterSession,
   );
 }

@@ -1,0 +1,41 @@
+.container {
+    display: flex;
+    gap: 12px;
+}
+
+.currentMilestoneContainer {
+    background-color: white;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #e4e4e4;
+    width: 100%;
+}
+
+.currentMilestoneText {
+    color: #2B376D;
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-size: large;
+}
+
+.milestones {
+    display: grid;
+    grid-template-columns: 2fr 8fr 2fr;
+    gap: 12px;
+}
+
+.milestoneItemDescription {
+    color: #6B7C93;
+    font-size: small;
+}
+
+.milestoneItemDate {
+    color: #A0AEC0;
+    font-size: x-small;
+}
+
+.milestoneItem {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

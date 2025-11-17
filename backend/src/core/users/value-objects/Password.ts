@@ -78,7 +78,6 @@ export const Password = {
         return hashedValue;
       },
       (hashedValue: string) => success(hashedValue as HashedPassword),
-      { operation: "hashPassword", tags: { action: "hash", domain: "users" } },
     );
   },
 
@@ -200,7 +199,6 @@ export const HashedPassword = {
       (isValid: boolean) => success(isValid),
       {
         operation: "verifyPassword",
-        tags: { action: "validate", domain: "users" },
       },
     );
   },

@@ -13,9 +13,9 @@ echo "✅ Database is ready!"
 
 echo "🔄 Running database migrations..."
 
-# Run migrations (push schema to database)
+# Run migrations using the proper migration script
 # Working directory is already /app from Dockerfile
-npx drizzle-kit push --config=drizzle.config.ts
+npx tsx scripts/run-migrations.ts
 
 if [ $? -eq 0 ]; then
   echo "✅ Migrations completed successfully!"

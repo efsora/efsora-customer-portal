@@ -9,10 +9,7 @@ import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from "@testcontainers/postgresql";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
 import { sql } from "drizzle-orm";
-import * as schema from "../src/db/schema.js";
 
 let globalContainer: StartedPostgreSqlContainer | null = null;
 
@@ -32,32 +29,41 @@ export async function setup() {
   console.log("✅ Test database container started");
   console.log(`📦 Connection: ${connectionUri}`);
 
-  // Set DATABASE_URL before any modules import db client
+  // Set all required environment variables BEFORE importing any modules
   process.env.DATABASE_URL = connectionUri;
+  process.env.NODE_ENV = "development";
+  process.env.JWT_SECRET =
+    "test-secret-key-minimum-32-chars-long-for-jwt-signing";
+  process.env.OTEL_SERVICE_NAME = "backend-test";
+  process.env.LOG_LEVEL = "error";
+  process.env.ENABLE_TRACING = "false";
+  process.env.METRICS_ENABLED = "false";
+  process.env.PORT = "3000";
 
-  // Apply schema
-  console.log("🔄 Applying database schema...");
-  const schemaClient = postgres(connectionUri, { max: 1 });
-  const schemaDb = drizzle(schemaClient, { schema });
+  // Apply migrations using Drizzle migrate
+  console.log("🔄 Running database migrations...");
+
+  // Import getDb and migrate after setting all environment variables
+  const { getDb } = await import("../src/db/client.js");
+  const { migrate } = await import("drizzle-orm/postgres-js/migrator");
+  const db = getDb();
 
   // Enable pgcrypto for gen_random_uuid()
-  await schemaDb.execute(sql`CREATE EXTENSION IF NOT EXISTS pgcrypto;`);
+  await db.execute(sql`CREATE EXTENSION IF NOT EXISTS pgcrypto;`);
 
-  // Create users table
-  await schemaDb.execute(sql`
-    CREATE TABLE IF NOT EXISTS users (
-      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-      email text NOT NULL UNIQUE,
-      name text,
-      password text NOT NULL,
-      created_at timestamp DEFAULT now() NOT NULL,
-      updated_at timestamp DEFAULT now() NOT NULL
+  // Install pg_uuidv7 extension if available
+  try {
+    await db.execute(sql`CREATE EXTENSION IF NOT EXISTS pg_uuidv7;`);
+  } catch {
+    console.log(
+      "⚠️  pg_uuidv7 extension not available, using gen_random_uuid()",
     );
-  `);
+  }
 
-  await schemaClient.end();
+  // Run Drizzle migrations
+  await migrate(db, { migrationsFolder: "./src/db/migrations" });
 
-  console.log("✅ Database schema applied");
+  console.log("✅ Database migrations applied");
 
   // Store container reference globally for teardown
   (

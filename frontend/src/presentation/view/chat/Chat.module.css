@@ -1,0 +1,27 @@
+.content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.chatContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex: 1;
+    overflow: hidden;
+}
+
+.chatHeaderContainer {
+    border-bottom: 1px solid var(--color-neutral-grey-200);
+    padding: 24px;
+    color: var(--color-primary-900);
+    font-size: 0.875rem;
+    font-weight: 400;
+}
+
+.chatHeaderHeader {
+    font-size: 1.5rem;
+    font-weight: 600;
+}

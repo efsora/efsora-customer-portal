@@ -37,17 +37,10 @@ export function handleFindAllUsersResult(userList: User[]) {
  * Returns Command that queries the database via repository
  */
 export function findAllUsers(): Result<UserData[]> {
-  return command(
-    async () => {
-      const allUsers = await userRepository.findAll();
-      return allUsers;
-    },
-    handleFindAllUsersResult,
-    {
-      operation: "findAllUsers",
-      tags: { action: "read", domain: "users" },
-    },
-  );
+  return command(async () => {
+    const allUsers = await userRepository.findAll();
+    return allUsers;
+  }, handleFindAllUsersResult);
 }
 
 /**
@@ -130,15 +123,8 @@ export function handleFindUserByIdResult(users: User[]) {
  * Returns Command that queries the database via repository
  */
 export function findUserById(userId: string): Result<UserData> {
-  return command(
-    async () => {
-      const users = await userRepository.findById(userId);
-      return users;
-    },
-    handleFindUserByIdResult,
-    {
-      operation: "findUserById",
-      tags: { action: "read", domain: "users" },
-    },
-  );
+  return command(async () => {
+    const users = await userRepository.findById(userId);
+    return users;
+  }, handleFindUserByIdResult);
 }

@@ -203,10 +203,6 @@ export function findUserByEmail(input: LoginInput): Effect<{ input; user }> {
             code: "UNAUTHORIZED",
             message: "Invalid email or password",
           }),
-    {
-      operation: "findUserByEmail",
-      tags: { domain: "users", action: "read" },
-    },
   );
 }
 ```

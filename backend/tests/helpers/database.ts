@@ -2,22 +2,24 @@
  * Database Test Helpers
  *
  * Provides utilities for integration testing with PostgreSQL testcontainers.
- * Supports parallel test execution with shared container and proper cleanup.
+ * Works with lazy-initialized database client to ensure proper test isolation.
  */
 
 import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from "@testcontainers/postgresql";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
 import { sql } from "drizzle-orm";
-import * as schema from "#db/schema";
+import { migrate } from "drizzle-orm/postgres-js/migrator";
+import { getDb, resetDatabase } from "#db/client";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Shared testcontainer instance for all tests (started once)
 let testContainer: StartedPostgreSqlContainer | null = null;
-let sharedDb: ReturnType<typeof drizzle> | null = null;
-let sharedClient: ReturnType<typeof postgres> | null = null;
 
 /**
  * Setup PostgreSQL testcontainer
@@ -26,113 +28,112 @@ let sharedClient: ReturnType<typeof postgres> | null = null;
  * @returns Connection string for the test database
  */
 export async function setupTestDatabase(): Promise<string> {
-  // Return existing connection if already setup
-  if (testContainer) {
-    return testContainer.getConnectionUri();
+  let connectionUri: string;
+
+  // Start container if not already running
+  if (!testContainer) {
+    testContainer = await new PostgreSqlContainer("postgres:18-alpine")
+      .withDatabase("test_db")
+      .withUsername("test_user")
+      .withPassword("test_password")
+      // .withReuse() // Disabled temporarily to ensure fresh schema
+      .start();
+
+    connectionUri = testContainer.getConnectionUri();
+
+    // Set DATABASE_URL for the lazy-initialized client
+    process.env.DATABASE_URL = connectionUri;
+
+    // Reset any existing database connection to force recreation with new URL
+    resetDatabase();
+
+    // Run migrations on test database (only on first setup)
+    await runMigrations();
+  } else {
+    connectionUri = testContainer.getConnectionUri();
   }
-
-  // Start PostgreSQL testcontainer
-  testContainer = await new PostgreSqlContainer("postgres:18-alpine")
-    .withDatabase("test_db")
-    .withUsername("test_user")
-    .withPassword("test_password")
-    .withReuse() // Reuse container across test runs for speed
-    .start();
-
-  const connectionUri = testContainer.getConnectionUri();
-
-  // Apply schema directly to test database (simpler than migrations)
-  await applySchema(connectionUri);
 
   return connectionUri;
 }
 
 /**
- * Apply schema directly to test database
- * Uses the Drizzle schema to create tables without migrations
- * Note: Uses gen_random_uuid() instead of uuidv7() for simplicity in tests
- *
- * @param connectionString - PostgreSQL connection string
+ * Run Drizzle migrations on test database
+ * Uses the same migration files as production for consistency
  */
-export async function applySchema(connectionString: string): Promise<void> {
-  const schemaClient = postgres(connectionString, { max: 1 });
-  const schemaDb = drizzle(schemaClient, { schema });
+export async function runMigrations(): Promise<void> {
+  const db = getDb();
 
-  // Enable pgcrypto extension for gen_random_uuid()
-  await schemaDb.execute(sql`CREATE EXTENSION IF NOT EXISTS pgcrypto;`);
+  // Enable pgcrypto extension (for UUID generation)
+  await db.execute(sql`CREATE EXTENSION IF NOT EXISTS pgcrypto;`);
 
-  // Create users table directly from schema
-  // Note: Using gen_random_uuid() instead of uuidv7() for test simplicity
-  await schemaDb.execute(sql`
-    CREATE TABLE IF NOT EXISTS users (
-      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-      email text NOT NULL UNIQUE,
-      name text,
-      password text NOT NULL,
-      created_at timestamp DEFAULT now() NOT NULL,
-      updated_at timestamp DEFAULT now() NOT NULL
+  // Install pg_uuidv7 extension if available (for uuidv7() function)
+  // This will fail silently if the extension is not available
+  try {
+    await db.execute(sql`CREATE EXTENSION IF NOT EXISTS pg_uuidv7;`);
+  } catch {
+    // Extension not available, migrations will use gen_random_uuid() as fallback
+    console.log(
+      "⚠️  pg_uuidv7 extension not available, using gen_random_uuid()",
     );
-  `);
+  }
 
-  await schemaClient.end();
+  // Run Drizzle migrations from the migrations folder
+  const migrationsFolder = join(__dirname, "../../src/db/migrations");
+  console.log("📂 Running migrations from:", migrationsFolder);
+
+  await migrate(db, { migrationsFolder });
+
+  console.log("✅ Test database migrations completed");
 }
 
 /**
  * Create a Drizzle database instance for testing
  *
- * @param connectionString - PostgreSQL connection string
+ * @deprecated Use getTestDb() instead - now uses lazy-initialized client
  * @returns Drizzle database instance
  */
-export function createTestDb(connectionString: string) {
-  // Return shared instance if already created
-  if (sharedDb && sharedClient) {
-    return sharedDb;
-  }
-
-  sharedClient = postgres(connectionString, {
-    max: 10,
-  });
-
-  sharedDb = drizzle(sharedClient, { schema });
-
-  return sharedDb;
+export function createTestDb() {
+  return getDb();
 }
 
 /**
  * Get the shared test database instance
- * Creates a new instance if not already created (uses DATABASE_URL from env)
+ * Uses the lazy-initialized database client from #db/client
  *
  * @returns Shared Drizzle database instance
  */
 export function getTestDb() {
-  if (!sharedDb) {
-    // Create db instance using DATABASE_URL set by global setup
-    const connectionString = process.env.DATABASE_URL;
-    if (!connectionString) {
-      throw new Error("DATABASE_URL not set. Ensure global setup has run.");
-    }
-
-    sharedClient = postgres(connectionString, { max: 10 });
-    sharedDb = drizzle(sharedClient, { schema });
-  }
-  return sharedDb;
+  return getDb();
 }
 
 /**
  * Cleanup database by truncating all tables
  * Uses CASCADE to handle foreign key constraints
- *
- * @param db - Drizzle database instance
+ * Uses RESTART IDENTITY to reset auto-increment sequences
+ * Uses the lazy-initialized database client
  */
-export async function cleanupDatabase(
-  db: ReturnType<typeof drizzle>,
-): Promise<void> {
+export async function cleanupDatabase(): Promise<void> {
+  const db = getDb();
+
   // Truncate all tables in the schema
   // CASCADE automatically handles foreign key constraints
-  const tables = ["users"]; // Add more tables as schema grows
+  // RESTART IDENTITY resets serial/auto-increment sequences to 1
+  // Order doesn't matter with CASCADE, but we list dependencies first for clarity
+  const tables = [
+    "events",
+    "milestones",
+    "projects",
+    "companies",
+    "roles",
+    "progress_status",
+    "session",
+    "users",
+  ];
 
   for (const table of tables) {
-    await db.execute(sql.raw(`TRUNCATE TABLE "${table}" CASCADE`));
+    await db.execute(
+      sql.raw(`TRUNCATE TABLE "${table}" RESTART IDENTITY CASCADE`),
+    );
   }
 }
 
@@ -141,12 +142,9 @@ export async function cleanupDatabase(
  * Closes connections and stops the container
  */
 export async function teardownTestDatabase(): Promise<void> {
-  // Close shared database connection
-  if (sharedClient) {
-    await sharedClient.end();
-    sharedClient = null;
-    sharedDb = null;
-  }
+  // Import closeDatabase from client to properly close connection
+  const { closeDatabase } = await import("#db/client");
+  await closeDatabase();
 
   // Stop testcontainer
   if (testContainer) {

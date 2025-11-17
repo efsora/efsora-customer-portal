@@ -67,3 +67,29 @@ export type LoginResult = {
   };
   token: string;
 };
+
+/**
+ * Extended user data with company, role, and project information
+ */
+export type ExtendedUserData = {
+  bio: string | null;
+  companyId: number | null;
+  createdAt: Date;
+  email: string;
+  id: string;
+  name: string | null;
+  projectId: number | null;
+  roleId: number | null;
+  surname: string | null;
+  updatedAt: Date;
+};
+
+/**
+ * Result for assignment operations (company, project, role)
+ */
+export type AssignmentResult = ExtendedUserData;
+
+/**
+ * Result for profile update operation
+ */
+export type ProfileUpdateResult = ExtendedUserData;
