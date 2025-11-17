@@ -27,12 +27,12 @@ export const useRegister = () => {
             return response.data;
         },
         onSuccess: (data) => {
-            if (data && data.token) {
+            if (data && data.token && data.user) {
                 setAuth(
                     {
-                        id: data.id,
-                        email: data.email,
-                        name: data.name || null,
+                        id: data.user.id,
+                        email: data.user.email,
+                        name: data.user.name || null,
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString(),
                     },

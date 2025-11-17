@@ -44,10 +44,10 @@ export const login = async (
  * Requires valid Bearer token in Authorization header
  */
 export const logout = async (): Promise<AppResponse_LogoutResponse_> => {
-    const response = await api.post<AppResponse_LogoutResponse_, Record<string, never>>(
-        ENDPOINTS.AUTH.LOGOUT,
-        {},
-    );
+    const response = await api.post<
+        AppResponse_LogoutResponse_,
+        Record<string, never>
+    >(ENDPOINTS.AUTH.LOGOUT, {});
 
     return response?.data;
 };

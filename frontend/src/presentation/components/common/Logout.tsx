@@ -1,7 +1,7 @@
-import { useIsAuthenticated } from '#store/authStore';
 import { useNavigate } from 'react-router-dom';
 
 import { useLogout } from '#api/hooks/useAuth';
+import { useIsAuthenticated } from '#store/authStore';
 
 export default function Logout() {
     const navigate = useNavigate();
@@ -19,10 +19,7 @@ export default function Logout() {
     return (
         <>
             {isAuthenticated && (
-                <button
-                    onClick={handleLogout}
-                    disabled={isPending}
-                >
+                <button onClick={handleLogout} disabled={isPending}>
                     {isPending ? 'Logging out...' : 'Logout'}
                 </button>
             )}

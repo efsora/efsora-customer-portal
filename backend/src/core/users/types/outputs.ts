@@ -14,6 +14,7 @@ export type CreateUserResult = {
     email: string;
     id: string;
     name: string | null;
+    surname: string | null;
   };
   token: string;
 };

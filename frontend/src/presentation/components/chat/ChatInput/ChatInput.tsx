@@ -1,5 +1,6 @@
-import React from "react";
-import styles from "./ChatInput.module.css";
+import React from 'react';
+
+import styles from './ChatInput.module.css';
 
 interface Props {
     input: string;
@@ -9,17 +10,17 @@ interface Props {
 }
 
 export function ChatInput({
-        input,
-        onInputChange,
-        onSend,
-        disabled = false,
-    }: Props) {
+    input,
+    onInputChange,
+    onSend,
+    disabled = false,
+}: Props) {
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
+        if (e.key === 'Enter') {
             onSend();
         }
     };
-    const isInputEmpty = input.trim() === "";
+    const isInputEmpty = input.trim() === '';
 
     return (
         <div className={styles.inputArea}>
@@ -43,4 +44,4 @@ export function ChatInput({
             </div>
         </div>
     );
-};
+}

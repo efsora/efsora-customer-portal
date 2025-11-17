@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import { ChatInput } from "#components/chat/ChatInput/ChatInput";
-import { MessageList } from "#components/chat/MessageList/MessageList";
-import styles from "./Chat.module.css";
-import Message from "#presentation/components/chat/Message/Message";
+import { ChatInput } from '#components/chat/ChatInput/ChatInput';
+import { MessageList } from '#components/chat/MessageList/MessageList';
+import Message from '#presentation/components/chat/Message/Message';
 
+import styles from './Chat.module.css';
 
 interface MessageType {
     user: string;
@@ -13,36 +13,35 @@ interface MessageType {
     error?: boolean;
 }
 
-
 const Chat: React.FC = () => {
     const [messages, setMessages] = useState<MessageType[]>([]);
-    const [input, setInput] = useState<string>("");
+    const [input, setInput] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
 
     const sendMessage = (): void => {
         if (!input.trim() || loading) return;
 
         const userMessage: MessageType = {
-            user: "user",
+            user: 'user',
             content: input,
             timestamp: new Date(),
         };
 
         setMessages((prev) => [...prev, userMessage]);
         setLoading(true);
-        setInput("");
+        setInput('');
 
         // Hardcoded bot reply
         setTimeout(() => {
             const botMessage: MessageType = {
-                user: "bot",
+                user: 'bot',
                 content: "Hello! I'm your bot. 👋 How can I help?",
                 timestamp: new Date(),
             };
 
             setMessages((prev) => [...prev, botMessage]);
             setLoading(false);
-        }, 600); 
+        }, 600);
     };
 
     return (
@@ -54,12 +53,14 @@ const Chat: React.FC = () => {
                     loading={loading}
                     emptyContent={
                         <div>
-                            <Message msg={{
-                            user: "bot",
-                            content: "Hello! I can help you find documents, answer questions about project status, and more. What would you like to know?",
-                    }
-                    } />
-                    </div>
+                            <Message
+                                msg={{
+                                    user: 'bot',
+                                    content:
+                                        'Hello! I can help you find documents, answer questions about project status, and more. What would you like to know?',
+                                }}
+                            />
+                        </div>
                     }
                 />
                 <ChatInput
@@ -74,8 +75,6 @@ const Chat: React.FC = () => {
 };
 
 export default Chat;
-
-
 
 export function ChatHeader() {
     return (

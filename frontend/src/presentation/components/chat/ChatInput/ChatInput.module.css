@@ -22,7 +22,6 @@
     font-size: 0.8rem;
     background: var(--color-neutral-grey-50);
     border-radius: 8px;
-
 }
 
 .inputAreaInput:focus {
@@ -31,7 +30,7 @@
 
 .inputAreaInput::placeholder {
     font-size: 0.8rem;
-    color: var(--color-neutral-grey-400)
+    color: var(--color-neutral-grey-400);
 }
 
 .button {

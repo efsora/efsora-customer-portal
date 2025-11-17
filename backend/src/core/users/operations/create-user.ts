@@ -32,6 +32,7 @@ export function mapRegisterDataToUser(
       success({
         email: result.email,
         name: input.name,
+        surname: input.surname,
         password: result.password,
       }),
   );
@@ -61,12 +62,14 @@ export function hashPasswordForCreation(data: ValidatedCreationData): Result<{
   email: Email;
   hashedPassword: HashedPassword;
   name?: string;
+  surname?: string;
 }> {
   return chain(Password.hash(data.password), (hashedPassword) =>
     success({
       email: data.email,
       hashedPassword,
       name: data.name,
+      surname: data.surname,
     }),
   );
 }
@@ -92,7 +95,9 @@ export function hashPasswordForCreation(data: ValidatedCreationData): Result<{
  * ```
  */
 export function handleSaveNewUserResult(
-  user: { id: string; email: string; name: string | null } | undefined,
+  user:
+    | { id: string; email: string; name: string | null; surname: string | null }
+    | undefined,
 ) {
   if (!user) {
     return fail({
@@ -106,6 +111,7 @@ export function handleSaveNewUserResult(
     email: user.email,
     id: user.id,
     name: user.name,
+    surname: user.surname,
   });
 }
 
@@ -113,11 +119,18 @@ export function saveNewUser(data: {
   email: Email;
   hashedPassword: HashedPassword;
   name?: string;
-}): Result<{ email: string; id: string; name: string | null }> {
+  surname?: string;
+}): Result<{
+  email: string;
+  id: string;
+  name: string | null;
+  surname: string | null;
+}> {
   return command(async () => {
     const userData: NewUser = {
       email: Email.toString(data.email),
       name: data.name ?? null,
+      surname: data.surname ?? null,
       password: HashedPassword.toString(data.hashedPassword),
     };
 
@@ -137,6 +150,7 @@ export function addAuthToken(userData: {
   email: string;
   id: string;
   name: string | null;
+  surname: string | null;
 }): Result<CreateUserResult> {
   const token = generateAuthToken(userData.id, userData.email);
   return success({
@@ -144,6 +158,7 @@ export function addAuthToken(userData: {
       id: userData.id,
       email: userData.email,
       name: userData.name,
+      surname: userData.surname,
     },
     token,
   });

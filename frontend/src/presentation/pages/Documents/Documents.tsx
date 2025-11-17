@@ -1,20 +1,46 @@
 import { useState } from 'react';
-import PageTitle from "#presentation/components/common/PageTitle/PageTitle";
-import styles from './Documents.module.css'
+
+import PageTitle from '#presentation/components/common/PageTitle/PageTitle';
 import { Table } from '#presentation/components/common/Table/Table';
 
+import styles from './Documents.module.css';
+
 const FILTER_TAGS = [
-    { label: 'SoW', icon: '/documents/sow-g.svg', activeIcon: '/documents/sow-w.svg' },
-    { label: 'Legal', icon: '/documents/shield-g.svg', activeIcon: '/documents/shield-w.svg' },
-    { label: 'Billing', icon: '/documents/biling-g.svg', activeIcon: '/documents/biling-w.svg' },
-    { label: 'Assets', icon: '/documents/asset-g.svg', activeIcon: '/documents/asset-w.svg' },
+    {
+        label: 'SoW',
+        icon: '/documents/sow-g.svg',
+        activeIcon: '/documents/sow-w.svg',
+    },
+    {
+        label: 'Legal',
+        icon: '/documents/shield-g.svg',
+        activeIcon: '/documents/shield-w.svg',
+    },
+    {
+        label: 'Billing',
+        icon: '/documents/biling-g.svg',
+        activeIcon: '/documents/biling-w.svg',
+    },
+    {
+        label: 'Assets',
+        icon: '/documents/asset-g.svg',
+        activeIcon: '/documents/asset-w.svg',
+    },
 ];
-const FILTER_BY_OPTIONS = ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5'];
+const FILTER_BY_OPTIONS = [
+    'Option 1',
+    'Option 2',
+    'Option 3',
+    'Option 4',
+    'Option 5',
+];
 
 export function Documents() {
     const [activeTag, setActiveTag] = useState<string | null>(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [selectedFilters, setSelectedFilters] = useState<Set<string>>(new Set());
+    const [selectedFilters, setSelectedFilters] = useState<Set<string>>(
+        new Set(),
+    );
 
     const handleFilterToggle = (option: string) => {
         const newSelected = new Set(selectedFilters);
@@ -28,8 +54,11 @@ export function Documents() {
 
     return (
         <div>
-            <PageTitle title="Documents" description='Access and manage project documents.'/>
-            
+            <PageTitle
+                title="Documents"
+                description="Access and manage project documents."
+            />
+
             <div className={styles.pageContainer}>
                 <div className={styles.searchContainer}>
                     <img src="/documents/search.svg" alt="search" />
@@ -39,19 +68,27 @@ export function Documents() {
                         className={styles.search}
                     />
                 </div>
-                
 
                 <div className={styles.filterContainer}>
-
                     <div className={styles.filterTags}>
                         {FILTER_TAGS.map((tag) => (
                             <button
                                 key={tag.label}
                                 className={`${styles.filterButton} ${activeTag === tag.label ? styles.active : ''}`}
-                                onClick={() => setActiveTag(activeTag === tag.label ? null : tag.label)}
+                                onClick={() =>
+                                    setActiveTag(
+                                        activeTag === tag.label
+                                            ? null
+                                            : tag.label,
+                                    )
+                                }
                             >
                                 <img
-                                    src={activeTag === tag.label ? tag.activeIcon : tag.icon}
+                                    src={
+                                        activeTag === tag.label
+                                            ? tag.activeIcon
+                                            : tag.icon
+                                    }
                                     alt={`${tag.label} icon`}
                                     className={styles.icon}
                                 />
@@ -67,20 +104,35 @@ export function Documents() {
                         >
                             <img src="/documents/filter.svg" alt="" />
                             <span>Filter By</span>
-                            <img src={isDropdownOpen ? "dropdown-up.svg" : "dropdown.svg"}/>
+                            <img
+                                src={
+                                    isDropdownOpen
+                                        ? 'dropdown-up.svg'
+                                        : 'dropdown.svg'
+                                }
+                            />
                         </button>
                         {isDropdownOpen && (
                             <div className={styles.dropdownMenu}>
                                 {FILTER_BY_OPTIONS.map((option) => (
-                                    <label key={option} className={styles.dropdownOption}>
+                                    <label
+                                        key={option}
+                                        className={styles.dropdownOption}
+                                    >
                                         <input
                                             type="checkbox"
-                                            checked={selectedFilters.has(option)}
-                                            onChange={() => handleFilterToggle(option)}
+                                            checked={selectedFilters.has(
+                                                option,
+                                            )}
+                                            onChange={() =>
+                                                handleFilterToggle(option)
+                                            }
                                             className={styles.checkbox}
                                         />
                                         <span className={styles.checkmark}>
-                                            {selectedFilters.has(option) ? '✓' : ''}
+                                            {selectedFilters.has(option)
+                                                ? '✓'
+                                                : ''}
                                         </span>
                                         <span>{option}</span>
                                     </label>
@@ -88,14 +140,12 @@ export function Documents() {
                             </div>
                         )}
                     </div>
-
                 </div>
 
                 <div className={styles.documentTable}>
                     <Table />
                 </div>
             </div>
-      
         </div>
     );
 }

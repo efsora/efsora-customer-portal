@@ -39,6 +39,7 @@ export async function handleRegister(
           id: data.user.id,
           email: data.user.email,
           name: data.user.name,
+          surname: data.user.surname,
         },
         token: data.token,
       }),

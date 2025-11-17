@@ -34,7 +34,7 @@
 }
 
 .logout {
-    color: var(--color-error-600)
+    color: var(--color-error-600);
 }
 
 .logout:hover {

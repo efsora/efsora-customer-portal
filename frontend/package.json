@@ -7,9 +7,10 @@
         "dev": "vite",
         "build": "tsc -b && vite build",
         "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
         "preview": "vite preview",
         "generate:types": "openapi-typescript ../backend/_docs/openapi.json --output schema.d.ts",
-        "format": "prettier --write .",
+        "format": "npm run lint:fix && prettier --write .",
         "format:check": "prettier --check .",
         "type-check": "npx tsc -b --noEmit --verbose"
     },

@@ -377,10 +377,14 @@
           },
           "name": {
             "type": ["string", "null"],
-            "example": "Jane Doe"
+            "example": "Jane"
+          },
+          "surname": {
+            "type": ["string", "null"],
+            "example": "Doe"
           }
         },
-        "required": ["email", "id", "name"]
+        "required": ["email", "id", "name", "surname"]
       },
       "RegisterResponse": {
         "type": "object",
@@ -406,7 +410,12 @@
           "name": {
             "type": "string",
             "minLength": 1,
-            "example": "Jane Doe"
+            "example": "Jane"
+          },
+          "surname": {
+            "type": "string",
+            "minLength": 1,
+            "example": "Doe"
           },
           "password": {
             "type": "string",
@@ -414,7 +423,7 @@
             "example": "securePassword123"
           }
         },
-        "required": ["email", "name", "password"]
+        "required": ["email", "name", "surname", "password"]
       },
       "UserData": {
         "type": "object",

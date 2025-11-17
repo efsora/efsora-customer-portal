@@ -3,7 +3,7 @@
 # ==============================================================================
 # Main commands for managing the full-stack application
 
-.PHONY: help full-stack-up full-stack-down full-stack-logs full-stack-clean
+.PHONY: help full-stack-up full-stack-up-prod full-stack-down full-stack-logs full-stack-clean full-stack-restart full-stack-rebuild
 .PHONY: dev-up dev-down dev-logs
 .PHONY: backend-test ai-test frontend-test
 .PHONY: generate-backend-types generate-ai-types generate-all-types
@@ -33,8 +33,32 @@ help: ## Show this help message
 # Docker Compose Commands
 # ==============================================================================
 
-full-stack-up: ## 🚀 Start all services (postgres, weaviate, backend, frontend, ai-service)
-	@echo "🚀 Starting full-stack application..."
+full-stack-up: ## 🚀 Start all services in development mode (with hot reload)
+	@echo "🚀 Starting full-stack application in development mode..."
+	@echo "   - PostgreSQL (port 5432)"
+	@echo "   - Weaviate (port 8080)"
+	@echo "   - Backend (port 3000, debug: 9229)"
+	@echo "   - Frontend (port 5174, hot reload enabled)"
+	@echo "   - AI Service (port 8000, debug: 5678)"
+	@echo ""
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+	@echo ""
+	@echo "✅ All services started in development mode!"
+	@echo ""
+	@echo "📍 Access points:"
+	@echo "   Frontend:         http://localhost:5174"
+	@echo "   Backend API:      http://localhost:3000"
+	@echo "   Backend Swagger:  http://localhost:3000/swagger"
+	@echo "   AI Service:       http://localhost:8000"
+	@echo "   AI Service Docs:  http://localhost:8000/docs"
+	@echo "   Weaviate:         http://localhost:8080"
+	@echo ""
+	@echo "🔥 Hot reload enabled - code changes will reflect automatically!"
+	@echo "📊 View logs with: make full-stack-logs"
+	@echo "🛑 Stop services with: make full-stack-down"
+
+full-stack-up-prod: ## 🚀 Start all services in production mode (baked code, no hot reload)
+	@echo "🚀 Starting full-stack application in production mode..."
 	@echo "   - PostgreSQL (port 5432)"
 	@echo "   - Weaviate (port 8080)"
 	@echo "   - Backend (port 3000)"
@@ -43,7 +67,7 @@ full-stack-up: ## 🚀 Start all services (postgres, weaviate, backend, frontend
 	@echo ""
 	docker compose up -d --build
 	@echo ""
-	@echo "✅ All services started!"
+	@echo "✅ All services started in production mode!"
 	@echo ""
 	@echo "📍 Access points:"
 	@echo "   Frontend:         http://localhost:5173"
@@ -53,82 +77,54 @@ full-stack-up: ## 🚀 Start all services (postgres, weaviate, backend, frontend
 	@echo "   AI Service Docs:  http://localhost:8000/docs"
 	@echo "   Weaviate:         http://localhost:8080"
 	@echo ""
+	@echo "⚠️  Production mode - code changes require rebuild!"
 	@echo "📊 View logs with: make full-stack-logs"
 	@echo "🛑 Stop services with: make full-stack-down"
 
 full-stack-down: ## 🛑 Stop all services
 	@echo "🛑 Stopping all services..."
-	docker compose down
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml down
 	@echo "✅ All services stopped!"
 
-full-stack-restart: ## 🔄 Restart all services
+full-stack-restart: ## 🔄 Restart all services (dev mode)
 	@echo "🔄 Restarting all services..."
-	docker compose restart
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml restart
 	@echo "✅ All services restarted!"
 
 full-stack-logs: ## 📊 View logs from all services
-	docker compose logs -f
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml logs -f
 
 full-stack-logs-backend: ## 📊 View backend logs only
-	docker compose logs -f backend
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml logs -f backend
 
 full-stack-logs-frontend: ## 📊 View frontend logs only
-	docker compose logs -f frontend
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml logs -f frontend
 
 full-stack-logs-ai: ## 📊 View AI service logs only
-	docker compose logs -f ai-service
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml logs -f ai-service
 
 full-stack-clean: ## 🧹 Stop services and remove volumes (WARNING: deletes all data)
 	@echo "⚠️  WARNING: This will delete all data in Docker volumes!"
 	@echo "   Press Ctrl+C to cancel, or Enter to continue..."
 	@read confirm
 	@echo "🧹 Cleaning up..."
-	docker compose down -v
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml down -v
 	@echo "✅ All services stopped and volumes removed!"
 
-full-stack-rebuild: ## 🔨 Rebuild and restart all services
+full-stack-rebuild: ## 🔨 Rebuild and restart all services (dev mode)
 	@echo "🔨 Rebuilding all services..."
-	docker compose up -d --build --force-recreate
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build --force-recreate
 	@echo "✅ All services rebuilt and restarted!"
 
 # ==============================================================================
-# Development Mode (with debugging)
+# Aliases (for backwards compatibility)
 # ==============================================================================
 
-dev-up: ## 🐛 Start all services in development mode with debugging enabled
-	@echo "🐛 Starting full-stack application in development mode..."
-	@echo "   - PostgreSQL (port 5432)"
-	@echo "   - Weaviate (port 8080)"
-	@echo "   - Backend (port 3000, debug: 9229)"
-	@echo "   - Frontend (port 5173)"
-	@echo "   - AI Service (port 8000, debug: 5678)"
-	@echo ""
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
-	@echo ""
-	@echo "✅ All services started in development mode!"
-	@echo ""
-	@echo "📍 Access points:"
-	@echo "   Frontend:         http://localhost:5173"
-	@echo "   Backend API:      http://localhost:3000"
-	@echo "   Backend Swagger:  http://localhost:3000/swagger"
-	@echo "   AI Service:       http://localhost:8000"
-	@echo "   AI Service Docs:  http://localhost:8000/docs"
-	@echo ""
-	@echo "🐛 Debug ports:"
-	@echo "   Backend (Node.js):  localhost:9229"
-	@echo "   AI Service (Python): localhost:5678"
-	@echo ""
-	@echo "💡 Use VSCode 'Debug All Services' to attach debuggers"
-	@echo "📊 View logs with: make dev-logs"
-	@echo "🛑 Stop services with: make dev-down"
+dev-up: full-stack-up ## 🐛 Alias for full-stack-up (backwards compatibility)
 
-dev-down: ## 🛑 Stop development services
-	@echo "🛑 Stopping development services..."
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml down
-	@echo "✅ Development services stopped!"
+dev-down: full-stack-down ## 🛑 Alias for full-stack-down (backwards compatibility)
 
-dev-logs: ## 📊 Follow logs for all development services
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml logs -f
+dev-logs: full-stack-logs ## 📊 Alias for full-stack-logs (backwards compatibility)
 
 # ==============================================================================
 # Testing Commands

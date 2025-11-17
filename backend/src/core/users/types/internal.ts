@@ -24,11 +24,13 @@ export type UserDataWithPassword = {
 export type ValidatedCreationData = {
   email: Email;
   name?: string;
+  surname?: string;
   password: Password;
 };
 
 export type ValidatedRegistrationData = {
   email: Email;
   name?: string;
+  surname?: string;
   password: Password;
 };
