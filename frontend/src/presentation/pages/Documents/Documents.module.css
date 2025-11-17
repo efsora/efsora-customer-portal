@@ -143,6 +143,26 @@
     gap: 24px;
 }
 
+.filterCategoryTitle {
+    padding: 10px 16px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--color-neutral-grey-600);
+    background-color: var(--color-neutral-grey-50);
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.filterCategoryTitle:hover {
+    background-color: var(--color-neutral-grey-100);
+    border-color: var(--color-neutral-grey-300);
+}
+
 .documentTable {
     width: 100%;
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import styles from './Table.module.css'
 import Tag from '../Tag/Tag';
 import VersionDropdown from '../VersionDropdown/VersionDropdown';
+import styles from './Table.module.css';
 
 interface FileRow {
   id: string;
@@ -18,52 +18,13 @@ interface FileRow {
   status: "signed" | "inProgress" | "paid" | "sent";
 }
 
-export const mockFiles: FileRow[] = [
-  {
-    id: "1",
-    fileName: { name: "Customer_Report_Q1.pdf", icon: "/documents/table-doc.svg" },
-    version: "v1.0.3",
-    uploader: { name: "Jane Doe", icon: "/documents/table-person.svg" },
-    lastUpdated: "2025-11-10T09:12:00Z",
-    status: "signed",
-  },
-  {
-    id: "2",
-    fileName: { name: "Sales_Data_Export.csv", icon: "/documents/table-doc.svg" },
-    version: "v2.1.0",
-    uploader: { name: "John Smith", icon: "/documents/table-person.svg" },
-    lastUpdated: "2025-11-08T15:42:00Z",
-    status: "inProgress",
-  },
-  {
-    id: "3",
-    fileName: { name: "Product_Images.zip", icon: "/documents/table-doc.svg" },
-    version: "v3.4.1",
-    uploader: { name: "Emily Carter", icon: "/documents/table-person.svg" },
-    lastUpdated: "2025-10-29T18:21:00Z",
-    status: "paid",
-  },
-  {
-    id: "4",
-    fileName: { name: "Contract_Template.docx", icon: "/documents/table-doc.svg" },
-    version: "v1.2.0",
-    uploader: { name: "Efsora", icon: "/documents/table-people.svg" },
-    lastUpdated: "2025-11-11T07:50:00Z",
-    status: "sent",
-  },
-  {
-    id: "5",
-    fileName: { name: "Release_Notes.md", icon: "/documents/table-doc.svg" },
-    version: "v5.0.0",
-    uploader: { name: "Sarah Johnson", icon: "/documents/table-person.svg" },
-    lastUpdated: "2025-11-13T12:10:00Z",
-    status: "sent",
-  },
-];
+interface TableProps {
+  files: FileRow[];
+}
 
-export function Table() {
+export function Table({ files }: TableProps) {
   const [selectedVersions, setSelectedVersions] = useState<Record<string, string>>(
-    Object.fromEntries(mockFiles.map(file => [file.id, file.version]))
+    Object.fromEntries(files.map(file => [file.id, file.version]))
   );
 
   const handleVersionChange = (fileId: string, newVersion: string) => {
@@ -89,7 +50,7 @@ export function Table() {
         </thead>
 
         <tbody>
-          {mockFiles.map((file) => (
+          {files.map((file) => (
             <tr key={file.id}>
               <td>
                 <div className={styles.cell}>
@@ -121,8 +82,10 @@ export function Table() {
                     {new Date(file.lastUpdated).toLocaleDateString()}
                 </div>
               </td>
-              <td className={styles.status}>
-                <Tag status={file.status} />
+              <td>
+                <div className={styles.status}>
+                  <Tag status={file.status} />
+                </div>
               </td>
               <td>
                 <button className={styles.downloadButton}>

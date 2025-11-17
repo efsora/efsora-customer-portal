@@ -16,7 +16,6 @@
 
 .table thead tr {
     border-bottom: 1px solid var(--color-primary-100)
-    
 }
 
 .table tbody tr {
@@ -36,6 +35,8 @@
 .status {
     width: fit-content;
     display: flex;
+    height: 100%;
+    align-items: center;
 }
 
 .table td {
@@ -66,5 +67,3 @@
     border-radius: 8px;
     padding: 2px 12px;
 }
-
-
