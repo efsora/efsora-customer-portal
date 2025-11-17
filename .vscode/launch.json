@@ -1,0 +1,79 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "🔧 Backend (Docker)",
+            "type": "node",
+            "request": "attach",
+            "port": 9229,
+            "address": "localhost",
+            "localRoot": "${workspaceFolder}/backend",
+            "remoteRoot": "/app",
+            "restart": true,
+            "skipFiles": ["<node_internals>/**"],
+            "sourceMaps": true,
+            "resolveSourceMapLocations": [
+                "${workspaceFolder}/**",
+                "!**/node_modules/**"
+            ],
+            "presentation": {
+                "hidden": false,
+                "group": "docker",
+                "order": 1
+            }
+        },
+        {
+            "name": "🐍 AI Service (Docker)",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/ai-service",
+                    "remoteRoot": "/app"
+                }
+            ],
+            "justMyCode": false,
+            "presentation": {
+                "hidden": false,
+                "group": "docker",
+                "order": 2
+            }
+        },
+        {
+            "name": "🌐 Frontend (Chrome)",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:5174",
+            "webRoot": "${workspaceFolder}/frontend/src",
+            "sourceMaps": true,
+            "sourceMapPathOverrides": {
+                "webpack:///src/*": "${webRoot}/*"
+            },
+            "presentation": {
+                "hidden": false,
+                "group": "docker",
+                "order": 3
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "🚀 Debug All Services",
+            "configurations": [
+                "🔧 Backend (Docker)",
+                "🐍 AI Service (Docker)",
+                "🌐 Frontend (Chrome)"
+            ],
+            "stopAll": true,
+            "presentation": {
+                "hidden": false,
+                "group": "",
+                "order": 1
+            }
+        }
+    ]
+}

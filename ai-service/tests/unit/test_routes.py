@@ -67,7 +67,7 @@ async def test_create_user_route_builds_response() -> None:
     class DummyUserService:
         @property
         def ctx(self) -> Context:
-            return mock_ctx  # type: ignore
+            return mock_ctx
 
         async def create_user(self, user_name: str, user_surname: str) -> User:
             assert user_name == payload.user_name

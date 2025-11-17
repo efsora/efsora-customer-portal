@@ -6,10 +6,19 @@ readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Efsora Developers" }]
 dependencies = [
+  "advanced-chunker>=0.1.4",
   "asyncpg>=0.30.0",
   "dependency-injector>=4.48.2",
   "fastapi>=0.117.1",
+  "langchain-aws>=1.0.0",
+  "langchain-community>=0.4.1",
+  "langchain-core>=1.0.4",
+  "langchain-openai>=1.0.2",
+  "langchain-weaviate>=0.0.6",
   "pydantic-settings>=2.10.1",
+  "pypdf>=6.2.0",
+  "python-dotenv>=1.1.1",
+  "semantic-chunker>=0.2.0",
   "sqlalchemy[asyncio]>=2.0.43",
   "structlog>=25.4.0",
   "uvicorn[standard]>=0.36.0",
@@ -99,12 +108,11 @@ combine-as-imports = true
 [tool.mypy]
 python_version = "3.11"
 plugins = ["pydantic.mypy"]
-mypy_path = ["src"]
-namespace_packages = true
-explicit_package_bases = true
-files = ["src/app"]
+mypy_path = ["src", "tests"]
+namespace_packages = false
+files = ["src/app", "tests"]
 exclude = "(^src/app/core/)"
-follow_imports = "skip"
+follow_imports = "silent"
 
 warn_unused_configs = true
 warn_redundant_casts = true
@@ -116,12 +124,35 @@ disallow_untyped_defs = true
 disallow_any_generics = true
 strict_equality = true
 ignore_missing_imports = true
+# Disable import-untyped for third-party packages without py.typed
+disable_error_code = ["import-untyped"]
 
 # Per-module options for libraries without stubs
 [[tool.mypy.overrides]]
-module = ["asyncpg.*", "structlog.*", "dependency_injector.*"]
+module = [
+    "asyncpg.*",
+    "structlog.*",
+    "dependency_injector.*",
+    "langchain_aws.*",
+    "langchain_community.*",
+    "langchain_core.*",
+    "langchain_weaviate.*",
+    "langchain_openai.*",
+    "weaviate.*",
+]
 ignore_missing_imports = true
 disallow_untyped_calls = false
+
+# Libraries that exist but don't have type stubs
+[[tool.mypy.overrides]]
+module = [
+    "semantic_chunker.*",
+    "advanced_chunker.*",
+]
+ignore_missing_imports = true
+disallow_untyped_calls = false
+# Allow importing untyped modules (no py.typed marker)
+follow_imports = "skip"
 
 [tool.pydantic-mypy]
 init_typed = true

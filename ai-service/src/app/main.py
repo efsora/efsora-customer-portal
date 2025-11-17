@@ -1,12 +1,13 @@
-import logging
 import os
 
 # Enable debugpy for VSCode debugging in Docker
 if os.getenv("ENABLE_DEBUGPY") == "true":
     import debugpy
+    import structlog
 
     debugpy.listen(("0.0.0.0", 5678))
-    logging.info("🐛 Debugpy listening on port 5678")
+    # Note: Logger not yet configured with settings, using basic structlog
+    structlog.get_logger().info("🐛 Debugpy listening on port 5678")
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -23,13 +24,12 @@ from starlette.responses import Response as SstarletteResponse
 
 from app.api.schemas.base_response import AppResponse, FieldError
 from app.api.schemas.errors import ErrorCode
-from app.api.v1 import routes, user_routes, weaviate_routes
+from app.api.v1 import chat_routes, routes, user_routes, weaviate_routes
 from app.core.exceptions import AppException
 from app.core.logging import get_logger, setup_logging
 from app.core.settings import Settings
 from app.core.version import APP_NAME, APP_VERSION
 from app.dependency_injection.container import Container
-from app.infrastructure.db.schema import metadata
 from app.middleware.logging import RequestLoggingMiddleware
 
 logger = get_logger(__name__)
@@ -64,13 +64,12 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         env=settings.ENV,
     )
 
-    engine = container.engine()
+    #   engine = container.engine()
 
     # Auto-create tables in dev, but NOT in test (conftest handles test_schema creation)
-    if settings.ENV == "dev":
-        async with engine.begin() as conn:
-            await conn.run_sync(metadata.create_all)
-        logger.debug(f"Database tables created for {settings.ENV} environment", env=settings.ENV)
+    #   if settings.ENV == "dev":
+    #       async with engine.begin() as conn:
+    #           await conn.run_sync(metadata.create_all)
 
     # Wire at runtime
     container.wire(
@@ -78,6 +77,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             "app.api.v1.routes",
             "app.api.v1.user_routes",
             "app.api.v1.weaviate_routes",
+            "app.api.v1.chat_routes",
             "app.api.dependencies",
             "app.services.user_service",
             "app.services.weaviate_service",
@@ -86,27 +86,26 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
     logger.info("Dependency injection container wired successfully")
 
-    # Connect Weaviate client
-    weaviate_client = container.weaviate_client()
+    # Initialize RAG chain (triggers all dependencies: sync client, vectorstore, llm, chain)
+    # This validates that Weaviate is accessible and embeddings exist
     try:
-        await weaviate_client.connect()
-        logger.debug("Weaviate async client connected successfully")
+        _ = container.rag_chain()
+        logger.info("RAG chain initialized successfully")
     except Exception as e:
-        logger.error(f"Failed to connect to Weaviate: {str(e)}", error=str(e))
+        logger.error("Failed to initialize RAG chain", error=str(e))
         raise
 
     try:
         yield
     finally:
         logger.info("Shutting down application")
-        # Close Weaviate client
+        # Close sync Weaviate client
         try:
-            await weaviate_client.close()
-            logger.debug("Weaviate async client closed successfully")
+            sync_client = container.weaviate_sync_client()
+            sync_client.close()
+            logger.debug("Weaviate sync client closed successfully")
         except Exception as e:
             logger.error(f"Error closing Weaviate client: {str(e)}", error=str(e))
-        # Dispose database engine
-        await engine.dispose()
         container.unwire()
 
 
@@ -124,6 +123,7 @@ def create_app() -> FastAPI:
     app.include_router(routes.router)
     app.include_router(user_routes.router)
     app.include_router(weaviate_routes.router)
+    app.include_router(chat_routes.router)
     app.add_middleware(RequestLoggingMiddleware)
     app.add_middleware(TraceIdMiddleware)
     app.add_middleware(

@@ -113,7 +113,9 @@ services:
     restart: unless-stopped
     ports:
       - "${AI_SERVICE_PORT:-8000}:8000"
+
     environment:
+      ENV: dev
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
       POSTGRES_DB: ${POSTGRES_DB:-app_db}
@@ -123,11 +125,26 @@ services:
       BACKEND_SCHEMA: ${BACKEND_SCHEMA:-backend_schema}
       WEAVIATE_HOST: weaviate
       WEAVIATE_PORT: 8080
+      WEAVIATE_GRPC_PORT: 50051
+      WEAVIATE_COLLECTION_NAME: EFSORA_CustomerPortal
+      DATA_DIR: /app/data/
+      OUTPUT_DIR: /app/output/
+      SEMANTIC_MAX_TOKENS: 512
+      EMBED_MODEL: amazon.titan-embed-text-v2:0
+      BEDROCK_REGION: us-east-1
+      LLM_MODEL: global.anthropic.claude-sonnet-4-20250514-v1:0
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+
     depends_on:
       postgres:
         condition: service_healthy
       weaviate:
         condition: service_healthy
+    volumes:
+      - ./ai-service/src:/app/src
+      - ./ai-service/data:/app/data
+      - ./ai-service/output:/app/output
     networks:
       - app-network
 

@@ -156,12 +156,40 @@ async def app_with_overrides(
         app.dependency_overrides.clear()
 
 
+class MockLogger:
+    """Mock logger for testing."""
+
+    def info(self, *args: Any, **kwargs: Any) -> None:
+        """Mock info log."""
+        pass
+
+    def error(self, *args: Any, **kwargs: Any) -> None:
+        """Mock error log."""
+        pass
+
+    def debug(self, *args: Any, **kwargs: Any) -> None:
+        """Mock debug log."""
+        pass
+
+    def warning(self, *args: Any, **kwargs: Any) -> None:
+        """Mock warning log."""
+        pass
+
+
+class MockContext:
+    """Mock context for testing."""
+
+    def __init__(self) -> None:
+        self.logger = MockLogger()
+
+
 class MockWeaviateService:
     """Mock Weaviate service for testing."""
 
     def __init__(self) -> None:
         self.storage: dict[str, list[dict[str, object]]] = {}
         self.uuid_counter = 0
+        self.ctx = MockContext()
 
     async def embed_text(self, text: str, collection: str) -> dict[str, object]:
         """Mock embed text."""
