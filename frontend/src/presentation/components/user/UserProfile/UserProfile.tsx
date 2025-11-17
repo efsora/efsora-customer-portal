@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import Dropdown from "#components/common/Dropdown/Dropdown";
 import { useGetUserSummaryById } from "#hooks/useUser";
 import { useCurrentUser } from "#store/authStore";
@@ -5,6 +6,7 @@ import Logout from "../../common/Logout";
 import styles from "./UserProfile.module.css";
 
 export default function UserProfile() {
+    const navigate = useNavigate();
     const currentUser = useCurrentUser();
     const userId = currentUser?.id || "";
     const {
@@ -71,7 +73,7 @@ export default function UserProfile() {
                 </div>
                 <div className={styles.dropdownItem}>
                     <img src="help.svg" alt="help" />
-                    <button>Help & Support</button>
+                    <button onClick={() => navigate("/help")}>Help & Support</button>
                 </div>
 
                 <div className="separator" />
