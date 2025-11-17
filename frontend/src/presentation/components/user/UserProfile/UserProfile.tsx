@@ -24,7 +24,7 @@ export default function UserProfile() {
                 <div className='iconPlaceholder' />
                 <div>
                     <p>{user?.data?.name || "Unknown User"}</p>
-                    <p className={styles.userRole}>Customer</p>
+                    <p className={styles.userRole}>{/*Customer*/}</p>
                 </div>
             </div>
             <Dropdown
