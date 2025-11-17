@@ -40,3 +40,14 @@
 .logout:hover {
     background-color: var(--color-error-50);
 }
+
+.profilePhoto {
+    height: 36px;
+    width: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--color-primary-50);
+    border-radius: 50%;
+    color: var(--color-primary-500);
+}

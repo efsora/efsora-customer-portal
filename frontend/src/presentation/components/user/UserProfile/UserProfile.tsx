@@ -15,13 +15,20 @@ export default function UserProfile() {
         isError,
     } = useGetUserSummaryById(userId);
 
+    // Generate initials from username
+    const getInitials = (name: string | null | undefined) => {
+        if (!name) return "U";
+        const words = name.trim().split(/\s+/);
+        return words.map((word) => word.charAt(0).toUpperCase()).join("").slice(0, 2);
+    };
+
     if (isLoading) return <p>Loading...</p>;
     if (isError) return <p>Error</p>;
 
     return (
         <div className={styles.container}>
             <div className={styles.userProfileContainer}>
-                <div className='iconPlaceholder' />
+                <div className={styles.profilePhoto}>{getInitials(user?.data?.name)}</div>
                 <div>
                     <p>{user?.data?.name || "Unknown User"}</p>
                     <p className={styles.userRole}>{/*Customer*/}</p>
