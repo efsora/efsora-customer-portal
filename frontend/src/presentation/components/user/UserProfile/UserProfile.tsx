@@ -1,8 +1,8 @@
+import Dropdown from "#components/common/Dropdown/Dropdown";
 import { useGetUserSummaryById } from "#hooks/useUser";
 import { useCurrentUser } from "#store/authStore";
-import Dropdown from "#components/common/Dropdown/Dropdown";
-import styles from "./UserProfile.module.css";
 import Logout from "../../common/Logout";
+import styles from "./UserProfile.module.css";
 
 export default function UserProfile() {
     const currentUser = useCurrentUser();

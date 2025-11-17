@@ -50,18 +50,11 @@ export const userDataSchema = z
 /**
  * Registration response schema (nested: user + token)
  * Best practice: separates user data from authentication token
+ * Uses userDataSchema to ensure consistency with login response and include timestamps
  */
 export const registerResponseSchema = z
   .object({
-    user: z
-      .object({
-        email: z.email().openapi({ example: "jane.doe@example.com" }),
-        id: z
-          .uuid()
-          .openapi({ example: "550e8400-e29b-41d4-a716-446655440000" }),
-        name: z.string().nullable().openapi({ example: "Jane Doe" }),
-      })
-      .openapi("RegisterUserData"),
+    user: userDataSchema,
     token: z
       .string()
       .openapi({ example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }),
