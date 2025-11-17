@@ -12,7 +12,7 @@
         "generate:types": "openapi-typescript ../backend/_docs/openapi.json --output schema.d.ts",
         "format": "npm run lint:fix && prettier --write .",
         "format:check": "prettier --check .",
-        "type-check": "npx tsc -b --noEmit --verbose"
+        "type-check": "tsc --noEmit"
     },
     "dependencies": {
         "@hookform/resolvers": "^5.2.2",
