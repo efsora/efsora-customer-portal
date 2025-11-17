@@ -17,6 +17,8 @@ tags:
     description: Health check endpoints
   - name: Users
     description: User management endpoints
+  - name: Chat
+    description: Chat endpoints
 
 paths:
   /health:
@@ -40,6 +42,124 @@ paths:
                   timestamp:
                     type: string
                     format: date-time
+
+  /chat/stream:
+    post:
+      tags:
+        - Chat
+      summary: Stream chat response
+      description: Send a chat message and stream the AI response via SSE
+      operationId: chatStream
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+                - sessionId
+              properties:
+                message:
+                  type: string
+                  description: User's chat message
+                  example: "What is Efsora?"
+                  maxLength: 4000
+                sessionId:
+                  type: string
+                  format: uuid
+                  description: Client-generated session UUID
+                  example: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        "200":
+          description: SSE stream of chat response chunks
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: Server-Sent Event data chunks
+                example: "data: Hello\n\ndata: World\n\n"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden - Session does not belong to user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /chat/sessions/{sessionId}/messages:
+    get:
+      tags:
+        - Chat
+      summary: Get chat history
+      description: Retrieve all messages for a chat session
+      operationId: getChatHistory
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Session UUID
+          example: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        "200":
+          description: List of chat messages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        role:
+                          type: string
+                          enum: [user, assistant]
+                        content:
+                          type: string
+                        createdAt:
+                          type: string
+                          format: date-time
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden - Session does not belong to user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
 components:
   schemas:

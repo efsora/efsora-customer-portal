@@ -1,6 +1,6 @@
 # src/app/services/rag_service.py
 
-from langchain_aws import BedrockEmbeddings, ChatBedrockConverse
+from langchain_aws import BedrockEmbeddings, ChatBedrock
 from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
@@ -28,7 +28,7 @@ def format_documents(docs: list[Document]) -> str:
 
 def build_rag_chain(
     vectorstore: WeaviateVectorStore,
-    llm: ChatBedrockConverse,
+    llm: ChatBedrock,
 ) -> RunnableSerializable[dict[str, str], str]:
     """
     Build RAG chain with document retrieval and LLM generation.
@@ -47,6 +47,8 @@ def build_rag_chain(
     template = """You are a helpful assistant. Use the retrieved context to answer the question.
 If the answer is not in the context, say you don't know. You can acknowledge greetings naturally.
 
+IMPORTANT: Write with proper spacing and complete words. Format your response with clear sentence structure.
+
 Conversation history:
 {history}
 
@@ -56,7 +58,7 @@ Retrieved context:
 Current question:
 {question}
 
-Answer in a clear and concise way."""
+Answer in a clear and concise way with proper word spacing."""
 
     prompt = ChatPromptTemplate.from_template(template)
 
@@ -65,6 +67,7 @@ Answer in a clear and concise way."""
     history_input = RunnableLambda(lambda x: x.get("history", ""))
 
     # Build RAG chain with document formatting
+    # Using ChatBedrock (not ChatBedrockConverse) for better streaming
     rag_chain = (
         RunnableParallel(
             context=question_input | retriever | RunnableLambda(format_documents),
@@ -73,7 +76,7 @@ Answer in a clear and concise way."""
         )
         | prompt
         | llm
-        | StrOutputParser()
+        | StrOutputParser()  # ChatBedrock works well with StrOutputParser
     )
 
     return rag_chain

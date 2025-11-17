@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 
+import { useChat } from '#api/hooks/useChat';
 import { ChatInput } from '#components/chat/ChatInput/ChatInput';
 import { MessageList } from '#components/chat/MessageList/MessageList';
 import Message from '#presentation/components/chat/Message/Message';
@@ -14,34 +15,43 @@ interface MessageType {
 }
 
 const Chat: React.FC = () => {
-    const [messages, setMessages] = useState<MessageType[]>([]);
     const [input, setInput] = useState<string>('');
-    const [loading, setLoading] = useState<boolean>(false);
 
-    const sendMessage = (): void => {
+    // Use the chat hook with real API integration
+    const {
+        messages: apiMessages,
+        isStreaming,
+        isLoadingHistory,
+        sendMessage: sendApiMessage,
+    } = useChat({
+        onError: (err) => {
+            console.error('Chat error:', err);
+        },
+    });
+
+    // Convert API messages to component format
+    const messages = useMemo<MessageType[]>(() => {
+        return apiMessages.map((msg) => ({
+            user: msg.role === 'user' ? 'user' : 'bot',
+            content: msg.content || '',
+            timestamp: msg.createdAt ? new Date(msg.createdAt) : new Date(),
+            error: msg.content?.startsWith('Error:'),
+        }));
+    }, [apiMessages]);
+
+    const loading = isStreaming || isLoadingHistory;
+
+    const sendMessage = async (): Promise<void> => {
         if (!input.trim() || loading) return;
 
-        const userMessage: MessageType = {
-            user: 'user',
-            content: input,
-            timestamp: new Date(),
-        };
-
-        setMessages((prev) => [...prev, userMessage]);
-        setLoading(true);
+        const messageContent = input;
         setInput('');
 
-        // Hardcoded bot reply
-        setTimeout(() => {
-            const botMessage: MessageType = {
-                user: 'bot',
-                content: "Hello! I'm your bot. 👋 How can I help?",
-                timestamp: new Date(),
-            };
-
-            setMessages((prev) => [...prev, botMessage]);
-            setLoading(false);
-        }, 600);
+        try {
+            await sendApiMessage(messageContent);
+        } catch (err) {
+            console.error('Failed to send message:', err);
+        }
     };
 
     return (

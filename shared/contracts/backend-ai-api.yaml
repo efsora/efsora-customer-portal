@@ -17,6 +17,8 @@ tags:
     description: Health check endpoints
   - name: AI
     description: AI processing endpoints
+  - name: Chat
+    description: Chat endpoints for RAG assistant
 
 paths:
   /health:
@@ -43,6 +45,47 @@ paths:
                   weaviate_status:
                     type: string
                     example: connected
+
+  /chat/stream:
+    post:
+      tags:
+        - Chat
+      summary: Stream chat response
+      description: Send a chat message and stream the AI response via SSE
+      operationId: chatStream
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+                - session_id
+              properties:
+                message:
+                  type: string
+                  description: User's chat message
+                  example: "What is Efsora?"
+                session_id:
+                  type: string
+                  description: Session identifier for conversation history
+                  example: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        "200":
+          description: SSE stream of chat response chunks
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: Server-Sent Event data chunks
+                example: "data: Hello World\n\n"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
 components:
   schemas:

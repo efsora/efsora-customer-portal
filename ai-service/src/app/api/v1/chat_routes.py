@@ -82,10 +82,25 @@ async def chat_stream(
                     client_disconnected = True
                     break
 
+                # Extract text from chunk (ChatBedrock returns strings with StrOutputParser)
                 text = chunk if isinstance(chunk, str) else str(chunk)
-                assistant_chunks.append(text)
-                # Proper SSE format
-                yield f"data: {text}\n\n"
+
+                # Smart spacing: ChatBedrock splits words mid-token
+                # Add space if there's no whitespace between alphanumeric boundaries
+                if text and assistant_chunks:
+                    prev_chunk = assistant_chunks[-1]
+                    if prev_chunk:
+                        prev_char = prev_chunk[-1]
+                        curr_char = text[0]
+
+                        # Add space if both boundaries are alphanumeric (word continuation)
+                        if prev_char.isalnum() and curr_char.isalnum():
+                            text = " " + text
+
+                # Stream the chunk
+                if text:  # Only send non-empty chunks
+                    assistant_chunks.append(text)
+                    yield f"data: {text}\n\n"
 
         except Exception as exc:
             ctx.logger.exception(

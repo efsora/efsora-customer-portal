@@ -15,6 +15,13 @@
       "when": 1763042651793,
       "tag": "0001_violet_scorpion",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1763386008777,
+      "tag": "0002_wonderful_morph",
+      "breakpoints": true
     }
   ]
 }

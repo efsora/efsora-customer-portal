@@ -12,4 +12,9 @@ export const ENDPOINTS = {
         GET_BY_ID: (userId: string) => `/api/v1/users/${userId}`,
         GET_ALL: '/api/v1/users',
     },
+    CHAT: {
+        STREAM: '/api/v1/chat/stream',
+        HISTORY: (sessionId: string) =>
+            `/api/v1/chat/sessions/${sessionId}/messages`,
+    },
 };
