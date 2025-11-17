@@ -28,8 +28,7 @@
     "docker:run": "docker-compose up",
     "docker:run:detached": "docker-compose up -d",
     "docker:down": "docker-compose down",
-    "docker:test": "docker-compose run --rm cypress-tests",
-    "qase:create": "node scripts/create-test-cases-auto.js"
+    "docker:test": "docker-compose run --rm cypress-tests"
   },
   "keywords": [
     "cypress",

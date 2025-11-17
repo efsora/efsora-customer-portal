@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "qase-mcp": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "/Users/tolgaerdonmez/desktop/mcp-servers/qase/mcp-qase/build/index.js"
+      ],
+      "env": {
+        "QASE_API_TOKEN": "07ee1ece4839a988cc9f89d11c44492a986eb512178d04462f31fc046c82ec11"
+      }
+    }
+  },
+  "tools": {
+    "auto_approve": [
+      "mcp__*"
+    ]
+  }
+}

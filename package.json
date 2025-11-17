@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "generate:types": "./scripts/generate-types.sh",
+    "test:api": "cypress run --config-file test/cypress.config.ts --spec 'cypress/e2e/api/**/*.cy.ts'",
     "lint:contracts": "cd shared && npm run lint --workspace=shared",
     "format:contracts": "cd shared && npm run format --workspace=shared",
     "prepare": "if command -v husky >/dev/null 2>&1; then husky; else echo 'Skipping Husky install (husky binary not available)'; fi"
