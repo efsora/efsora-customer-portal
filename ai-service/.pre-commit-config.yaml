@@ -12,11 +12,13 @@ repos:
       - id: ruff
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.11.2
+    rev: v1.13.0
     hooks:
       - id: mypy
         pass_filenames: false
-        args: [".", "--disable-error-code=import-untyped"]
+        args:
+          - .
+          - "--disable-error-code=import-untyped"
         additional_dependencies:
           - pydantic>=2
           - pydantic-settings>=2
@@ -37,7 +39,6 @@ repos:
           - langchain-core>=1.0.4
           - langchain-weaviate>=0.0.6
           - langchain-openai>=1.0.2
-          - semantic-chunker>=0.2.0
           - advanced-chunker>=0.1.4
           - pypdf>=6.2.0
 
