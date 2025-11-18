@@ -13,6 +13,7 @@ export function mapUserToUserData(user: User): UserData {
     email: user.email,
     id: user.id,
     name: user.name,
+    surname: user.surname,
     updatedAt: user.updatedAt,
   };
 }

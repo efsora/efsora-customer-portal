@@ -28,14 +28,14 @@ export const useRegister = () => {
         },
         onSuccess: (data) => {
             if (data && data.token && data.user) {
-            if (data && data.token && data.user) {
                 setAuth(
                     {
                         id: data.user.id,
                         email: data.user.email,
                         name: data.user.name || null,
-                        createdAt: data.user.createdAt || '',
-                        updatedAt: data.user.updatedAt || '',
+                        surname: data.user.surname || null,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
                     },
                     data.token,
                 );
@@ -66,6 +66,7 @@ export const useLogin = () => {
                         id: data.user.id,
                         email: data.user.email,
                         name: data.user.name || null,
+                        surname: data.user.surname || null,
                         createdAt: data.user.createdAt || '',
                         updatedAt: data.user.updatedAt || '',
                     },

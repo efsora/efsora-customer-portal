@@ -28,6 +28,7 @@ export type PublicUserData = {
   email: string;
   id: string;
   name: string | null;
+  surname: string | null;
   updatedAt: Date;
 };
 
@@ -40,6 +41,7 @@ export type UpdateUserResult = {
   email: string;
   id: string;
   name: string | null;
+  surname: string | null;
   token?: string;
   updatedAt: Date;
 };
@@ -52,6 +54,7 @@ export type UserData = {
   email: string;
   id: string;
   name: string | null;
+  surname: string | null;
   updatedAt: Date;
 };
 
@@ -64,6 +67,7 @@ export type LoginResult = {
     email: string;
     id: string;
     name: string | null;
+    surname: string | null;
     updatedAt: Date;
   };
   token: string;

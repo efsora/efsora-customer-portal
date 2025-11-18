@@ -440,17 +440,9 @@
           "message"
         ]
       },
-      "UserData": {
+      "RegisterUserData": {
         "type": "object",
         "properties": {
-          "createdAt": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "format": "date",
-            "example": "2025-10-29T10:30:00.000Z"
-          },
           "email": {
             "type": "string",
             "format": "email",
@@ -462,21 +454,32 @@
             "example": "550e8400-e29b-41d4-a716-446655440000"
           },
           "name": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "Jane"
           },
           "surname": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "Doe"
           }
         },
-        "required": ["email", "id", "name", "surname"]
+        "required": [
+          "email",
+          "id",
+          "name",
+          "surname"
+        ]
       },
       "RegisterResponse": {
         "type": "object",
         "properties": {
           "user": {
-            "$ref": "#/components/schemas/UserData"
+            "$ref": "#/components/schemas/RegisterUserData"
           },
           "token": {
             "type": "string",
@@ -512,13 +515,21 @@
             "example": "securePassword123"
           }
         },
-        "required": ["email", "name", "surname", "password"]
+        "required": [
+          "email",
+          "name",
+          "surname",
+          "password"
+        ]
       },
       "UserData": {
         "type": "object",
         "properties": {
           "createdAt": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "date",
             "example": "2025-10-29T10:30:00.000Z"
           },
@@ -533,16 +544,36 @@
             "example": "550e8400-e29b-41d4-a716-446655440000"
           },
           "name": {
-            "type": ["string", "null"],
-            "example": "Jane Doe"
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": "Jane"
+          },
+          "surname": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": "Doe"
           },
           "updatedAt": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "date",
             "example": "2025-10-29T10:30:00.000Z"
           }
         },
-        "required": ["createdAt", "email", "id", "name", "updatedAt"]
+        "required": [
+          "createdAt",
+          "email",
+          "id",
+          "name",
+          "surname",
+          "updatedAt"
+        ]
       },
       "LoginResponse": {
         "type": "object",
@@ -1892,7 +1923,55 @@
                     "data": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/components/schemas/UserData"
+                        "allOf": [
+                          {
+                            "$ref": "#/components/schemas/UserData"
+                          },
+                          {
+                            "properties": {
+                              "createdAt": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "format": "date",
+                                "example": "2025-10-29T10:30:00.000Z"
+                              },
+                              "email": {
+                                "type": "string",
+                                "format": "email",
+                                "example": "jane.doe@example.com"
+                              },
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "example": "550e8400-e29b-41d4-a716-446655440000"
+                              },
+                              "name": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "example": "Jane Doe"
+                              },
+                              "updatedAt": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "format": "date",
+                                "example": "2025-10-29T10:30:00.000Z"
+                              }
+                            },
+                            "required": [
+                              "createdAt",
+                              "email",
+                              "id",
+                              "name",
+                              "updatedAt"
+                            ]
+                          }
+                        ]
                       }
                     },
                     "error": {
@@ -1990,7 +2069,55 @@
                   "type": "object",
                   "properties": {
                     "data": {
-                      "$ref": "#/components/schemas/UserData"
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/UserData"
+                        },
+                        {
+                          "properties": {
+                            "createdAt": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "format": "date",
+                              "example": "2025-10-29T10:30:00.000Z"
+                            },
+                            "email": {
+                              "type": "string",
+                              "format": "email",
+                              "example": "jane.doe@example.com"
+                            },
+                            "id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "example": "550e8400-e29b-41d4-a716-446655440000"
+                            },
+                            "name": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "example": "Jane Doe"
+                            },
+                            "updatedAt": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "format": "date",
+                              "example": "2025-10-29T10:30:00.000Z"
+                            }
+                          },
+                          "required": [
+                            "createdAt",
+                            "email",
+                            "id",
+                            "name",
+                            "updatedAt"
+                          ]
+                        }
+                      ]
                     },
                     "error": {
                       "type": "null"
