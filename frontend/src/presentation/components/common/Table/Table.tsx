@@ -46,7 +46,8 @@ export function Table({ files }: TableProps) {
                         <th className={styles.header}>Uploader</th>
                         <th className={styles.header}>Last Updated</th>
                         <th className={styles.header}>Status</th>
-                        <th className={styles.header}>Actions</th>
+                        {/*<th className={styles.header}>Actions</th>*/}
+                        
                     </tr>
                 </thead>
 
@@ -88,12 +89,14 @@ export function Table({ files }: TableProps) {
                   <Tag status={file.status} />
                 </div>
               </td>
+              {/*
               <td>
                 <button className={styles.downloadButton}>
                     <img src="/documents/table-download.svg" alt="download" />
                     Download
                 </button>
               </td>
+              */}
             </tr>
           ))}
         </tbody>

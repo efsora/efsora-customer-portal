@@ -60,9 +60,9 @@ export function Documents() {
             let matches = false;
 
             switch (filterType) {
-                case 'Version':
-                    matches = selectedValues.has(file.version);
-                    break;
+                // case 'Version':
+                //     matches = selectedValues.has(file.version);
+                //     break;
                 case 'Uploader':
                     matches = selectedValues.has(file.uploader.name);
                     break;

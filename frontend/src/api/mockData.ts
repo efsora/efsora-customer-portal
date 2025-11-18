@@ -147,7 +147,7 @@ export const FILTER_TAGS: FilterTag[] = [
 ];
 
 export const FILTER_CATEGORIES: FilterCategory[] = [
-  { type: 'Version', label: 'Version' },
+  // { type: 'Version', label: 'Version' },
   { type: 'Uploader', label: 'Uploader' },
   { type: 'Status', label: 'Status' },
   { type: 'Last Updated', label: 'Last Updated' },
@@ -237,8 +237,8 @@ export const getCreatedMonths = () => {
 
 export const getFilterOptions = (type: FilterType): string[] => {
   switch (type) {
-    case 'Version':
-      return getUniqueVersions();
+    // case 'Version':
+    //   return getUniqueVersions();
     case 'Uploader':
       return getUniqueUploaders();
     case 'Status':
