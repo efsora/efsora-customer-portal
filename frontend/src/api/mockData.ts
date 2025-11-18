@@ -34,7 +34,7 @@ export interface MilestoneData {
   title: string;
   dueDate: string;
   assignedPerson: string;
-  status: "revision" | "delivered" | "waiting" | "completed" | "inProgress";
+  status: "scheduled" | "inProgress" | "waiting" | "internalReview" | "delivered" | "completed" | "revision" | "blocked";
 }
 
 export interface RecentUpdate {
@@ -155,7 +155,41 @@ export const FILTER_CATEGORIES: FilterCategory[] = [
 ];
 
 // ===== TIMELINE DATA =====
+// Milestones are stored in reverse chronological order (newest first)
+// Past milestones should be marked as 'completed' or 'delivered'
+// Current active milestone should be 'inProgress'
+// Future milestones should be 'scheduled'
 export const MILESTONES: MilestoneData[] = [
+  {
+    title: "Enhancement Phase 2",
+    dueDate: "01 Feb 2026",
+    assignedPerson: "Lisa Wong",
+    status: "scheduled"
+  },
+  {
+    title: "Q1 2026 Planning Session",
+    dueDate: "02 Jan 2026",
+    assignedPerson: "Jane Doe",
+    status: "scheduled"
+  },
+  {
+    title: "Deployment Preparation",
+    dueDate: "02 Dec 2025",
+    assignedPerson: "Lisa Wong",
+    status: "scheduled"
+  },
+  {
+    title: "Quality Assurance Testing",
+    dueDate: "20 Nov 2025",
+    assignedPerson: "Sarah Johnson",
+    status: "scheduled"
+  },
+  {
+    title: "Contract Template Finalization",
+    dueDate: "11 Nov 2025",
+    assignedPerson: "Efsora",
+    status: "inProgress"
+  },
   {
     title: "Customer Report Q1 Review",
     dueDate: "10 Nov 2025",
@@ -166,27 +200,21 @@ export const MILESTONES: MilestoneData[] = [
     title: "Sales Data Export Processing",
     dueDate: "08 Nov 2025",
     assignedPerson: "John Smith",
-    status: "inProgress"
+    status: "completed"
   },
   {
-    title: "Product Images & Assets Delivery",
-    dueDate: "29 Oct 2025",
-    assignedPerson: "Emily Carter",
-    status: "delivered"
-  },
-  {
-    title: "Contract Template Finalization",
-    dueDate: "11 Nov 2025",
-    assignedPerson: "Efsora",
-    status: "waiting"
+    title: "Design Phase Completion",
+    dueDate: "05 Nov 2025",
+    assignedPerson: "Michael Lee",
+    status: "completed"
   }
 ];
 
 // ===== DASHBOARD DATA =====
 export const ACTIVE_MILESTONE: MilestoneData = {
-  title: "Sales Data Export Processing",
-  dueDate: "08 Nov 2025",
-  assignedPerson: "John Smith",
+  title: "Contract Template Finalization",
+  dueDate: "11 Nov 2025",
+  assignedPerson: "Efsora",
   status: "inProgress"
 };
 

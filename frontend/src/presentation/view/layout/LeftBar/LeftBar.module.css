@@ -16,11 +16,12 @@
     display: flex;
     flex-direction: column;
     gap: 24px;
-    padding: 32px 24px;
+    padding: 32px 20px;
 }
 
 .brandContainer {
     width: 100%;
+    padding: 4px;
 }
 
 .customerContainer {
@@ -40,6 +41,8 @@
     cursor: pointer;
     width: 100%;
     transition: all 0.3s ease;
+    border-radius: 8px;
+    padding: 4px;
 }
 
 .customerButton:hover {
