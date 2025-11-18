@@ -43,7 +43,7 @@ from tests.ragas.fixtures.real_semantic_data import REAL_SEMANTIC_TEST_DATA
 @pytest.mark.asyncio
 @pytest.mark.integration
 async def test_real_semantic_faithfulness(
-    real_rag_system: Any,
+    cached_semantic_responses: list[dict[str, Any]],
     ragas_llm: LangchainLLMWrapper,
     semantic_evaluation_config: dict[str, Any],
 ) -> None:
@@ -54,25 +54,18 @@ async def test_real_semantic_faithfulness(
     from the provided contexts. High scores indicate the RAG system
     is not making up information.
 
+    Note: Uses cached_semantic_responses to avoid redundant API calls.
     Note: Currently skips if endpoint doesn't return retrieved_contexts.
     """
-    # Collect responses from real RAG system
-    test_data = []
-    for item in REAL_SEMANTIC_TEST_DATA:
-        rag_output = await real_rag_system.retrieve_and_generate(item["user_input"])
-
-        test_data.append({
-            "user_input": rag_output["query"],
-            "retrieved_contexts": rag_output["retrieved_contexts"],
-            "response": rag_output["response"],
-            "reference": item["reference"],
-        })
+    # Use cached responses (API calls already made in fixture)
+    test_data = cached_semantic_responses
 
     # Check if we have contexts (required for faithfulness)
     if not test_data[0]["retrieved_contexts"]:
         pytest.skip(
             "Skipping faithfulness test: endpoint doesn't return retrieved_contexts. "
-            "Modify /api/v1/chat/stream to return contexts for proper evaluation."
+            "This metric detects hallucinations by verifying responses against contexts. "
+            "See tests/ragas/RAG_API_REQUIREMENTS.md for implementation details."
         )
 
     dataset = EvaluationDataset.from_list(test_data)
@@ -103,7 +96,7 @@ async def test_real_semantic_faithfulness(
 @pytest.mark.asyncio
 @pytest.mark.integration
 async def test_real_semantic_answer_relevancy(
-    real_rag_system: Any,
+    cached_semantic_responses: list[dict[str, Any]],
     ragas_llm: LangchainLLMWrapper,
     ragas_embeddings: LangchainEmbeddingsWrapper,
     semantic_evaluation_config: dict[str, Any],
@@ -113,17 +106,11 @@ async def test_real_semantic_answer_relevancy(
 
     Evaluates how well the response addresses the user's actual question.
     Low relevancy indicates responses may be off-topic or incomplete.
-    """
-    # Collect responses from real RAG system
-    test_data = []
-    for item in REAL_SEMANTIC_TEST_DATA:
-        rag_output = await real_rag_system.retrieve_and_generate(item["user_input"])
 
-        test_data.append({
-            "user_input": rag_output["query"],
-            "response": rag_output["response"],
-            "reference": item["reference"],
-        })
+    Note: Uses cached_semantic_responses to avoid redundant API calls.
+    """
+    # Use cached responses (API calls already made in fixture)
+    test_data = cached_semantic_responses
 
     dataset = EvaluationDataset.from_list(test_data)
 
@@ -153,7 +140,7 @@ async def test_real_semantic_answer_relevancy(
 @pytest.mark.asyncio
 @pytest.mark.integration
 async def test_real_semantic_context_precision(
-    real_rag_system: Any,
+    cached_semantic_responses: list[dict[str, Any]],
     ragas_llm: LangchainLLMWrapper,
     semantic_evaluation_config: dict[str, Any],
 ) -> None:
@@ -163,24 +150,18 @@ async def test_real_semantic_context_precision(
     Measures how much of the retrieved context is actually relevant.
     High precision means low noise in retrieval results.
 
+    Note: Uses cached_semantic_responses to avoid redundant API calls.
     Note: Requires endpoint to return retrieved_contexts.
     """
-    # Collect responses from real RAG system
-    test_data = []
-    for item in REAL_SEMANTIC_TEST_DATA:
-        rag_output = await real_rag_system.retrieve_and_generate(item["user_input"])
-
-        test_data.append({
-            "user_input": rag_output["query"],
-            "retrieved_contexts": rag_output["retrieved_contexts"],
-            "response": rag_output["response"],
-            "reference": item["reference"],
-        })
+    # Use cached responses (API calls already made in fixture)
+    test_data = cached_semantic_responses
 
     # Check if we have contexts
     if not test_data[0]["retrieved_contexts"]:
         pytest.skip(
-            "Skipping context precision test: endpoint doesn't return retrieved_contexts."
+            "Skipping context precision test: endpoint doesn't return retrieved_contexts. "
+            "This metric measures retrieval quality (relevance of retrieved docs). "
+            "See tests/ragas/RAG_API_REQUIREMENTS.md for implementation details."
         )
 
     dataset = EvaluationDataset.from_list(test_data)
@@ -210,7 +191,7 @@ async def test_real_semantic_context_precision(
 @pytest.mark.asyncio
 @pytest.mark.integration
 async def test_real_semantic_context_recall(
-    real_rag_system: Any,
+    cached_semantic_responses: list[dict[str, Any]],
     ragas_llm: LangchainLLMWrapper,
     semantic_evaluation_config: dict[str, Any],
 ) -> None:
@@ -220,24 +201,18 @@ async def test_real_semantic_context_recall(
     Measures how much of the relevant information was actually retrieved.
     High recall means the system finds all necessary context.
 
+    Note: Uses cached_semantic_responses to avoid redundant API calls.
     Note: Requires endpoint to return retrieved_contexts.
     """
-    # Collect responses from real RAG system
-    test_data = []
-    for item in REAL_SEMANTIC_TEST_DATA:
-        rag_output = await real_rag_system.retrieve_and_generate(item["user_input"])
-
-        test_data.append({
-            "user_input": rag_output["query"],
-            "retrieved_contexts": rag_output["retrieved_contexts"],
-            "response": rag_output["response"],
-            "reference": item["reference"],
-        })
+    # Use cached responses (API calls already made in fixture)
+    test_data = cached_semantic_responses
 
     # Check if we have contexts
     if not test_data[0]["retrieved_contexts"]:
         pytest.skip(
-            "Skipping context recall test: endpoint doesn't return retrieved_contexts."
+            "Skipping context recall test: endpoint doesn't return retrieved_contexts. "
+            "This metric measures retrieval completeness (all relevant docs retrieved). "
+            "See tests/ragas/RAG_API_REQUIREMENTS.md for implementation details."
         )
 
     dataset = EvaluationDataset.from_list(test_data)
@@ -267,7 +242,7 @@ async def test_real_semantic_context_recall(
 @pytest.mark.asyncio
 @pytest.mark.integration
 async def test_real_semantic_answer_similarity(
-    real_rag_system: Any,
+    cached_semantic_responses: list[dict[str, Any]],
     ragas_llm: LangchainLLMWrapper,
     ragas_embeddings: LangchainEmbeddingsWrapper,
     semantic_evaluation_config: dict[str, Any],
@@ -277,17 +252,11 @@ async def test_real_semantic_answer_similarity(
 
     Measures how semantically close the response is to the reference answer.
     This is useful when you have ground truth answers for your documents.
-    """
-    # Collect responses from real RAG system
-    test_data = []
-    for item in REAL_SEMANTIC_TEST_DATA:
-        rag_output = await real_rag_system.retrieve_and_generate(item["user_input"])
 
-        test_data.append({
-            "user_input": rag_output["query"],
-            "response": rag_output["response"],
-            "reference": item["reference"],
-        })
+    Note: Uses cached_semantic_responses to avoid redundant API calls.
+    """
+    # Use cached responses (API calls already made in fixture)
+    test_data = cached_semantic_responses
 
     dataset = EvaluationDataset.from_list(test_data)
 
@@ -317,7 +286,7 @@ async def test_real_semantic_answer_similarity(
 @pytest.mark.asyncio
 @pytest.mark.integration
 async def test_real_semantic_answer_correctness(
-    real_rag_system: Any,
+    cached_semantic_responses: list[dict[str, Any]],
     ragas_llm: LangchainLLMWrapper,
     ragas_embeddings: LangchainEmbeddingsWrapper,
     semantic_evaluation_config: dict[str, Any],
@@ -327,17 +296,11 @@ async def test_real_semantic_answer_correctness(
 
     Combines both semantic similarity and factual accuracy to evaluate
     if the response is correct relative to the reference answer.
-    """
-    # Collect responses from real RAG system
-    test_data = []
-    for item in REAL_SEMANTIC_TEST_DATA:
-        rag_output = await real_rag_system.retrieve_and_generate(item["user_input"])
 
-        test_data.append({
-            "user_input": rag_output["query"],
-            "response": rag_output["response"],
-            "reference": item["reference"],
-        })
+    Note: Uses cached_semantic_responses to avoid redundant API calls.
+    """
+    # Use cached responses (API calls already made in fixture)
+    test_data = cached_semantic_responses
 
     dataset = EvaluationDataset.from_list(test_data)
 
@@ -367,7 +330,7 @@ async def test_real_semantic_answer_correctness(
 @pytest.mark.asyncio
 @pytest.mark.integration
 async def test_real_semantic_comprehensive_evaluation(
-    real_rag_system: Any,
+    cached_semantic_responses: list[dict[str, Any]],
     ragas_llm: LangchainLLMWrapper,
     ragas_embeddings: LangchainEmbeddingsWrapper,
     semantic_evaluation_config: dict[str, Any],
@@ -378,20 +341,12 @@ async def test_real_semantic_comprehensive_evaluation(
     Runs all semantic metrics together for a complete RAG quality assessment.
     This is the most thorough but also slowest and most expensive test.
 
+    Note: Uses cached_semantic_responses to avoid redundant API calls.
     Note: Context-based metrics (faithfulness, precision, recall) will be skipped
     if endpoint doesn't return retrieved_contexts.
     """
-    # Collect responses from real RAG system
-    test_data = []
-    for item in REAL_SEMANTIC_TEST_DATA:
-        rag_output = await real_rag_system.retrieve_and_generate(item["user_input"])
-
-        test_data.append({
-            "user_input": rag_output["query"],
-            "retrieved_contexts": rag_output["retrieved_contexts"],
-            "response": rag_output["response"],
-            "reference": item["reference"],
-        })
+    # Use cached responses (API calls already made in fixture)
+    test_data = cached_semantic_responses
 
     dataset = EvaluationDataset.from_list(test_data)
 
@@ -415,8 +370,13 @@ async def test_real_semantic_comprehensive_evaluation(
             answer_similarity,
             answer_correctness,
         ]
-        print("\nNote: Skipping context-dependent metrics (faithfulness, precision, recall)")
-        print("      Endpoint doesn't return retrieved_contexts\n")
+        print("\n" + "="*60)
+        print("NOTE: Skipping context-dependent metrics")
+        print("="*60)
+        print("Missing: Faithfulness, Context Precision, Context Recall")
+        print("Reason:  Endpoint doesn't return retrieved_contexts")
+        print("Details: See tests/ragas/RAG_API_REQUIREMENTS.md")
+        print("="*60 + "\n")
 
     # Configure all metrics
     for metric in metrics:

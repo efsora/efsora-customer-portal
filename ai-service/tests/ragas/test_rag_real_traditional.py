@@ -34,7 +34,7 @@ from tests.ragas.fixtures.real_traditional_data import REAL_TRADITIONAL_TEST_DAT
 @pytest.mark.asyncio
 @pytest.mark.integration
 async def test_real_traditional_exact_match(
-    real_rag_system: Any,
+    cached_traditional_responses: list[dict[str, Any]],
     exact_match_scorer: ExactMatch,
     traditional_evaluation_config: dict[str, Any],
 ) -> None:
@@ -45,16 +45,15 @@ async def test_real_traditional_exact_match(
     - Configuration values (ports, paths, names)
     - Command outputs
     - Factual data (dates, numbers, codes)
+
+    Note: Uses cached_traditional_responses to avoid redundant API calls.
     """
     scores = []
 
-    for item in REAL_TRADITIONAL_TEST_DATA:
-        # Get response from real RAG system
-        rag_output = await real_rag_system.retrieve_and_generate(item["user_input"])
-
+    for item in cached_traditional_responses:
         sample = SingleTurnSample(
-            user_input=rag_output["query"],
-            response=rag_output["response"],
+            user_input=item["user_input"],
+            response=item["response"],
             reference=item["reference"],
         )
 
@@ -64,7 +63,7 @@ async def test_real_traditional_exact_match(
         # Debug: print actual vs expected
         print(f"\nQuestion: {item['user_input']}")
         print(f"Expected: {item['reference']}")
-        print(f"Actual:   {rag_output['response']}")
+        print(f"Actual:   {item['response']}")
         print(f"Match: {'✓' if score == 1.0 else '✗'}")
 
     # Calculate average exact match rate
@@ -88,7 +87,7 @@ async def test_real_traditional_exact_match(
 @pytest.mark.asyncio
 @pytest.mark.integration
 async def test_real_traditional_bleu_score(
-    real_rag_system: Any,
+    cached_traditional_responses: list[dict[str, Any]],
     bleu_scorer: BleuScore,
     traditional_evaluation_config: dict[str, Any],
 ) -> None:
@@ -97,16 +96,15 @@ async def test_real_traditional_bleu_score(
 
     Good for testing responses that should be similar but allow
     some variation in wording. BLEU measures precision of n-grams.
+
+    Note: Uses cached_traditional_responses to avoid redundant API calls.
     """
     scores = []
 
-    for item in REAL_TRADITIONAL_TEST_DATA:
-        # Get response from real RAG system
-        rag_output = await real_rag_system.retrieve_and_generate(item["user_input"])
-
+    for item in cached_traditional_responses:
         sample = SingleTurnSample(
-            user_input=rag_output["query"],
-            response=rag_output["response"],
+            user_input=item["user_input"],
+            response=item["response"],
             reference=item["reference"],
         )
 
@@ -134,7 +132,7 @@ async def test_real_traditional_bleu_score(
 @pytest.mark.asyncio
 @pytest.mark.integration
 async def test_real_traditional_rouge_score(
-    real_rag_system: Any,
+    cached_traditional_responses: list[dict[str, Any]],
     rouge_scorer: RougeScore,
     traditional_evaluation_config: dict[str, Any],
 ) -> None:
@@ -143,16 +141,15 @@ async def test_real_traditional_rouge_score(
 
     ROUGE-L measures longest common subsequence F-measure.
     Good for checking if key information is present in response.
+
+    Note: Uses cached_traditional_responses to avoid redundant API calls.
     """
     scores = []
 
-    for item in REAL_TRADITIONAL_TEST_DATA:
-        # Get response from real RAG system
-        rag_output = await real_rag_system.retrieve_and_generate(item["user_input"])
-
+    for item in cached_traditional_responses:
         sample = SingleTurnSample(
-            user_input=rag_output["query"],
-            response=rag_output["response"],
+            user_input=item["user_input"],
+            response=item["response"],
             reference=item["reference"],
         )
 
@@ -180,7 +177,7 @@ async def test_real_traditional_rouge_score(
 @pytest.mark.asyncio
 @pytest.mark.integration
 async def test_real_traditional_string_similarity(
-    real_rag_system: Any,
+    cached_traditional_responses: list[dict[str, Any]],
     string_similarity_scorer: NonLLMStringSimilarity,
     traditional_evaluation_config: dict[str, Any],
 ) -> None:
@@ -189,16 +186,15 @@ async def test_real_traditional_string_similarity(
 
     Measures character-level edit distance between response and reference.
     Good for testing responses that should be similar in structure.
+
+    Note: Uses cached_traditional_responses to avoid redundant API calls.
     """
     scores = []
 
-    for item in REAL_TRADITIONAL_TEST_DATA:
-        # Get response from real RAG system
-        rag_output = await real_rag_system.retrieve_and_generate(item["user_input"])
-
+    for item in cached_traditional_responses:
         sample = SingleTurnSample(
-            user_input=rag_output["query"],
-            response=rag_output["response"],
+            user_input=item["user_input"],
+            response=item["response"],
             reference=item["reference"],
         )
 
@@ -226,7 +222,7 @@ async def test_real_traditional_string_similarity(
 @pytest.mark.asyncio
 @pytest.mark.integration
 async def test_real_traditional_string_presence(
-    real_rag_system: Any,
+    cached_traditional_responses: list[dict[str, Any]],
     string_presence_scorer: StringPresence,
     traditional_evaluation_config: dict[str, Any],
 ) -> None:
@@ -235,16 +231,15 @@ async def test_real_traditional_string_presence(
 
     Checks if the response contains the reference text as a substring.
     Useful for ensuring critical information is included.
+
+    Note: Uses cached_traditional_responses to avoid redundant API calls.
     """
     scores = []
 
-    for item in REAL_TRADITIONAL_TEST_DATA:
-        # Get response from real RAG system
-        rag_output = await real_rag_system.retrieve_and_generate(item["user_input"])
-
+    for item in cached_traditional_responses:
         sample = SingleTurnSample(
-            user_input=rag_output["query"],
-            response=rag_output["response"],
+            user_input=item["user_input"],
+            response=item["response"],
             reference=item["reference"],
         )
 
@@ -272,7 +267,7 @@ async def test_real_traditional_string_presence(
 @pytest.mark.asyncio
 @pytest.mark.integration
 async def test_real_traditional_comprehensive_evaluation(
-    real_rag_system: Any,
+    cached_traditional_responses: list[dict[str, Any]],
     exact_match_scorer: ExactMatch,
     bleu_scorer: BleuScore,
     rouge_scorer: RougeScore,
@@ -284,6 +279,8 @@ async def test_real_traditional_comprehensive_evaluation(
 
     Runs all traditional metrics together for complete quality assessment.
     Fast (seconds), free ($0), no LLM required.
+
+    Note: Uses cached_traditional_responses to avoid redundant API calls.
     """
     results = {
         "exact_match": [],
@@ -293,13 +290,10 @@ async def test_real_traditional_comprehensive_evaluation(
     }
 
     # Collect all metrics for each test case
-    for item in REAL_TRADITIONAL_TEST_DATA:
-        # Get response from real RAG system
-        rag_output = await real_rag_system.retrieve_and_generate(item["user_input"])
-
+    for item in cached_traditional_responses:
         sample = SingleTurnSample(
-            user_input=rag_output["query"],
-            response=rag_output["response"],
+            user_input=item["user_input"],
+            response=item["response"],
             reference=item["reference"],
         )
 

@@ -6,10 +6,10 @@ Comprehensive test suites for evaluating RAG (Retrieval-Augmented Generation) sy
 
 This testing framework provides **two types of test suites** for evaluating your real RAG system:
 
-| Test Suite | Metrics | Speed | Cost | Use Case |
-|------------|---------|-------|------|----------|
-| **Semantic** | LLM-based (AWS Bedrock Claude) | Slow (min) | $$$ | Test actual RAG pipeline with complex questions requiring semantic understanding |
-| **Traditional** | Non-LLM (BLEU, ROUGE, etc.) | Fast (sec) | Free | Test actual RAG pipeline with factual questions using lexical matching |
+| Test Suite      | Metrics                        | Speed      | Cost | Use Case                                                                         |
+| --------------- | ------------------------------ | ---------- | ---- | -------------------------------------------------------------------------------- |
+| **Semantic**    | LLM-based (AWS Bedrock Claude) | Slow (min) | $$$  | Test actual RAG pipeline with complex questions requiring semantic understanding |
+| **Traditional** | Non-LLM (BLEU, ROUGE, etc.)    | Fast (sec) | Free | Test actual RAG pipeline with factual questions using lexical matching           |
 
 ### Directory Structure
 
@@ -37,11 +37,12 @@ uv sync
 ```
 
 This installs:
-- `ragas>=0.2.0` - RAG evaluation framework
-- `langchain>=0.3.0` - LLM abstraction layer
-- `langchain-anthropic>=0.3.0` - Anthropic integration
-- `anthropic>=0.39.0` - Anthropic API client
-- `datasets>=3.0.0` - Dataset handling
+
+-   `ragas>=0.2.0` - RAG evaluation framework
+-   `langchain>=0.3.0` - LLM abstraction layer
+-   `langchain-anthropic>=0.3.0` - Anthropic integration
+-   `anthropic>=0.39.0` - Anthropic API client
+-   `datasets>=3.0.0` - Dataset handling
 
 ### 2. Set Anthropic API Key (for semantic tests only)
 
@@ -50,6 +51,7 @@ export AWS_CLAUDE_API_KEY="sk-ant-..."
 ```
 
 Or create a `.env` file:
+
 ```env
 AWS_CLAUDE_API_KEY=sk-ant-...
 ```
@@ -71,7 +73,7 @@ docker-compose up -d weaviate
 # Edit: tests/ragas/fixtures/real_traditional_data.py
 
 # 3. Run tests
-pytest tests/ragas/test_rag_real_traditional.py -v  # Fast, free
+uv run pytest tests/ragas/test_rag_real_traditional.py -v
 ENV=test AWS_ACCESS_KEY_ID=xxx AWS_SECRET_ACCESS_KEY=yyy pytest tests/ragas/test_rag_real_semantic.py -v  # Slow, costs money
 ```
 
@@ -113,15 +115,15 @@ ENV=test AWS_ACCESS_KEY_ID=xxx AWS_SECRET_ACCESS_KEY=yyy pytest tests/ragas/test
 
 #### Available Tests
 
-| Test Function | Metric | What It Measures |
-|---------------|--------|------------------|
-| `test_real_semantic_faithfulness` | Faithfulness | No hallucination - response grounded in context |
-| `test_real_semantic_answer_relevancy` | Answer Relevancy | Response directly addresses the question |
-| `test_real_semantic_context_precision` | Context Precision | Quality of retrieved contexts (low noise) |
-| `test_real_semantic_context_recall` | Context Recall | Completeness of retrieved information |
-| `test_real_semantic_answer_similarity` | Answer Similarity | Semantic similarity to reference answer |
-| `test_real_semantic_answer_correctness` | Answer Correctness | Factual accuracy + semantic similarity |
-| `test_real_semantic_comprehensive_evaluation` | All metrics | Complete evaluation (most thorough) |
+| Test Function                                 | Metric             | What It Measures                                |
+| --------------------------------------------- | ------------------ | ----------------------------------------------- |
+| `test_real_semantic_faithfulness`             | Faithfulness       | No hallucination - response grounded in context |
+| `test_real_semantic_answer_relevancy`         | Answer Relevancy   | Response directly addresses the question        |
+| `test_real_semantic_context_precision`        | Context Precision  | Quality of retrieved contexts (low noise)       |
+| `test_real_semantic_context_recall`           | Context Recall     | Completeness of retrieved information           |
+| `test_real_semantic_answer_similarity`        | Answer Similarity  | Semantic similarity to reference answer         |
+| `test_real_semantic_answer_correctness`       | Answer Correctness | Factual accuracy + semantic similarity          |
+| `test_real_semantic_comprehensive_evaluation` | All metrics        | Complete evaluation (most thorough)             |
 
 #### Thresholds (configurable in conftest.py:77)
 
@@ -155,14 +157,14 @@ pytest tests/ragas/test_rag_real_semantic.py::test_real_semantic_comprehensive_e
 
 #### Available Tests
 
-| Test Function | Metric | What It Measures | Best For |
-|---------------|--------|------------------|----------|
-| `test_real_traditional_exact_match` | Exact Match | Exact string equality | Ports, codes, single-word answers |
-| `test_real_traditional_bleu_score` | BLEU | N-gram precision overlap | Similar answers with slight variations |
-| `test_real_traditional_rouge_score` | ROUGE-L | Longest common subsequence | Key information presence |
-| `test_real_traditional_string_similarity` | Levenshtein | Edit distance similarity | Typos, format differences |
-| `test_real_traditional_string_presence` | String Presence | Reference is substring of response | Critical info inclusion |
-| `test_real_traditional_comprehensive_evaluation` | All traditional metrics | Complete fast evaluation |
+| Test Function                                    | Metric                  | What It Measures                   | Best For                               |
+| ------------------------------------------------ | ----------------------- | ---------------------------------- | -------------------------------------- |
+| `test_real_traditional_exact_match`              | Exact Match             | Exact string equality              | Ports, codes, single-word answers      |
+| `test_real_traditional_bleu_score`               | BLEU                    | N-gram precision overlap           | Similar answers with slight variations |
+| `test_real_traditional_rouge_score`              | ROUGE-L                 | Longest common subsequence         | Key information presence               |
+| `test_real_traditional_string_similarity`        | Levenshtein             | Edit distance similarity           | Typos, format differences              |
+| `test_real_traditional_string_presence`          | String Presence         | Reference is substring of response | Critical info inclusion                |
+| `test_real_traditional_comprehensive_evaluation` | All traditional metrics | Complete fast evaluation           |
 
 #### Thresholds (configurable in conftest.py:101)
 
@@ -289,10 +291,11 @@ COMMAND_TEST_DATA = [
 ### The `real_rag_system` Fixture
 
 All tests use the `real_rag_system` fixture which:
-- Initializes the full FastAPI application with lifespan
-- Builds the actual vectorstore and RAG chain
-- Calls the real `/api/v1/chat/stream` endpoint
-- Collects and evaluates streaming SSE responses
+
+-   Initializes the full FastAPI application with lifespan
+-   Builds the actual vectorstore and RAG chain
+-   Calls the real `/api/v1/chat/stream` endpoint
+-   Collects and evaluates streaming SSE responses
 
 ### Prerequisites
 
@@ -317,10 +320,10 @@ pytest tests/ragas/test_rag_real_semantic.py -v           # Slow, costs money
 
 ### Important Notes
 
-- The endpoint currently doesn't return `retrieved_contexts`, so faithfulness/precision/recall tests will skip
-- Tests are marked with `@pytest.mark.integration` for easy filtering
-- Traditional tests are free and fast, semantic tests cost money but are more accurate
-- Update the test data fixtures with questions relevant to YOUR actual documents
+-   **Retrieved Contexts Missing**: The `/api/v1/chat/stream` endpoint doesn't return `retrieved_contexts`, causing faithfulness/precision/recall tests to skip. See `RAG_API_REQUIREMENTS.md` for implementation details needed to enable these critical metrics.
+-   Tests are marked with `@pytest.mark.integration` for easy filtering
+-   Traditional tests are free and fast, semantic tests cost money but are more accurate
+-   Update the test data fixtures with questions relevant to YOUR actual documents
 
 ### Writing Custom Tests
 
@@ -404,9 +407,9 @@ async def test_my_actual_rag_semantic(
 
 ### 1. Start with Traditional Tests
 
-- **Faster iteration**: Results in seconds, not minutes
-- **No cost**: Run unlimited tests without API charges
-- **Good baseline**: Catches obvious errors quickly
+-   **Faster iteration**: Results in seconds, not minutes
+-   **No cost**: Run unlimited tests without API charges
+-   **Good baseline**: Catches obvious errors quickly
 
 ```bash
 # Development workflow
@@ -417,9 +420,9 @@ pytest tests/ragas/test_rag_semantic.py -v     # Thorough validation before depl
 
 ### 2. Use Semantic Tests for Final Validation
 
-- Run before production deployments
-- Use for complex feature validation
-- Evaluate edge cases and nuanced responses
+-   Run before production deployments
+-   Use for complex feature validation
+-   Evaluate edge cases and nuanced responses
 
 ### 3. Customize Thresholds
 
@@ -459,9 +462,9 @@ MY_PRODUCT_DATA = [
   run: pytest tests/ragas/test_rag_traditional.py -v
 
 - name: Run Semantic RAG Tests (Thorough)
-  if: github.ref == 'refs/heads/main'  # Only on main branch
+  if: github.ref == 'refs/heads/main' # Only on main branch
   env:
-    AWS_CLAUDE_API_KEY: ${{ secrets.AWS_CLAUDE_API_KEY }}
+      AWS_CLAUDE_API_KEY: ${{ secrets.AWS_CLAUDE_API_KEY }}
   run: pytest tests/ragas/test_rag_semantic.py -v
 ```
 
@@ -472,6 +475,7 @@ MY_PRODUCT_DATA = [
 **Issue**: `AWS_CLAUDE_API_KEY not set, skipping semantic Ragas tests`
 
 **Solution**:
+
 ```bash
 export AWS_CLAUDE_API_KEY="sk-ant-..."
 ```
@@ -481,6 +485,7 @@ export AWS_CLAUDE_API_KEY="sk-ant-..."
 **Issue**: `ModuleNotFoundError: No module named 'ragas'`
 
 **Solution**:
+
 ```bash
 cd ai-service
 uv sync
@@ -491,23 +496,25 @@ uv sync
 **Issue**: Semantic tests take too long
 
 **Solutions**:
-- Run traditional tests during development
-- Use semantic tests only for final validation
-- Run specific semantic tests instead of comprehensive suite
-- Consider using Claude Haiku (faster, cheaper) for development:
-  ```python
-  # conftest.py
-  llm = ChatAnthropic(
-      model="claude-3-5-haiku-20241022",  # Faster, cheaper
-      ...
-  )
-  ```
+
+-   Run traditional tests during development
+-   Use semantic tests only for final validation
+-   Run specific semantic tests instead of comprehensive suite
+-   Consider using Claude Haiku (faster, cheaper) for development:
+    ```python
+    # conftest.py
+    llm = ChatAnthropic(
+        model="claude-3-5-haiku-20241022",  # Faster, cheaper
+        ...
+    )
+    ```
 
 ### Traditional Tests Failing
 
 **Issue**: Exact match tests failing due to formatting
 
 **Solution**: Use BLEU/ROUGE instead:
+
 ```python
 # Instead of exact match
 await exact_match_scorer.ascore(reference, response)
@@ -521,39 +528,40 @@ await bleu_scorer.ascore(reference, response)
 **Issue**: Anthropic API rate limit errors
 
 **Solutions**:
-- Add delays between tests
-- Run tests sequentially: `pytest tests/ragas/test_rag_semantic.py -v` (no `-n auto`)
-- Upgrade Anthropic API tier
-- Use traditional tests more frequently
+
+-   Add delays between tests
+-   Run tests sequentially: `pytest tests/ragas/test_rag_semantic.py -v` (no `-n auto`)
+-   Upgrade Anthropic API tier
+-   Use traditional tests more frequently
 
 ## Cost Estimation
 
 ### Semantic Tests (Approximate)
 
-| Test | Claude Sonnet 4 Calls | Estimated Cost |
-|------|----------------------|----------------|
-| Single metric test | ~5-10 calls | $0.01-0.02 |
-| Comprehensive test | ~30-50 calls | $0.05-0.10 |
-| Full semantic suite | ~100-150 calls | $0.20-0.30 |
+| Test                | Claude Sonnet 4 Calls | Estimated Cost |
+| ------------------- | --------------------- | -------------- |
+| Single metric test  | ~5-10 calls           | $0.01-0.02     |
+| Comprehensive test  | ~30-50 calls          | $0.05-0.10     |
+| Full semantic suite | ~100-150 calls        | $0.20-0.30     |
 
 ### Traditional Tests
 
-| Test | Cost |
-|------|------|
+| Test                  | Cost      |
+| --------------------- | --------- |
 | All traditional tests | **$0.00** |
 
 ### Recommendation
 
-- **Development**: Use traditional tests (free, fast)
-- **Pre-production**: Run semantic tests once
-- **CI/CD**: Traditional on every PR, semantic on main branch only
+-   **Development**: Use traditional tests (free, fast)
+-   **Pre-production**: Run semantic tests once
+-   **CI/CD**: Traditional on every PR, semantic on main branch only
 
 ## Further Reading
 
-- [Ragas Documentation](https://docs.ragas.io/)
-- [Ragas Traditional Metrics](https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/traditional/)
-- [Ragas LLM Metrics](https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/semantic/)
-- [Anthropic Claude Models](https://docs.anthropic.com/en/docs/models-overview)
+-   [Ragas Documentation](https://docs.ragas.io/)
+-   [Ragas Traditional Metrics](https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/traditional/)
+-   [Ragas LLM Metrics](https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/semantic/)
+-   [Anthropic Claude Models](https://docs.anthropic.com/en/docs/models-overview)
 
 ## Quick Reference
 
@@ -577,7 +585,8 @@ pytest tests/ragas/test_rag_traditional.py -n auto
 ## Contact
 
 For questions about these tests:
-- Review this README
-- Check inline code documentation
-- Consult [Ragas documentation](https://docs.ragas.io/)
-- Ask project maintainers
+
+-   Review this README
+-   Check inline code documentation
+-   Consult [Ragas documentation](https://docs.ragas.io/)
+-   Ask project maintainers

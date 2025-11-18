@@ -31,13 +31,14 @@ def aws_credentials() -> tuple[str, str, str]:
 
     Returns:
         Tuple of (access_key_id, secret_access_key, region)
+        Region defaults to 'us-east-1' if not specified in environment.
 
     Raises:
         pytest.skip: If AWS credentials are not set
     """
     access_key_id = os.getenv("AWS_ACCESS_KEY_ID")
     secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY")
-    region = os.getenv("AWS_REGION")
+    region = os.getenv("AWS_REGION") or os.getenv("BEDROCK_REGION") or "us-east-1"
 
     if not access_key_id or not secret_access_key:
         pytest.skip(
@@ -165,8 +166,6 @@ def string_presence_scorer() -> Any:
 def semantic_evaluation_config() -> dict[str, Any]:
     """
     Configuration for semantic (LLM-based) evaluation thresholds.
-
-    These metrics use Claude Sonnet 4 for evaluation (costs API credits).
     """
     return {
         # Core RAG metrics
@@ -185,8 +184,6 @@ def semantic_evaluation_config() -> dict[str, Any]:
 def traditional_evaluation_config() -> dict[str, Any]:
     """
     Configuration for traditional (non-LLM) evaluation thresholds.
-
-    These metrics are fast and free (no API calls).
     """
     return {
         # Exact matching (binary)
@@ -208,7 +205,7 @@ def traditional_evaluation_config() -> dict[str, Any]:
 # REAL RAG SYSTEM FIXTURES (for integration testing with actual RAG pipeline)
 # ============================================================================
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(scope="module")
 async def real_rag_client() -> AsyncGenerator[AsyncClient, None]:
     """
     Create AsyncClient for making requests to the real RAG system.
@@ -217,6 +214,8 @@ async def real_rag_client() -> AsyncGenerator[AsyncClient, None]:
     If not, start it with: make run (or uvicorn app.main:app --reload)
 
     Use this client to test the actual /api/v1/chat/stream endpoint.
+
+    Scope: module - shared across all tests in a module to enable response caching.
     """
     async with AsyncClient(base_url="http://localhost:8000", timeout=30.0) as client:
         yield client
@@ -239,13 +238,15 @@ async def collect_sse_response(response_text: str) -> str:
     return combined
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(scope="module")
 async def real_rag_system(real_rag_client: AsyncClient) -> Any:
     """
     Real RAG system fixture that provides a consistent interface for testing.
 
     This fixture wraps the real RAG API endpoint to provide the same interface
     as the mock_rag_system fixture, making it easy to test real vs mock.
+
+    Scope: module - shared across all tests in a module to enable response caching.
 
     Returns:
         Object with retrieve_and_generate() method that calls the real RAG API
@@ -287,13 +288,105 @@ async def real_rag_system(real_rag_client: AsyncClient) -> Any:
             response_text = response.text
             combined_response = await collect_sse_response(response_text)
 
-            # Note: The current endpoint doesn't return retrieved_contexts separately
-            # For now, we'll return empty contexts. To get actual contexts, the endpoint
-            # would need to be modified to return them.
+            # ================================================================
+            # IMPORTANT: Retrieved contexts are currently not returned by API
+            # ================================================================
+            #
+            # The /api/v1/chat/stream endpoint only returns the LLM response text
+            # and does not include the retrieved contexts that were used to generate
+            # the response. This causes 3 critical ragas metrics to auto-skip:
+            #
+            # 1. Faithfulness - Cannot detect hallucinations without contexts
+            # 2. Context Precision - Cannot measure retrieval quality
+            # 3. Context Recall - Cannot measure retrieval completeness
+            #
+            # WHY contexts are missing:
+            # - The RAG chain uses StrOutputParser() which discards intermediate data
+            # - The streaming endpoint only yields text chunks, no metadata
+            #
+            # WHAT is needed:
+            # - Modify the endpoint to return retrieved contexts alongside the response
+            # - Options: SSE metadata event, query parameter, or separate endpoint
+            #
+            # For detailed implementation requirements, see:
+            # tests/ragas/RAG_API_REQUIREMENTS.md
+            #
+            # Until the API is updated, faithfulness/precision/recall tests will skip.
+            # ================================================================
             return {
                 "query": query,
-                "retrieved_contexts": [],  # TODO: Modify endpoint to return contexts
+                "retrieved_contexts": [],  # Empty until API returns contexts
                 "response": combined_response,
             }
 
     return RealRAGSystem(real_rag_client)
+
+
+# ============================================================================
+# CACHED RESPONSES FIXTURES (to avoid redundant API calls in tests)
+# ============================================================================
+
+@pytest_asyncio.fixture(scope="module")
+async def cached_traditional_responses(real_rag_system: Any) -> list[dict[str, Any]]:
+    """
+    Cache RAG responses for traditional tests to avoid redundant API calls.
+
+    Makes API requests ONCE for all questions in REAL_TRADITIONAL_TEST_DATA,
+    then all 6 traditional test functions reuse these cached responses.
+
+    Without caching: 6 tests × 5 questions = 30 API requests
+    With caching: 5 questions = 5 API requests (6x faster!)
+
+    Returns:
+        List of dicts with 'user_input', 'response', 'reference' for each question
+    """
+    from tests.ragas.fixtures.real_traditional_data import REAL_TRADITIONAL_TEST_DATA
+
+    cached_responses = []
+
+    for item in REAL_TRADITIONAL_TEST_DATA:
+        # Make API call once
+        rag_output = await real_rag_system.retrieve_and_generate(item["user_input"])
+
+        # Cache the result
+        cached_responses.append({
+            "user_input": rag_output["query"],
+            "response": rag_output["response"],
+            "reference": item["reference"],
+            "retrieved_contexts": rag_output["retrieved_contexts"],
+        })
+
+    return cached_responses
+
+
+@pytest_asyncio.fixture(scope="module")
+async def cached_semantic_responses(real_rag_system: Any) -> list[dict[str, Any]]:
+    """
+    Cache RAG responses for semantic tests to avoid redundant API calls.
+
+    Makes API requests ONCE for all questions in REAL_SEMANTIC_TEST_DATA,
+    then all 7 semantic test functions reuse these cached responses.
+
+    Without caching: 7 tests × 5 questions = 35 API requests
+    With caching: 5 questions = 5 API requests (7x faster!)
+
+    Returns:
+        List of dicts with 'user_input', 'response', 'reference', 'retrieved_contexts'
+    """
+    from tests.ragas.fixtures.real_semantic_data import REAL_SEMANTIC_TEST_DATA
+
+    cached_responses = []
+
+    for item in REAL_SEMANTIC_TEST_DATA:
+        # Make API call once
+        rag_output = await real_rag_system.retrieve_and_generate(item["user_input"])
+
+        # Cache the result
+        cached_responses.append({
+            "user_input": rag_output["query"],
+            "response": rag_output["response"],
+            "reference": item["reference"],
+            "retrieved_contexts": rag_output["retrieved_contexts"],
+        })
+
+    return cached_responses
