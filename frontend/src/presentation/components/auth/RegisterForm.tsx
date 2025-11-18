@@ -19,6 +19,10 @@ const registerSchema = z
             .string()
             .min(1, 'Name is required')
             .max(255, 'Name must be less than 255 characters'),
+        surname: z
+            .string()
+            .min(1, 'Surname is required')
+            .max(255, 'Surname must be less than 255 characters'),
         password: z
             .string()
             .min(1, 'Password is required')
@@ -55,6 +59,7 @@ export const RegisterForm = () => {
             {
                 email: data.email,
                 name: data.name,
+                surname: data.surname,
                 password: data.password,
             },
             {
@@ -101,14 +106,14 @@ export const RegisterForm = () => {
                     <div className="rounded-md shadow-sm -space-y-px">
                         <div>
                             <label htmlFor="name" className="sr-only">
-                                Full Name
+                                Name
                             </label>
                             <input
                                 {...register('name')}
                                 id="name"
                                 type="text"
-                                autoComplete="name"
-                                placeholder="Full Name"
+                                autoComplete="given-name"
+                                placeholder="Name"
                                 className={`appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm ${
                                     errors.name ? 'border-red-300' : ''
                                 }`}
@@ -116,6 +121,27 @@ export const RegisterForm = () => {
                             {errors.name && (
                                 <p className="mt-1 text-sm text-red-600">
                                     {errors.name.message}
+                                </p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label htmlFor="surname" className="sr-only">
+                                Surname
+                            </label>
+                            <input
+                                {...register('surname')}
+                                id="surname"
+                                type="text"
+                                autoComplete="family-name"
+                                placeholder="Surname"
+                                className={`appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm ${
+                                    errors.surname ? 'border-red-300' : ''
+                                }`}
+                            />
+                            {errors.surname && (
+                                <p className="mt-1 text-sm text-red-600">
+                                    {errors.surname.message}
                                 </p>
                             )}
                         </div>

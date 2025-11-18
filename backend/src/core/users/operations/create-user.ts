@@ -1,4 +1,4 @@
-import type { NewUser, User } from "#db/schema";
+import type { NewUser } from "#db/schema";
 import { SESSION_EXPIRES_IN_MS } from "#infrastructure/auth/constants";
 import { generateAuthToken } from "#infrastructure/auth/token";
 import {
@@ -14,7 +14,6 @@ import type { ValidatedCreationData } from "../types/internal";
 import type { CreateUserResult } from "../types/outputs";
 import { Email } from "../value-objects/Email";
 import { HashedPassword, Password } from "../value-objects/Password";
-import { mapUserToUserData } from "../mappers";
 import { findByEmail } from "./find";
 
 /**
@@ -33,6 +32,7 @@ export function mapRegisterDataToUser(
       success({
         email: result.email,
         name: input.name,
+        surname: input.surname,
         password: result.password,
       }),
   );
@@ -62,12 +62,14 @@ export function hashPasswordForCreation(data: ValidatedCreationData): Result<{
   email: Email;
   hashedPassword: HashedPassword;
   name?: string;
+  surname?: string;
 }> {
   return chain(Password.hash(data.password), (hashedPassword) =>
     success({
       email: data.email,
       hashedPassword,
       name: data.name,
+      surname: data.surname,
     }),
   );
 }
@@ -94,13 +96,7 @@ export function hashPasswordForCreation(data: ValidatedCreationData): Result<{
  */
 export function handleSaveNewUserResult(
   user:
-    | {
-        id: string;
-        email: string;
-        name: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-      }
+    | { id: string; email: string; name: string | null; surname: string | null }
     | undefined,
 ) {
   if (!user) {
@@ -110,19 +106,31 @@ export function handleSaveNewUserResult(
     });
   }
 
-  // Return full user entity (token will be added in next step)
-  return success(user);
+  // Return user data structure (token will be added in next step)
+  return success({
+    email: user.email,
+    id: user.id,
+    name: user.name,
+    surname: user.surname,
+  });
 }
 
 export function saveNewUser(data: {
   email: Email;
   hashedPassword: HashedPassword;
   name?: string;
-}): Result<User> {
+  surname?: string;
+}): Result<{
+  email: string;
+  id: string;
+  name: string | null;
+  surname: string | null;
+}> {
   return command(async () => {
     const userData: NewUser = {
       email: Email.toString(data.email),
       name: data.name ?? null,
+      surname: data.surname ?? null,
       password: HashedPassword.toString(data.hashedPassword),
     };
 
@@ -139,10 +147,20 @@ export function saveNewUser(data: {
  * @param user - Full user entity from database (with timestamps)
  * @returns Result with nested structure: { user: {...}, token: "..." }
  */
-export function addAuthToken(user: User): Result<CreateUserResult> {
-  const token = generateAuthToken(user.id, user.email);
+export function addAuthToken(userData: {
+  email: string;
+  id: string;
+  name: string | null;
+  surname: string | null;
+}): Result<CreateUserResult> {
+  const token = generateAuthToken(userData.id, userData.email);
   return success({
-    user: mapUserToUserData(user),
+    user: {
+      id: userData.id,
+      email: userData.email,
+      name: userData.name,
+      surname: userData.surname,
+    },
     token,
   });
 }

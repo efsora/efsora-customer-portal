@@ -1,21 +1,22 @@
 import { useState } from 'react';
+
 import Tag from '../Tag/Tag';
 import VersionDropdown from '../VersionDropdown/VersionDropdown';
 import styles from './Table.module.css';
 
 interface FileRow {
-  id: string;
-  fileName: {
-    name: string;
-    icon: string;
-  };
-  version: string;
-  uploader: {
-    name: string;
-    icon: string;
-  };
-  lastUpdated: string;
-  status: "signed" | "inProgress" | "paid" | "sent";
+    id: string;
+    fileName: {
+        name: string;
+        icon: string;
+    };
+    version: string;
+    uploader: {
+        name: string;
+        icon: string;
+    };
+    lastUpdated: string;
+    status: 'signed' | 'inProgress' | 'paid' | 'sent';
 }
 
 interface TableProps {
@@ -27,27 +28,27 @@ export function Table({ files }: TableProps) {
     Object.fromEntries(files.map(file => [file.id, file.version]))
   );
 
-  const handleVersionChange = (fileId: string, newVersion: string) => {
-    setSelectedVersions(prev => ({
-      ...prev,
-      [fileId]: newVersion
-    }));
-    console.log("Selected version:", newVersion);
-  };
+    const handleVersionChange = (fileId: string, newVersion: string) => {
+        setSelectedVersions((prev) => ({
+            ...prev,
+            [fileId]: newVersion,
+        }));
+        console.log('Selected version:', newVersion);
+    };
 
-  return (
-    <div className={styles.container}>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th className={styles.header}>File Name</th>
-            <th className={styles.header}>Version</th>
-            <th className={styles.header}>Uploader</th>
-            <th className={styles.header}>Last Updated</th>
-            <th className={styles.header}>Status</th>
-            <th className={styles.header}>Actions</th>
-          </tr>
-        </thead>
+    return (
+        <div className={styles.container}>
+            <table className={styles.table}>
+                <thead>
+                    <tr>
+                        <th className={styles.header}>File Name</th>
+                        <th className={styles.header}>Version</th>
+                        <th className={styles.header}>Uploader</th>
+                        <th className={styles.header}>Last Updated</th>
+                        <th className={styles.header}>Status</th>
+                        <th className={styles.header}>Actions</th>
+                    </tr>
+                </thead>
 
         <tbody>
           {files.map((file) => (

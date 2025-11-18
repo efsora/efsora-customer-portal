@@ -7,6 +7,7 @@ import styles from './LoginForm.module.css';
 
 import { useLogin } from '#api/hooks/useAuth';
 
+
 /**
  * Login form validation schema
  */
@@ -58,7 +59,6 @@ export const LoginForm = () => {
         <div className={styles.container}>
             <div className={styles.formContainer}>
                 <div className={styles.innerContainer}>
-
                     <div className={styles.title}>
                         <img src="efsora-labs-brand.svg" alt="efsora-brand" />
                         <div className={styles.subtitle}>
@@ -66,7 +66,6 @@ export const LoginForm = () => {
                             <div>Sign in to your account to continue.</div>
                         </div>
                     </div>
-          
 
                     <form
                         className={styles.form}
@@ -86,9 +85,7 @@ export const LoginForm = () => {
 
                         <div className={styles.inputContainers}>
                             <div className={styles.inputContainer}>
-                                <label htmlFor="email">
-                                    Email
-                                </label>
+                                <label htmlFor="email">Email</label>
                                 <input
                                     {...register('email')}
                                     id="email"
@@ -97,17 +94,11 @@ export const LoginForm = () => {
                                     placeholder="you@company.com"
                                     className={styles.input}
                                 />
-                                {errors.email && (
-                                    <p>
-                                        {errors.email.message}
-                                    </p>
-                                )}
+                                {errors.email && <p>{errors.email.message}</p>}
                             </div>
 
                             <div className={styles.inputContainer}>
-                                <label htmlFor="password">
-                                    Password
-                                </label>
+                                <label htmlFor="password">Password</label>
                                 <input
                                     {...register('password')}
                                     id="password"
@@ -117,9 +108,7 @@ export const LoginForm = () => {
                                     className={styles.input}
                                 />
                                 {errors.password && (
-                                    <div>
-                                        {errors.password.message}
-                                    </div>
+                                    <div>{errors.password.message}</div>
                                 )}
                             </div>
                         </div>
@@ -137,13 +126,11 @@ export const LoginForm = () => {
                                 Don't have an account? Contact us.
                             </div>
                         </div>
-           
                     </form>
                 </div>
             </div>
-        
+
             <div>Need help? Contact support@efsora.com</div>
         </div>
-
     );
 };

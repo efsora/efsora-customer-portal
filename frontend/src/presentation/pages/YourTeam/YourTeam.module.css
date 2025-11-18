@@ -22,7 +22,7 @@
 
 .teamTitle {
     color: var(--color-primary-900);
-    font-size: 1.250rem;
+    font-size: 1.25rem;
     font-weight: 600;
 }
 
@@ -52,17 +52,17 @@
 }
 
 .email {
-    color:  var(--color-neutral-grey-400);
+    color: var(--color-neutral-grey-400);
     font-size: 0.875rem;
 }
 
 .workingOn {
-    color:  var(--color-neutral-grey-400);
+    color: var(--color-neutral-grey-400);
     font-size: 0.875rem;
 }
 
 .project {
-    color:  var(--color-neutral-grey-600);
+    color: var(--color-neutral-grey-600);
     font-size: 0.875rem;
 }
 

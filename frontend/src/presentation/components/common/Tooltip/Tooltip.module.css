@@ -4,27 +4,27 @@
 }
 
 .tooltip {
-  position: absolute;
-  z-index: 50;
-  white-space: nowrap;
+    position: absolute;
+    z-index: 50;
+    white-space: nowrap;
 
-  padding: 4px 8px;
-  border-radius: 4px;
+    padding: 4px 8px;
+    border-radius: 4px;
 
-  background: black;
-  color: white;
-  font-size: 0.875rem;
+    background: black;
+    color: white;
+    font-size: 0.875rem;
 
-  opacity: 1;
+    opacity: 1;
 }
 
 /* Arrow tip using ::before pseudo-element */
 .tooltip::before {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 0;
-  border-style: solid;
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
 }
 
 /* Positions */

@@ -1,15 +1,14 @@
 import { useState } from 'react';
-import PageTitle from "#presentation/components/common/PageTitle/PageTitle";
-import styles from './Documents.module.css'
-import { Table } from '#presentation/components/common/Table/Table';
+
 import {
-  MOCK_FILES,
-  FILTER_TAGS,
-  FILTER_CATEGORIES,
-  getFilterOptions,
-  type FileRow,
-  type FilterType,
+    FILTER_CATEGORIES,
+    FILTER_TAGS,
+    getFilterOptions,
+    MOCK_FILES,
+    type FilterType
 } from '#api/mockData';
+import PageTitle from '#presentation/components/common/PageTitle/PageTitle';
+import { Table } from '#presentation/components/common/Table/Table';
 
 export function Documents() {
     const [activeTag, setActiveTag] = useState<string | null>(null);
@@ -103,8 +102,11 @@ export function Documents() {
 
     return (
         <div>
-            <PageTitle title="Documents" description='Access and manage project documents.'/>
-            
+            <PageTitle
+                title="Documents"
+                description="Access and manage project documents."
+            />
+
             <div className={styles.pageContainer}>
                 <div className={styles.searchContainer}>
                     <img src="/documents/search.svg" alt="search" />
@@ -116,19 +118,27 @@ export function Documents() {
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
-                
 
                 <div className={styles.filterContainer}>
-
                     <div className={styles.filterTags}>
                         {FILTER_TAGS.map((tag) => (
                             <button
                                 key={tag.label}
                                 className={`${styles.filterButton} ${activeTag === tag.label ? styles.active : ''}`}
-                                onClick={() => setActiveTag(activeTag === tag.label ? null : tag.label)}
+                                onClick={() =>
+                                    setActiveTag(
+                                        activeTag === tag.label
+                                            ? null
+                                            : tag.label,
+                                    )
+                                }
                             >
                                 <img
-                                    src={activeTag === tag.label ? tag.activeIcon : tag.icon}
+                                    src={
+                                        activeTag === tag.label
+                                            ? tag.activeIcon
+                                            : tag.icon
+                                    }
                                     alt={`${tag.label} icon`}
                                     className={styles.icon}
                                 />
@@ -144,7 +154,13 @@ export function Documents() {
                         >
                             <img src="/documents/filter.svg" alt="" />
                             <span>Filter By</span>
-                            <img src={isDropdownOpen ? "dropdown-up.svg" : "dropdown.svg"}/>
+                            <img
+                                src={
+                                    isDropdownOpen
+                                        ? 'dropdown-up.svg'
+                                        : 'dropdown.svg'
+                                }
+                            />
                         </button>
                         {isDropdownOpen && (
                             <div className={styles.dropdownMenu}>
@@ -194,14 +210,12 @@ export function Documents() {
                             </div>
                         )}
                     </div>
-
                 </div>
 
                 <div className={styles.documentTable}>
                     <Table files={filteredFiles} />
                 </div>
             </div>
-      
         </div>
     );
 }

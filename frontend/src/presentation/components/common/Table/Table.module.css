@@ -13,13 +13,12 @@
     font-size: 0.875rem;
 }
 
-
 .table thead tr {
-    border-bottom: 1px solid var(--color-primary-100)
+    border-bottom: 1px solid var(--color-primary-100);
 }
 
 .table tbody tr {
-    border-bottom: 1px solid var(--color-primary-50)
+    border-bottom: 1px solid var(--color-primary-50);
 }
 
 .header {

@@ -28,6 +28,7 @@ export const useRegister = () => {
         },
         onSuccess: (data) => {
             if (data && data.token && data.user) {
+            if (data && data.token && data.user) {
                 setAuth(
                     {
                         id: data.user.id,

@@ -24,7 +24,8 @@ describe("createUser Integration Tests", () => {
       const input: CreateUserInput = {
         email: "test@example.com",
         password: "securePassword123",
-        name: "Test User",
+        name: "Test",
+        surname: "User",
       };
 
       // Act
@@ -41,7 +42,8 @@ describe("createUser Integration Tests", () => {
         // Verify user data structure
         expect(result.value.user).toMatchObject({
           email: "test@example.com",
-          name: "Test User",
+          name: "Test",
+          surname: "User",
         });
 
         // Verify UUID is generated
@@ -62,14 +64,15 @@ describe("createUser Integration Tests", () => {
 
         expect(userRecords).toHaveLength(1);
         expect(userRecords[0].email).toBe("test@example.com");
-        expect(userRecords[0].name).toBe("Test User");
+        expect(userRecords[0].name).toBe("Test");
+        expect(userRecords[0].surname).toBe("User");
         // Password should be hashed, not plain text
         expect(userRecords[0].password).not.toBe("securePassword123");
         expect(userRecords[0].password.startsWith("$2b$")).toBe(true);
       }
     });
 
-    it("should create user successfully without optional name", async () => {
+    it("should create user successfully without optional name and surname", async () => {
       // Arrange
       const input: CreateUserInput = {
         email: "noname@example.com",
@@ -85,6 +88,7 @@ describe("createUser Integration Tests", () => {
       if (result.status === "Success") {
         expect(result.value.user.email).toBe("noname@example.com");
         expect(result.value.user.name).toBeNull();
+        expect(result.value.user.surname).toBeNull();
         expect(result.value.token).toBeDefined();
       }
     });
@@ -176,7 +180,8 @@ describe("createUser Integration Tests", () => {
       const input: CreateUserInput = {
         email: "persist@example.com",
         password: "testPassword123",
-        name: "Persist Test",
+        name: "Persist",
+        surname: "Test",
       };
 
       // Act
@@ -194,7 +199,8 @@ describe("createUser Integration Tests", () => {
       expect(userRecords).toHaveLength(1);
       expect(userRecords[0]).toMatchObject({
         email: "persist@example.com",
-        name: "Persist Test",
+        name: "Persist",
+        surname: "Test",
       });
 
       // Verify timestamps are set

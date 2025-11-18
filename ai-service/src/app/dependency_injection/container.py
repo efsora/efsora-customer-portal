@@ -1,7 +1,7 @@
 from typing import TypeAlias
 
 from dependency_injector import containers, providers
-from langchain_aws import BedrockEmbeddings, ChatBedrockConverse
+from langchain_aws import BedrockEmbeddings, ChatBedrock
 from langchain_core.runnables import RunnableSerializable
 from langchain_weaviate import WeaviateVectorStore
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
@@ -34,22 +34,27 @@ def create_embeddings(settings: Settings) -> BedrockEmbeddings:
     return BedrockEmbeddings(**kwargs)  # type: ignore[arg-type]
 
 
-def create_bedrock_llm(settings: Settings) -> ChatBedrockConverse:
-    """Create Bedrock LLM instance for chat."""
+def create_bedrock_llm(settings: Settings) -> ChatBedrock:
+    """Create Bedrock LLM instance for chat using ChatBedrock (better streaming)."""
     kwargs = {
         "model_id": settings.LLM_MODEL,
         "region_name": settings.BEDROCK_REGION,
-        "temperature": 0.3,
-        "max_tokens": 512,
+        "model_kwargs": {
+            "temperature": 0.3,
+            "max_tokens": 512,
+            "top_k": 250,
+        },
+        "streaming": True,  # Enable streaming mode
     }
 
     # Add credentials if provided in settings
     if settings.AWS_ACCESS_KEY_ID:
+        kwargs["credentials_profile_name"] = None
         kwargs["aws_access_key_id"] = settings.AWS_ACCESS_KEY_ID
     if settings.AWS_SECRET_ACCESS_KEY:
         kwargs["aws_secret_access_key"] = settings.AWS_SECRET_ACCESS_KEY
 
-    return ChatBedrockConverse(**kwargs)  # type: ignore[arg-type]
+    return ChatBedrock(**kwargs)  # type: ignore[arg-type]
 
 
 def create_vectorstore(
@@ -68,7 +73,7 @@ def create_vectorstore(
 
 def create_rag_chain(
     vectorstore: WeaviateVectorStore,
-    bedrock_llm: ChatBedrockConverse,
+    bedrock_llm: ChatBedrock,
 ) -> RunnableSerializable[dict[str, str], str]:
     """Create RAG chain from vectorstore and LLM."""
     from app.services.rag_service import build_rag_chain
@@ -112,7 +117,7 @@ class Container(containers.DeclarativeContainer):
         create_embeddings,
         settings=settings,
     )
-    bedrock_llm: providers.Singleton[ChatBedrockConverse] = providers.Singleton(
+    bedrock_llm: providers.Singleton[ChatBedrock] = providers.Singleton(
         create_bedrock_llm,
         settings=settings,
     )

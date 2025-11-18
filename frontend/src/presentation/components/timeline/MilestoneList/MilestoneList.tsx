@@ -1,7 +1,6 @@
-import styles from './MilestoneList.module.css'
-import { Milestone } from '../Milestone/Milestone';
-import type { MilestoneProps } from '../Milestone/Milestone';
 import { MILESTONES } from '#api/mockData';
+import { Milestone } from '../Milestone/Milestone';
+import styles from './MilestoneList.module.css';
 
 export function MilestoneList() {
     return (

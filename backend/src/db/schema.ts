@@ -271,3 +271,58 @@ export const eventsRelations = relations(events, ({ one }) => ({
     references: [progressStatus.id],
   }),
 }));
+
+/**
+ * Chat Sessions Table
+ * Stores chat session metadata
+ */
+export const chatSessions = pgTable("chat_sessions", {
+  id: uuid("id").primaryKey(), // Client-provided UUID
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+export type ChatSession = typeof chatSessions.$inferSelect;
+export type NewChatSession = typeof chatSessions.$inferInsert;
+
+/**
+ * Chat Messages Table
+ * Stores all chat messages (user + assistant)
+ */
+export const chatMessages = pgTable("chat_messages", {
+  id: uuid("id")
+    .primaryKey()
+    .default(sql`uuidv7()`),
+  sessionId: uuid("session_id")
+    .notNull()
+    .references(() => chatSessions.id, { onDelete: "cascade" }),
+  role: text("role").notNull(), // "user" | "assistant"
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type ChatMessage = typeof chatMessages.$inferSelect;
+export type NewChatMessage = typeof chatMessages.$inferInsert;
+
+// Chat Sessions Relations
+export const chatSessionRelations = relations(
+  chatSessions,
+  ({ one, many }) => ({
+    user: one(users, { fields: [chatSessions.userId], references: [users.id] }),
+    messages: many(chatMessages),
+  }),
+);
+
+// Chat Messages Relations
+export const chatMessageRelations = relations(chatMessages, ({ one }) => ({
+  session: one(chatSessions, {
+    fields: [chatMessages.sessionId],
+    references: [chatSessions.id],
+  }),
+}));

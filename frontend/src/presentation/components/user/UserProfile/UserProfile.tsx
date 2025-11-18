@@ -37,7 +37,7 @@ export default function UserProfile() {
             <Dropdown
                 trigger={(open) => (
                     <img
-                        src={open ? "/dropdown-up.svg" : "/dropdown.svg"}
+                        src={open ? '/dropdown-up.svg' : '/dropdown.svg'}
                         alt="toggle dropdown"
                     />
                 )}
@@ -59,7 +59,7 @@ export default function UserProfile() {
 
                 <div className="separator" />
 
-                <div className='text-lg pt-2'>Recently Viewed</div>
+                <div className="text-lg pt-2">Recently Viewed</div>
                 <div className={styles.dropdownItem}>
                     <img src="recent.svg" alt="recent" />
                     <button>August Invoice</button>
@@ -70,7 +70,7 @@ export default function UserProfile() {
                 </div>
                 <div className={styles.dropdownItem}>
                     <img src="recent.svg" alt="recent" />
-                    <button>MVP Scope Agreement</button>  
+                    <button>MVP Scope Agreement</button>
                 </div>
 
                 <div className="separator" />

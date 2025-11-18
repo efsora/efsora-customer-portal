@@ -462,28 +462,15 @@
             "example": "550e8400-e29b-41d4-a716-446655440000"
           },
           "name": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "example": "Jane Doe"
+            "type": ["string", "null"],
+            "example": "Jane"
           },
-          "updatedAt": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "format": "date",
-            "example": "2025-10-29T10:30:00.000Z"
+          "surname": {
+            "type": ["string", "null"],
+            "example": "Doe"
           }
         },
-        "required": [
-          "createdAt",
-          "email",
-          "id",
-          "name",
-          "updatedAt"
-        ]
+        "required": ["email", "id", "name", "surname"]
       },
       "RegisterResponse": {
         "type": "object",
@@ -512,7 +499,12 @@
           "name": {
             "type": "string",
             "minLength": 1,
-            "example": "Jane Doe"
+            "example": "Jane"
+          },
+          "surname": {
+            "type": "string",
+            "minLength": 1,
+            "example": "Doe"
           },
           "password": {
             "type": "string",
@@ -520,11 +512,37 @@
             "example": "securePassword123"
           }
         },
-        "required": [
-          "email",
-          "name",
-          "password"
-        ]
+        "required": ["email", "name", "surname", "password"]
+      },
+      "UserData": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": ["string", "null"],
+            "format": "date",
+            "example": "2025-10-29T10:30:00.000Z"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "jane.doe@example.com"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "name": {
+            "type": ["string", "null"],
+            "example": "Jane Doe"
+          },
+          "updatedAt": {
+            "type": ["string", "null"],
+            "format": "date",
+            "example": "2025-10-29T10:30:00.000Z"
+          }
+        },
+        "required": ["createdAt", "email", "id", "name", "updatedAt"]
       },
       "LoginResponse": {
         "type": "object",

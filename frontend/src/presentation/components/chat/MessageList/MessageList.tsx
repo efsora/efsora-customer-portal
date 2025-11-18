@@ -1,6 +1,7 @@
-import React, {useEffect, useRef} from "react";
-import Message from "../Message/Message";
-import styles from "./MessageList.module.css";
+import React, { useEffect, useRef } from 'react';
+
+import styles from './MessageList.module.css';
+import Message from '../Message/Message';
 
 type Props = {
     messages: MessageType[];
@@ -19,21 +20,21 @@ export function MessageList({ messages, loading, emptyContent }: Props) {
     const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
     useEffect(() => {
         if (endOfMessagesRef.current) {
-            endOfMessagesRef.current.scrollIntoView({ behavior: "smooth" });
+            endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [messages, loading]);
     return (
         <div className={styles.chatBox}>
             {messages.length === 0 && emptyContent}
             {messages.map((msg, index) => (
-                <Message key={index} msg={msg}/>
+                <Message key={index} msg={msg} />
             ))}
             {loading && (
                 <div className={styles.loaderWrapper}>
-                    <div className={styles.loader}/>
+                    <div className={styles.loader} />
                 </div>
             )}
-            <div ref={endOfMessagesRef}/>
+            <div ref={endOfMessagesRef} />
         </div>
     );
-};
+}

@@ -1,6 +1,6 @@
 .milestoneItemActive {
-    border: 2px solid #C2E0F6;
-    background-color: #F9FAFB;
+    border: 2px solid #c2e0f6;
+    background-color: #f9fafb;
     border-radius: 8px;
     padding: 20px;
 }
@@ -9,11 +9,11 @@
     height: 2.5rem;
     width: 2.5rem;
     border-radius: 50%;
-    background-color: #0F6FC6;
+    background-color: #0f6fc6;
 }
 
 .activeMilestoneTitle {
-    color: #0F6FC6;
+    color: #0f6fc6;
 }
 
 .progressContainer {
@@ -21,31 +21,31 @@
 }
 
 .progressBarContainer {
-    background-color: #E2EDFE;
+    background-color: #e2edfe;
     border-radius: 8px;
     height: 6px;
     width: 100%;
 }
 
 .progressBarFill {
-    background-color: #0F6FC6;
+    background-color: #0f6fc6;
     height: 100%;
     border-radius: 8px;
 }
 
 .progressTitle {
-    color: #6B7C93;
+    color: #6b7c93;
 }
 
 .progressPercentage {
-    color: #0F6FC6;
+    color: #0f6fc6;
 }
 
 .recentUpdatesList {
     list-style: none;
     padding: 0;
     font-size: 0.875rem;
-    color: #4B5563;
+    color: #4b5563;
 }
 
 .updateItem {
@@ -65,7 +65,7 @@
 }
 
 .description {
-    color: #4B5563;
+    color: #4b5563;
 }
 
 .owner {
@@ -75,6 +75,6 @@
 }
 
 .recentUpdatesText {
-    color: #2B376D;
+    color: #2b376d;
     font-size: small;
 }

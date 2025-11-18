@@ -11,10 +11,11 @@ export const registerBodySchema = z
     email: z
       .email("Invalid email format")
       .openapi({ example: "jane.doe@example.com" }),
-    name: z
+    name: z.string().min(1, "Name is required").openapi({ example: "Jane" }),
+    surname: z
       .string()
-      .min(1, "Name is required")
-      .openapi({ example: "Jane Doe" }),
+      .min(1, "Surname is required")
+      .openapi({ example: "Doe" }),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters long")
@@ -54,7 +55,16 @@ export const userDataSchema = z
  */
 export const registerResponseSchema = z
   .object({
-    user: userDataSchema,
+    user: z
+      .object({
+        email: z.email().openapi({ example: "jane.doe@example.com" }),
+        id: z
+          .uuid()
+          .openapi({ example: "550e8400-e29b-41d4-a716-446655440000" }),
+        name: z.string().nullable().openapi({ example: "Jane" }),
+        surname: z.string().nullable().openapi({ example: "Doe" }),
+      })
+      .openapi("RegisterUserData"),
     token: z
       .string()
       .openapi({ example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }),

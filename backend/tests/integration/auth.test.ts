@@ -14,7 +14,8 @@ describe("Auth Workflows", () => {
       const registerInput = {
         email: "test@example.com",
         password: "SecurePass123",
-        name: "Test User",
+        name: "Test",
+        surname: "User",
       };
 
       const registerResult = await run(createUser(registerInput));
@@ -31,7 +32,7 @@ describe("Auth Workflows", () => {
       expect(loginResult.status).toBe("Success");
       if (loginResult.status === "Success") {
         expect(loginResult.value.user.email).toBe("test@example.com");
-        expect(loginResult.value.user.name).toBe("Test User");
+        expect(loginResult.value.user.name).toBe("Test");
         expect(loginResult.value.token).toBeDefined();
         expect(typeof loginResult.value.token).toBe("string");
         expect(loginResult.value.token.length).toBeGreaterThan(0);
@@ -58,7 +59,8 @@ describe("Auth Workflows", () => {
       const registerInput = {
         email: "test@example.com",
         password: "SecurePass123",
-        name: "Test User",
+        name: "Test",
+        surname: "User",
       };
 
       await run(createUser(registerInput));
@@ -97,7 +99,8 @@ describe("Auth Workflows", () => {
       const registerInput = {
         email: "user@example.com",
         password: "TestPassword123",
-        name: "Example User",
+        name: "Example",
+        surname: "User",
       };
 
       await run(createUser(registerInput));
