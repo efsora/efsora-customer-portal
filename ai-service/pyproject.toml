@@ -43,6 +43,7 @@ dev = [
   "bandit>=1.8.6",
   "black>=25.9.0",
   "coverage[toml]>=7.10.7",
+  "debugpy>=1.8.0",
   "httpx>=0.28.1",
   "mypy>=1.18.2",
   "pip-audit>=2.9.0",

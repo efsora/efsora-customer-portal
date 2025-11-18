@@ -1,0 +1,66 @@
+.container {
+    background-color: white;
+    border: 1px solid var(--color-neutral-grey-200);
+    border-radius: 14px;
+    padding: 24px;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    color: var(--color-primary-900);
+    font-size: 0.875rem;
+}
+
+.table thead tr {
+    border-bottom: 1px solid var(--color-primary-100);
+}
+
+.table tbody tr {
+    border-bottom: 1px solid var(--color-primary-50);
+}
+
+.header {
+    color: var(--color-primary-800);
+    font-weight: 500;
+}
+
+.table th {
+    text-align: left;
+    padding-bottom: 16px;
+}
+
+.status {
+    width: fit-content;
+    display: flex;
+}
+
+.table td {
+    padding: 12px 0;
+}
+
+.cell {
+    display: flex;
+    gap: 4px;
+}
+
+.downloadButton {
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-500);
+    font-weight: 500;
+    padding: 2px 24px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.dropdown {
+    background-color: var(--color-neutral-grey-50);
+    border: 0;
+    appearance: none;
+    border-radius: 8px;
+    padding: 2px 12px;
+}

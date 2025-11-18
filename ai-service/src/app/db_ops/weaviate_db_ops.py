@@ -4,8 +4,11 @@ from langchain_aws import BedrockEmbeddings
 import weaviate
 from weaviate.classes.query import MetadataQuery
 
+from app.core.context import Context
+
 
 async def embed_text_in_weaviate(
+    ctx: Context,
     client: weaviate.WeaviateAsyncClient,
     text: str,
     collection: str,
@@ -16,6 +19,7 @@ async def embed_text_in_weaviate(
     Embed text in Weaviate with vector embeddings.
 
     Args:
+        ctx: Context for logging and dependency access
         client: Async Weaviate client
         text: Text to embed
         collection: Collection name
@@ -25,6 +29,12 @@ async def embed_text_in_weaviate(
     Returns:
         Dictionary with embedded text metadata
     """
+    ctx.logger.debug(
+        f"Embedding text in collection '{collection}'",
+        collection=collection,
+        text_length=len(text),
+        source=source,
+    )
     try:
         col = client.collections.get(collection)
 
@@ -37,6 +47,13 @@ async def embed_text_in_weaviate(
             vector=embedding_vector,
         )
 
+        ctx.logger.info(
+            f"Successfully embedded text in '{collection}'",
+            collection=collection,
+            uuid=str(uuid),
+            source=source,
+        )
+
         return {
             "text": text,
             "collection": collection,
@@ -44,10 +61,16 @@ async def embed_text_in_weaviate(
             "source": source,
         }
     except Exception as e:
+        ctx.logger.error(
+            f"Failed to embed text in '{collection}': {str(e)}",
+            collection=collection,
+            error=str(e),
+        )
         raise ValueError(f"Failed to embed text: {str(e)}") from e
 
 
 async def search_in_weaviate(
+    ctx: Context,
     client: weaviate.WeaviateAsyncClient,
     query: str,
     collection: str,
@@ -58,6 +81,7 @@ async def search_in_weaviate(
     Search for similar objects in Weaviate using vector similarity.
 
     Args:
+        ctx: Context for logging and dependency access
         client: Async Weaviate client
         query: Search query text
         collection: Collection name
@@ -67,6 +91,12 @@ async def search_in_weaviate(
     Returns:
         Dictionary with search results
     """
+    ctx.logger.debug(
+        f"Searching in collection '{collection}' for query: '{query}'",
+        collection=collection,
+        query=query,
+        limit=limit,
+    )
     try:
         col = client.collections.get(collection)
 
@@ -93,6 +123,13 @@ async def search_in_weaviate(
                     }
                 )
 
+        ctx.logger.info(
+            f"Search completed in '{collection}': found {len(results)} result(s)",
+            collection=collection,
+            query=query,
+            results_count=len(results),
+        )
+
         return {
             "query": query,
             "collection": collection,
@@ -100,4 +137,10 @@ async def search_in_weaviate(
             "count": len(results),
         }
     except Exception as e:
+        ctx.logger.error(
+            f"Failed to search in '{collection}': {str(e)}",
+            collection=collection,
+            query=query,
+            error=str(e),
+        )
         raise ValueError(f"Failed to search: {str(e)}") from e

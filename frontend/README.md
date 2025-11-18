@@ -1,8 +1,29 @@
 # React Front-end Template
 
-Need to use node version =>18.
+**Requirements:** Node.js 22+ (project uses Node 22 in Docker)
 
-Runs in http://localhost:5173
+Runs in http://localhost:5173 (or 5174 in development mode)
+
+## VSCode Extensions (Recommended)
+
+For the best development experience with real-time linting, formatting, and error detection, install these extensions:
+
+**Required:**
+
+- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) - Linting and auto-fix
+- [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) - Code formatting
+- [JavaScript Debugger](https://marketplace.visualstudio.com/items?itemName=ms-vscode.js-debug) - Chrome debugger for React
+
+**Highly Recommended:**
+
+- [Pretty TypeScript Errors](https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors) - Better error messages
+- [Error Lens](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens) - Inline error highlighting
+
+**Configuration:** The workspace is already configured in `.vscode/settings.json` to:
+
+- Auto-format on save with Prettier
+- Auto-fix ESLint errors on save
+- Organize imports automatically
 
 ### Scripts
 

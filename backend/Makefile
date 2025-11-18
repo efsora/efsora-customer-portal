@@ -6,8 +6,8 @@
 # Declare all targets as phony (don't produce files)
 .PHONY: help dev dev-docker build install clean-install ci-install \
 	test test-run test-coverage \
-	lint lint-fix format format-check type-check check fix \
-	db-generate db-migrate db-push db-studio migrate reset-db \
+	lint lint-fix format format-check type-check check fix pre-commit \
+	db-generate db-migrate db-migrate-test db-migrate-all db-push db-studio migrate reset-db \
 	docker-up docker-down docker-logs docker-clean up down logs clean \
 	generate-openapi env setup ci
 
@@ -48,7 +48,9 @@ help: ## Show this help message
 	@echo ""
 	@echo "🗄️  Database (Drizzle ORM):"
 	@echo "  db-generate        Generate migrations from schema"
-	@echo "  db-migrate         Apply migrations to database"
+	@echo "  db-migrate         Apply migrations to main database"
+	@echo "  db-migrate-test    Apply migrations to test database"
+	@echo "  db-migrate-all     Apply migrations to all databases"
 	@echo "  db-push            Push schema directly to DB (dev only)"
 	@echo "  db-studio          Open Drizzle Studio GUI"
 	@echo "  migrate            Generate and apply migrations"
@@ -163,6 +165,13 @@ check: lint type-check format-check ## Run all checks
 fix: lint-fix format ## Fix all issues
 	@echo "✅ All fixes applied"
 
+pre-commit: ## Run pre-commit checks (check only, no fixes)
+	@echo "🔍 Running backend pre-commit checks..."
+	@npm run format:check || (echo "❌ Format check failed" && exit 1)
+	@npm run lint || (echo "❌ Lint check failed" && exit 1)
+	@npm run type-check || (echo "❌ Type check failed" && exit 1)
+	@echo "✅ Backend pre-commit checks passed"
+
 #===========================================
 # Database (Drizzle ORM)
 #===========================================
@@ -172,10 +181,24 @@ db-generate: ## Generate migrations from schema
 	npx drizzle-kit generate
 	@echo "✅ Migrations generated"
 
-db-migrate: ## Apply migrations to database
-	@echo "🔄 Applying migrations..."
-	npx drizzle-kit migrate
-	@echo "✅ Migrations applied"
+db-migrate: ## Apply migrations to main database
+	@echo "🔄 Applying migrations to main database..."
+	@if [ -z "$$DATABASE_URL" ]; then \
+		echo "❌ DATABASE_URL not set, sourcing from .env..."; \
+		export $$(cat .env | grep DATABASE_URL | xargs) && npx tsx scripts/run-migrations.ts; \
+	else \
+		npx tsx scripts/run-migrations.ts; \
+	fi
+	@echo "✅ Migrations applied to main database"
+
+db-migrate-test: ## Apply migrations to test database
+	@echo "🔄 Applying migrations to test database..."
+	@echo "⚠️  Note: Tests automatically run migrations. Use this for manual testing only."
+	@DATABASE_URL=postgresql://test_user:test_password@localhost:5432/test_db npx tsx scripts/run-migrations.ts
+	@echo "✅ Migrations applied to test database"
+
+db-migrate-all: db-migrate db-migrate-test ## Apply migrations to all databases
+	@echo "✅ All migrations applied"
 
 db-push: ## Push schema directly to DB (dev only)
 	@echo "🔄 Pushing schema to database..."

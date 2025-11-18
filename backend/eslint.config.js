@@ -7,7 +7,13 @@ import { noDirectCoreImports } from "./eslint-local-rules.js";
 
 export default tseslint.config(
   {
-    ignores: ["**/*.js", "dist/**"],
+    ignores: [
+      "**/*.js",
+      "dist/**",
+      "src/generated/**",
+      "_docs/**",
+      "src/infrastructure/config/env.ts",
+    ],
   },
   eslint.configs.recommended,
   tseslint.configs.strictTypeChecked,
@@ -40,6 +46,20 @@ export default tseslint.config(
     },
     rules: {
       "local/no-direct-core-imports": "error",
+    },
+  },
+  // Relax type-checking rules for test files
+  {
+    files: ["tests/**/*.ts", "**/*.test.ts"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/no-unnecessary-type-assertion": "off",
+      "@typescript-eslint/require-await": "off",
     },
   },
 );

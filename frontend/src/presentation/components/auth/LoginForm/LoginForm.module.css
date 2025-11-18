@@ -1,0 +1,98 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 32px;
+    color: var(--color-neutral-grey-600);
+    width: 464px;
+    padding: 32px;
+}
+
+.formContainer {
+    background-color: white;
+    box-shadow: 0px 10px 15px -4px rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    width: 100%;
+    padding: 32px;
+}
+
+.innerContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+}
+
+.subtitle {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.welcome {
+    color: var(--color-primary-900);
+    font-weight: 500;
+}
+
+.input {
+    background-color: var(--color-neutral-grey-50);
+    width: 100%;
+    border-radius: 8px;
+    padding: 4px 12px;
+}
+
+.input::placeholder {
+    color: var(--color-neutral-grey-500);
+}
+
+.inputContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.inputContainers {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+}
+
+.signInButton {
+    background-color: var(--color-primary-500);
+    width: 100%;
+    border-radius: 8px;
+    padding: 8px;
+    color: white;
+    font-weight: 500;
+}
+
+.inlineLink {
+    color: var(--color-primary-500);
+}
+
+.singInButtonContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    margin-top: 32px;
+    width: 100%;
+}

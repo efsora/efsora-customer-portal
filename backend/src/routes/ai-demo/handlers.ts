@@ -4,6 +4,9 @@
  * Example handlers demonstrating type-safe communication with AI service.
  */
 
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 import type { Request, Response } from "express";
 import { aiServiceClient } from "#infrastructure/ai-service";
 import { logger } from "#infrastructure/logger";

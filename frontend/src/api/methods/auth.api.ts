@@ -8,6 +8,7 @@ import type {
 import type {
     AppResponse_RegisterResponse_,
     AppResponse_LoginResponse_,
+    AppResponse_LogoutResponse_,
 } from '../types/auth/response.types';
 
 /**
@@ -34,6 +35,19 @@ export const login = async (
         ENDPOINTS.AUTH.LOGIN,
         loginRequest,
     );
+
+    return response?.data;
+};
+
+/**
+ * Logout a user by invalidating their session on the backend
+ * Requires valid Bearer token in Authorization header
+ */
+export const logout = async (): Promise<AppResponse_LogoutResponse_> => {
+    const response = await api.post<
+        AppResponse_LogoutResponse_,
+        Record<string, never>
+    >(ENDPOINTS.AUTH.LOGOUT, {});
 
     return response?.data;
 };

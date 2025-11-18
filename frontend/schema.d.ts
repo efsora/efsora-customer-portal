@@ -13,38 +13,9 @@ export interface paths {
         };
         /**
          * Health check
-         * @description Check if the server is running and healthy
+         * @description Returns the health status of the backend service
          */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Server is healthy */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example Server is healthy */
-                            message: string;
-                            /**
-                             * @example ok
-                             * @enum {string}
-                             */
-                            status: "ok";
-                            /** @example 2025-10-31T10:30:00.000Z */
-                            timestamp: string;
-                        };
-                    };
-                };
-            };
-        };
+        get: operations["getHealth"];
         put?: never;
         post?: never;
         delete?: never;
@@ -53,55 +24,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/hello": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Hello endpoint
-         * @description Simple health/test endpoint that returns a greeting message
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Successful response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            data: components["schemas"]["HelloResponse"];
-                            error?: null;
-                            message?: null;
-                            meta?: components["schemas"]["Meta"] & (Record<string, never> | null);
-                            /** @enum {boolean} */
-                            success: true;
-                            /** @example 00-1234567890abcdef-1234567890abcdef-01 */
-                            traceId: string;
-                        };
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/register": {
+    "/chat/stream": {
         parameters: {
             query?: never;
             header?: never;
@@ -111,155 +34,17 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Register user
-         * @description Register a new user account with email, name, and password
+         * Stream chat response
+         * @description Send a chat message and stream the AI response via SSE
          */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["RegisterBody"];
-                };
-            };
-            responses: {
-                /** @description User registered successfully with JWT token */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            data: components["schemas"]["RegisterResponse"];
-                            error?: null;
-                            message?: null;
-                            meta?: components["schemas"]["Meta"] & (Record<string, never> | null);
-                            /** @enum {boolean} */
-                            success: true;
-                            /** @example 00-1234567890abcdef-1234567890abcdef-01 */
-                            traceId: string;
-                        };
-                    };
-                };
-                /** @description Validation Error - Invalid request body, params, or query */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Conflict - Resource already exists or conflict occurred */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error - Unexpected server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        post: operations["chatStream"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/auth/login": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Login user
-         * @description Login with email and password to receive JWT authentication token
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["LoginBody"];
-                };
-            };
-            responses: {
-                /** @description Login successful with JWT token */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            data: components["schemas"]["LoginResponse"];
-                            error?: null;
-                            message?: null;
-                            meta?: components["schemas"]["Meta"] & (Record<string, never> | null);
-                            /** @enum {boolean} */
-                            success: true;
-                            /** @example 00-1234567890abcdef-1234567890abcdef-01 */
-                            traceId: string;
-                        };
-                    };
-                };
-                /** @description Validation Error - Invalid request body, params, or query */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Unauthorized - Invalid or missing authentication token */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error - Unexpected server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/users": {
+    "/chat/sessions/{sessionId}/messages": {
         parameters: {
             query?: never;
             header?: never;
@@ -267,142 +52,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get all users
-         * @description Retrieve all users. Requires authentication.
+         * Get chat history
+         * @description Retrieve all messages for a chat session
          */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description List of users */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            data: components["schemas"]["UserData"][];
-                            error?: null;
-                            message?: null;
-                            meta?: components["schemas"]["Meta"] & (Record<string, never> | null);
-                            /** @enum {boolean} */
-                            success: true;
-                            /** @example 00-1234567890abcdef-1234567890abcdef-01 */
-                            traceId: string;
-                        };
-                    };
-                };
-                /** @description Unauthorized - Invalid or missing authentication token */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error - Unexpected server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/users/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get user by ID
-         * @description Retrieve user information by ID. Users can only access their own data.
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description User found */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            data: components["schemas"]["UserData"];
-                            error?: null;
-                            message?: null;
-                            meta?: components["schemas"]["Meta"] & (Record<string, never> | null);
-                            /** @enum {boolean} */
-                            success: true;
-                            /** @example 00-1234567890abcdef-1234567890abcdef-01 */
-                            traceId: string;
-                        };
-                    };
-                };
-                /** @description Unauthorized - Invalid or missing authentication token */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Forbidden - Insufficient permissions for this resource */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Not Found - Requested resource does not exist */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error - Unexpected server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponse"];
-                    };
-                };
-            };
-        };
+        get: operations["getChatHistory"];
         put?: never;
         post?: never;
         delete?: never;
@@ -415,189 +68,13 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        AppError: {
-            context?: {
-                [key: string]: unknown;
-            };
+        Error: {
+            /** @description Error message */
             message: string;
-            resourceId?: number;
-            /** @example 2025-10-31T10:30:00.000Z */
-            timestamp?: string;
-            userId?: number;
-            /** @enum {string} */
-            code: "COMMAND_EXECUTION_ERROR";
-        } | {
-            context?: {
-                [key: string]: unknown;
-            };
-            message: string;
-            resourceId?: number;
-            /** @example 2025-10-31T10:30:00.000Z */
-            timestamp?: string;
-            userId?: number;
-            /** @enum {string} */
-            code: "CONFLICT";
-            /** @enum {string} */
-            conflictType: "email";
-            email?: string;
-        } | {
-            context?: {
-                [key: string]: unknown;
-            };
-            message: string;
-            resourceId: number;
-            /** @example 2025-10-31T10:30:00.000Z */
-            timestamp?: string;
-            userId?: number;
-            /** @enum {string} */
-            code: "FORBIDDEN";
-            /** @enum {string} */
-            resourceType: "auth" | "comment" | "post" | "user";
-        } | {
-            context?: {
-                [key: string]: unknown;
-            };
-            message: string;
-            resourceId?: number;
-            /** @example 2025-10-31T10:30:00.000Z */
-            timestamp?: string;
-            userId?: number;
-            /** @enum {string} */
-            code: "INTERNAL_ERROR";
-        } | {
-            context?: {
-                [key: string]: unknown;
-            };
-            message: string;
-            resourceId: number;
-            /** @example 2025-10-31T10:30:00.000Z */
-            timestamp?: string;
-            userId?: number;
-            /** @enum {string} */
-            code: "NOT_FOUND";
-            /** @enum {string} */
-            resourceType: "auth" | "comment" | "post" | "user";
-        } | {
-            context?: {
-                [key: string]: unknown;
-            };
-            message: string;
-            resourceId?: number;
-            /** @example 2025-10-31T10:30:00.000Z */
-            timestamp?: string;
-            userId?: number;
-            /** @enum {string} */
-            code: "UNAUTHORIZED";
-        } | {
-            context?: {
-                [key: string]: unknown;
-            };
-            message: string;
-            resourceId?: number;
-            /** @example 2025-10-31T10:30:00.000Z */
-            timestamp?: string;
-            userId?: number;
-            /** @enum {string} */
-            code: "VALIDATION_ERROR";
-            field: string;
-        };
-        ErrorResponse: {
-            data?: null;
-            error: components["schemas"]["AppError"];
-            /** @example An error occurred */
-            message: string;
-            meta?: null;
-            /** @enum {boolean} */
-            success: false;
-            /** @example 00-1234567890abcdef-1234567890abcdef-01 */
-            traceId: string;
-        };
-        PaginationMeta: {
-            /** @example 1 */
-            page: number;
-            /** @example 10 */
-            size: number;
-            /** @example 100 */
-            total: number;
-        };
-        CursorMeta: {
-            /** @example abc123 */
-            next_cursor?: string | null;
-            /** @example def456 */
-            previous_cursor?: string | null;
-        };
-        Meta: {
-            cursor?: components["schemas"]["CursorMeta"] & (Record<string, never> | null);
-            pagination?: components["schemas"]["PaginationMeta"] & (Record<string, never> | null);
-        };
-        HelloResponse: {
-            /** @example Hello from API */
-            message: string;
-        };
-        RegisterResponse: {
-            /**
-             * Format: email
-             * @example jane.doe@example.com
-             */
-            email: string;
-            /**
-             * Format: uuid
-             * @example 550e8400-e29b-41d4-a716-446655440000
-             */
-            id: string;
-            /** @example Jane Doe */
-            name: string | null;
-            /** @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... */
-            token: string;
-        };
-        RegisterBody: {
-            /**
-             * Format: email
-             * @example jane.doe@example.com
-             */
-            email: string;
-            /** @example Jane Doe */
-            name: string;
-            /** @example securePassword123 */
-            password: string;
-        };
-        UserData: {
-            /**
-             * Format: date
-             * @example 2025-10-29T10:30:00.000Z
-             */
-            createdAt: string | null;
-            /**
-             * Format: email
-             * @example jane.doe@example.com
-             */
-            email: string;
-            /**
-             * Format: uuid
-             * @example 550e8400-e29b-41d4-a716-446655440000
-             */
-            id: string;
-            /** @example Jane Doe */
-            name: string | null;
-            /**
-             * Format: date
-             * @example 2025-10-29T10:30:00.000Z
-             */
-            updatedAt: string | null;
-        };
-        LoginResponse: {
-            user: components["schemas"]["UserData"];
-            /** @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... */
-            token: string;
-        };
-        LoginBody: {
-            /**
-             * Format: email
-             * @example jane.doe@example.com
-             */
-            email: string;
-            /** @example securePassword123 */
-            password: string;
+            /** @description Error code */
+            code: string;
+            /** @description Additional error details */
+            details?: Record<string, never>;
         };
     };
     responses: never;
@@ -607,4 +84,156 @@ export interface components {
     pathItems: never;
 }
 export type $defs = Record<string, never>;
-export type operations = Record<string, never>;
+export interface operations {
+    getHealth: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Service is healthy */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ok */
+                        status?: string;
+                        /** Format: date-time */
+                        timestamp?: string;
+                    };
+                };
+            };
+        };
+    };
+    chatStream: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * @description User's chat message
+                     * @example What is Efsora?
+                     */
+                    message: string;
+                    /**
+                     * Format: uuid
+                     * @description Client-generated session UUID
+                     * @example 550e8400-e29b-41d4-a716-446655440000
+                     */
+                    sessionId: string;
+                };
+            };
+        };
+        responses: {
+            /** @description SSE stream of chat response chunks */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": string;
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Forbidden - Session does not belong to user */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    getChatHistory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Session UUID
+                 * @example 550e8400-e29b-41d4-a716-446655440000
+                 */
+                sessionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of chat messages */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        messages?: {
+                            /** Format: uuid */
+                            id?: string;
+                            /** @enum {string} */
+                            role?: "user" | "assistant";
+                            content?: string;
+                            /** Format: date-time */
+                            createdAt?: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Forbidden - Session does not belong to user */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Session not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+}

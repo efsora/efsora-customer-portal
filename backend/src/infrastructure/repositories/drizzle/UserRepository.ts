@@ -1,8 +1,8 @@
 import type { NewUser, User } from "#db/schema";
 
 import { db } from "#db/client";
-import { users } from "#db/schema";
-import { eq } from "drizzle-orm";
+import { users, session } from "#db/schema";
+import { eq, and } from "drizzle-orm";
 
 export type UserRepository = ReturnType<typeof createUserRepository>;
 
@@ -19,8 +19,16 @@ export function createUserRepository(dbInstance: typeof db) {
       return dbInstance.insert(users).values(data).returning();
     },
 
-    delete: (id: string) => {
-      return dbInstance.delete(users).where(eq(users.id, id)).returning();
+    delete: async (id: string) => {
+      // Manually cascade delete sessions (ORM-only relations, no DB-level FK)
+      await dbInstance.delete(session).where(eq(session.userId, id));
+
+      // Delete user
+      const result = await dbInstance
+        .delete(users)
+        .where(eq(users.id, id))
+        .returning();
+      return result;
     },
 
     findAll: () => {
@@ -50,6 +58,26 @@ export function createUserRepository(dbInstance: typeof db) {
         .set(updateData)
         .where(eq(users.id, id))
         .returning();
+    },
+
+    findByProjectAndCompany: (projectId: number, companyId: number) => {
+      return dbInstance
+        .select({
+          id: users.id,
+          email: users.email,
+          name: users.name,
+          surname: users.surname,
+          bio: users.bio,
+          companyId: users.companyId,
+          roleId: users.roleId,
+          projectId: users.projectId,
+          createdAt: users.createdAt,
+          updatedAt: users.updatedAt,
+        })
+        .from(users)
+        .where(
+          and(eq(users.projectId, projectId), eq(users.companyId, companyId)),
+        );
     },
 
     withTransaction: (tx: unknown) => createUserRepository(tx as typeof db),

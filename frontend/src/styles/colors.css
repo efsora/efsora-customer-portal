@@ -1,0 +1,78 @@
+:root {
+    --color-primary-50: #e8f2fb;
+    --color-primary-100: #c2e0f6;
+    --color-primary-200: #9bcdf0;
+    --color-primary-300: #74baeb;
+    --color-primary-400: #4dace5;
+    --color-primary-500: #0f6fc6;
+    --color-primary-600: #1b5ba1;
+    --color-primary-700: #224a84;
+    --color-primary-800: #273f75;
+    --color-primary-900: #2b376d;
+
+    --color-secondary-50: #fffef5;
+    --color-secondary-100: #fffadb;
+    --color-secondary-200: #fff5b8;
+    --color-secondary-300: #ffed8e;
+    --color-secondary-400: #ffe279;
+    --color-secondary-500: #ffd364;
+    --color-secondary-600: #e6b840;
+    --color-secondary-700: #cc9d2d;
+    --color-secondary-800: #b3821f;
+    --color-secondary-900: #996b14;
+
+    --color-success-50: #eefbf3;
+    --color-success-100: #d4f4e2;
+    --color-success-200: #a8e9c5;
+    --color-success-300: #7ddea8;
+    --color-success-400: #51d38b;
+    --color-success-500: #10b981;
+    --color-success-600: #0d9668;
+    --color-success-700: #0a7350;
+    --color-success-800: #065038;
+    --color-success-900: #032d20;
+
+    --color-warning-50: #fff8f0;
+    --color-warning-100: #ffecd1;
+    --color-warning-200: #ffd8a3;
+    --color-warning-300: #ffc375;
+    --color-warning-400: #ffaf47;
+    --color-warning-500: #ff9500;
+    --color-warning-600: #cc7700;
+    --color-warning-700: #995900;
+    --color-warning-800: #663c00;
+    --color-warning-900: #331e00;
+
+    --color-error-50: #fef2f2;
+    --color-error-100: #fee2e2;
+    --color-error-200: #fecaca;
+    --color-error-300: #fca5a5;
+    --color-error-400: #f87171;
+    --color-error-500: #ef4444;
+    --color-error-600: #dc2626;
+    --color-error-700: #b91c1c;
+    --color-error-800: #991b1b;
+    --color-error-900: #7f1d1d;
+
+    --color-info-50: #eef2ff;
+    --color-info-100: #e0e7ff;
+    --color-info-200: #c7d2fe;
+    --color-info-300: #a5b4fc;
+    --color-info-400: #818cf8;
+    --color-info-500: #6366f1;
+    --color-info-600: #4f46e5;
+    --color-info-700: #4338ca;
+    --color-info-800: #3730a3;
+    --color-info-900: #312e81;
+
+    --color-neutral-grey-50: #f9fafb;
+    --color-neutral-grey-100: #f3f4f6;
+    --color-neutral-grey-200: #e5e7eb;
+    --color-neutral-grey-300: #d1d5db;
+    --color-neutral-grey-400: #9ca3af;
+    --color-neutral-grey-500: #6b7280;
+    --color-neutral-grey-600: #4b5563;
+    --color-neutral-grey-700: #374151;
+    --color-neutral-grey-800: #1f2937;
+    --color-neutral-grey-900: #111827;
+}

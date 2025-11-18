@@ -8,16 +8,14 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { eq } from "drizzle-orm";
 import { run } from "#lib/result/index";
-import { createUser } from "#core/users/create-user.workflow";
-import type { CreateUserInput } from "#core/users/types/inputs";
+import { createUser } from "#core/users";
+import type { CreateUserInput } from "#core/users";
 import { users } from "#db/schema";
 import { cleanupDatabase, getTestDb } from "../helpers/database";
 
 describe("createUser Integration Tests", () => {
-  // Cleanup database before each test to ensure isolation
   beforeEach(async () => {
-    const db = getTestDb();
-    await cleanupDatabase(db);
+    await cleanupDatabase();
   });
 
   describe("Happy Path", () => {
@@ -26,7 +24,8 @@ describe("createUser Integration Tests", () => {
       const input: CreateUserInput = {
         email: "test@example.com",
         password: "securePassword123",
-        name: "Test User",
+        name: "Test",
+        surname: "User",
       };
 
       // Act
@@ -36,20 +35,25 @@ describe("createUser Integration Tests", () => {
       expect(result.status).toBe("Success");
 
       if (result.status === "Success") {
+        // Verify nested structure (best practice)
+        expect(result.value).toHaveProperty("user");
+        expect(result.value).toHaveProperty("token");
+
         // Verify user data structure
-        expect(result.value).toMatchObject({
+        expect(result.value.user).toMatchObject({
           email: "test@example.com",
-          name: "Test User",
+          name: "Test",
+          surname: "User",
         });
 
         // Verify UUID is generated
-        expect(result.value.id).toBeDefined();
-        expect(typeof result.value.id).toBe("string");
+        expect(result.value.user.id).toBeDefined();
+        expect(typeof result.value.user.id).toBe("string");
 
         // Verify authentication token is generated
         expect(result.value.token).toBeDefined();
         expect(typeof result.value.token).toBe("string");
-        expect(result.value.token?.length).toBeGreaterThan(0);
+        expect(result.value.token.length).toBeGreaterThan(0);
 
         // Verify user exists in database
         const db = getTestDb();
@@ -60,14 +64,15 @@ describe("createUser Integration Tests", () => {
 
         expect(userRecords).toHaveLength(1);
         expect(userRecords[0].email).toBe("test@example.com");
-        expect(userRecords[0].name).toBe("Test User");
+        expect(userRecords[0].name).toBe("Test");
+        expect(userRecords[0].surname).toBe("User");
         // Password should be hashed, not plain text
         expect(userRecords[0].password).not.toBe("securePassword123");
         expect(userRecords[0].password.startsWith("$2b$")).toBe(true);
       }
     });
 
-    it("should create user successfully without optional name", async () => {
+    it("should create user successfully without optional name and surname", async () => {
       // Arrange
       const input: CreateUserInput = {
         email: "noname@example.com",
@@ -81,8 +86,9 @@ describe("createUser Integration Tests", () => {
       expect(result.status).toBe("Success");
 
       if (result.status === "Success") {
-        expect(result.value.email).toBe("noname@example.com");
-        expect(result.value.name).toBeNull();
+        expect(result.value.user.email).toBe("noname@example.com");
+        expect(result.value.user.name).toBeNull();
+        expect(result.value.user.surname).toBeNull();
         expect(result.value.token).toBeDefined();
       }
     });
@@ -174,7 +180,8 @@ describe("createUser Integration Tests", () => {
       const input: CreateUserInput = {
         email: "persist@example.com",
         password: "testPassword123",
-        name: "Persist Test",
+        name: "Persist",
+        surname: "Test",
       };
 
       // Act
@@ -192,7 +199,8 @@ describe("createUser Integration Tests", () => {
       expect(userRecords).toHaveLength(1);
       expect(userRecords[0]).toMatchObject({
         email: "persist@example.com",
-        name: "Persist Test",
+        name: "Persist",
+        surname: "Test",
       });
 
       // Verify timestamps are set

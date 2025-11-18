@@ -45,7 +45,6 @@ import {
  *   return command(
  *     async () => db.select().from(users).where(eq(users.id, userId)),
  *     (result) => result ? success(result) : fail("Not found", "NOT_FOUND")
- *     // Metadata omitted → auto-generates: { operation: "findUserById", tags: { domain: "users", action: "read" } }
  *   );
  * }
  *
@@ -54,7 +53,6 @@ import {
  *   return command(
  *     async () => { ... },
  *     (result) => success(result),
- *     { operation: "customName", tags: { domain: "custom", action: "special" } }
  *   );
  * }
  * ```

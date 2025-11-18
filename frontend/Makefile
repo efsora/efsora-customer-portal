@@ -35,8 +35,15 @@ commit-check:
 	@echo "Running pre-commit checks..."
 	$(NPM) run type-check
 	$(NPM) run lint
-	$(NPM) run format
+	$(NPM) run format:check
 	@echo "All checks passed"
+
+pre-commit:
+	@echo "🔍 Running frontend pre-commit checks..."
+	@$(NPM) run format:check || (echo "❌ Format check failed" && exit 1)
+	@$(NPM) run lint || (echo "❌ Lint check failed" && exit 1)
+	@$(NPM) run type-check || (echo "❌ Type check failed" && exit 1)
+	@echo "✅ Frontend pre-commit checks passed"
 
 # ----------------------------------------
 # Docker commands

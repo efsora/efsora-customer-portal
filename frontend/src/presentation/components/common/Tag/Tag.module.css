@@ -1,0 +1,96 @@
+.tag {
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    height: fit-content;
+    width: fit-content;
+}
+
+/* --- Status Variants --- */
+
+.scheduled {
+    background-color: var(--color-neutral-grey-100);
+    color: var(--color-neutral-grey-400);
+}
+
+.inProgress {
+    background-color: var(--color-warning-100);
+    color: var(--color-warning-500);
+}
+
+.waiting {
+    background-color: var(--color-error-100);
+    color: var(--color-error-500);
+}
+
+.internalReview {
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-500);
+}
+
+.delivered {
+    background-color: var(--color-success-100);
+    color: var(--color-success-600);
+}
+
+.completed {
+    background-color: var(--color-info-300);
+    color: var(--color-info-800);
+}
+
+.revision {
+    background-color: var(--color-neutral-grey-400);
+    color: var(--color-neutral-grey-800);
+}
+
+.blocked {
+    background-color: var(--color-error-500);
+    color: var(--color-error-900);
+}
+
+.management {
+    background-color: var(--color-neutral-grey-800);
+    color: var(--color-neutral-grey-300);
+}
+
+.product {
+    background-color: var(--color-primary-800);
+    color: var(--color-primary-100);
+}
+
+.legal {
+    background-color: var(--color-error-900);
+    color: var(--color-error-100);
+}
+
+.financial {
+    background-color: var(--color-success-700);
+    color: var(--color-success-100);
+}
+
+.dev {
+    background-color: var(--color-info-700);
+    color: var(--color-info-100);
+}
+
+.testing {
+    background-color: var(--color-info-900);
+    color: var(--color-info-100);
+}
+
+.signed {
+    background-color: var(--color-success-100);
+    color: var(--color-success-600);
+}
+
+.paid {
+    background-color: var(--color-success-100);
+    color: var(--color-success-600);
+}
+
+.sent {
+    background-color: var(--color-info-300);
+    color: var(--color-info-800);
+}

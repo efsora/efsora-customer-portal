@@ -5,6 +5,8 @@
  * Uses generated types from OpenAPI spec for full type safety.
  */
 
+/* eslint-disable @typescript-eslint/prefer-promise-reject-errors */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
 import type { paths, components } from "#generated/ai-service";
 import { logger } from "#infrastructure/logger";
@@ -31,7 +33,7 @@ export class AIServiceClient {
 
   constructor(baseURL?: string) {
     this.client = axios.create({
-      baseURL: baseURL || AI_SERVICE_CONFIG.baseURL,
+      baseURL: baseURL ?? AI_SERVICE_CONFIG.baseURL,
       timeout: AI_SERVICE_CONFIG.timeout,
       headers: AI_SERVICE_CONFIG.headers,
     });
@@ -101,13 +103,10 @@ export class AIServiceClient {
    */
   async createUser(
     data: components["schemas"]["CreateUserRequest"],
-  ): Promise<
-    AIServiceResponse<components["schemas"]["CreateUserResponse"]>
-  > {
-    const response =
-      await this.client.post<
-        paths["/api/v1/users"]["post"]["responses"][201]["content"]["application/json"]
-      >("/api/v1/users", data);
+  ): Promise<AIServiceResponse<components["schemas"]["CreateUserResponse"]>> {
+    const response = await this.client.post<
+      paths["/api/v1/users"]["post"]["responses"][201]["content"]["application/json"]
+    >("/api/v1/users", data);
     return response.data;
   }
 
@@ -117,10 +116,9 @@ export class AIServiceClient {
   async embedText(
     data: components["schemas"]["EmbedRequest"],
   ): Promise<AIServiceResponse<components["schemas"]["EmbedResponse"]>> {
-    const response =
-      await this.client.post<
-        paths["/api/v1/weaviate/embed"]["post"]["responses"][201]["content"]["application/json"]
-      >("/api/v1/weaviate/embed", data);
+    const response = await this.client.post<
+      paths["/api/v1/weaviate/embed"]["post"]["responses"][201]["content"]["application/json"]
+    >("/api/v1/weaviate/embed", data);
     return response.data;
   }
 
@@ -130,11 +128,129 @@ export class AIServiceClient {
   async search(
     data: components["schemas"]["SearchRequest"],
   ): Promise<AIServiceResponse<components["schemas"]["SearchResponse"]>> {
-    const response =
-      await this.client.post<
-        paths["/api/v1/weaviate/search"]["post"]["responses"][200]["content"]["application/json"]
-      >("/api/v1/weaviate/search", data);
+    const response = await this.client.post<
+      paths["/api/v1/weaviate/search"]["post"]["responses"][200]["content"]["application/json"]
+    >("/api/v1/weaviate/search", data);
     return response.data;
+  }
+
+  /**
+   * Stream chat response from AI service via SSE
+   * Note: Uses native fetch instead of Axios for SSE streaming support
+   * Includes basic retry logic for transient failures
+   */
+  async *streamChat(
+    message: string,
+    sessionId: string,
+    retryCount = 0,
+  ): AsyncGenerator<string, void, unknown> {
+    const baseURL = this.client.defaults.baseURL ?? AI_SERVICE_CONFIG.baseURL;
+    const url = `${baseURL}/api/v1/chat/stream`;
+    const MAX_RETRIES = 2;
+    const RETRY_DELAY_MS = 1000;
+
+    logger.debug(
+      { url, sessionId, messageLength: message.length, retryCount },
+      "Streaming chat from AI service",
+    );
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message,
+          session_id: sessionId,
+        }),
+        signal: AbortSignal.timeout(30000), // 30s timeout
+      });
+
+      if (!response.ok) {
+        const status = String(response.status);
+        const error = `AI Service stream error: ${status}`;
+        logger.error({ status: response.status, url, retryCount }, error);
+
+        // Retry on 5xx errors
+        if (response.status >= 500 && retryCount < MAX_RETRIES) {
+          logger.info(
+            { retryCount: retryCount + 1 },
+            "Retrying AI service request",
+          );
+          await new Promise((resolve) =>
+            setTimeout(resolve, RETRY_DELAY_MS * (retryCount + 1)),
+          );
+          yield* this.streamChat(message, sessionId, retryCount + 1);
+          return;
+        }
+
+        throw new Error(error);
+      }
+
+      if (!response.body) {
+        throw new Error("No response body from AI service");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      try {
+        // Stream reading loop - breaks when stream is complete (done === true)
+        // This is the standard pattern for ReadableStream consumption
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        while (true) {
+          const result = await reader.read();
+
+          // Stream complete - exit loop
+          if (result.done) {
+            break;
+          }
+
+          // Type assertion is safe - value is Uint8Array when done === false
+          const chunk = decoder.decode(result.value as Uint8Array, {
+            stream: true,
+          });
+          const lines = chunk.split("\n");
+
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              const data = line.slice(6).trim();
+              if (data && !data.startsWith("[Error]")) {
+                yield data;
+              } else if (data.startsWith("[Error]")) {
+                logger.error(
+                  { sessionId, error: data },
+                  "AI service returned error",
+                );
+                throw new Error(data.slice(8));
+              }
+            }
+          }
+        }
+
+        logger.debug({ sessionId }, "Chat stream completed successfully");
+      } finally {
+        reader.releaseLock();
+      }
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.name === "TimeoutError" &&
+        retryCount < MAX_RETRIES
+      ) {
+        logger.warn(
+          { retryCount: retryCount + 1 },
+          "AI service timeout, retrying",
+        );
+        await new Promise((resolve) =>
+          setTimeout(resolve, RETRY_DELAY_MS * (retryCount + 1)),
+        );
+        yield* this.streamChat(message, sessionId, retryCount + 1);
+        return;
+      }
+      throw error;
+    }
   }
 
   /**

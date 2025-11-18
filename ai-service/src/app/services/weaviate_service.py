@@ -43,8 +43,12 @@ class WeaviateService:
 
     async def embed_text(self, text: str, collection: str) -> dict[str, Any]:
         """Embed text into Weaviate vector database with semantic vectors."""
-        return await embed_text_in_weaviate(self._client, text, collection, self._embeddings)
+        return await embed_text_in_weaviate(
+            self._ctx, self._client, text, collection, self._embeddings
+        )
 
     async def search(self, query: str, collection: str, limit: int = 10) -> dict[str, Any]:
         """Search for similar objects in Weaviate using vector similarity."""
-        return await search_in_weaviate(self._client, query, collection, self._embeddings, limit)
+        return await search_in_weaviate(
+            self._ctx, self._client, query, collection, self._embeddings, limit
+        )

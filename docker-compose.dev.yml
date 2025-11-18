@@ -1,0 +1,43 @@
+# Development overrides for docker-compose.yml
+# Run with: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  backend:
+    entrypoint: []
+    command: sh -c "npm run generate:openapi && node --inspect=0.0.0.0:9229 --require ./node_modules/tsx/dist/preflight.cjs --import ./node_modules/tsx/dist/loader.mjs --import ./src/instrumentation.ts --watch-path=./src src/index.ts"
+    ports:
+      - "3000:3000"
+      - "9229:9229"  # Node.js debug port
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/drizzle.config.ts:/app/drizzle.config.ts
+    environment:
+      NODE_ENV: development
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    command: npm run dev -- --host 0.0.0.0
+    ports:
+      - "5174:5173"  # Temporarily using 5174 due to port conflict
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - ./frontend/index.html:/app/index.html
+      - ./frontend/vite.config.ts:/app/vite.config.ts
+      - ./frontend/tsconfig.json:/app/tsconfig.json
+      - ./frontend/tsconfig.app.json:/app/tsconfig.app.json
+      - ./frontend/tsconfig.node.json:/app/tsconfig.node.json
+    environment:
+      VITE_API_URL: http://localhost:3000
+
+  ai-service:
+    ports:
+      - "8000:8000"
+      - "5678:5678"  # debugpy port
+    volumes:
+      - ./ai-service/src:/app/src
+      - ./ai-service/pyproject.toml:/app/pyproject.toml
+    environment:
+      ENABLE_DEBUGPY: "true"

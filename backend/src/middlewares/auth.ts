@@ -1,6 +1,7 @@
 import { env } from "#infrastructure/config/env";
 import { getRequestId } from "#infrastructure/logger/context";
 import { logger } from "#infrastructure/logger/index";
+import { sessionRepository } from "#infrastructure/repositories/drizzle";
 import { errorResponse } from "#middlewares/utils/response";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
@@ -25,9 +26,14 @@ export type AuthenticatedRequest = Request & {
 };
 
 /**
- * Authentication middleware that verifies JWT tokens from the Authorization header
+ * Authentication middleware that verifies JWT tokens and validates sessions
  *
  * Expected header format: `Authorization: Bearer <token>`
+ *
+ * Validates:
+ * 1. JWT signature and expiration
+ * 2. Session exists in database
+ * 3. Session is not expired
  *
  * On success:
  * - Attaches `req.userId` (string) - the authenticated user's ID
@@ -50,11 +56,11 @@ export type AuthenticatedRequest = Request & {
  * }
  * ```
  */
-export function auth(
+export async function auth(
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction,
-): void {
+): Promise<void> {
   try {
     // Extract Authorization header
     const authHeader = req.headers.authorization;
@@ -69,12 +75,14 @@ export function auth(
         "Authorization header missing",
       );
 
-      res.status(401).json(
-        errorResponse(
-          "Authorization header missing. Please provide a valid JWT token.",
-          "MISSING_AUTH_HEADER",
-        ),
-      );
+      res
+        .status(401)
+        .json(
+          errorResponse(
+            "Authorization header missing. Please provide a valid JWT token.",
+            "MISSING_AUTH_HEADER",
+          ),
+        );
       return;
     }
 
@@ -91,12 +99,14 @@ export function auth(
         "Invalid Authorization header format",
       );
 
-      res.status(401).json(
-        errorResponse(
-          "Invalid Authorization header format. Expected 'Bearer <token>'.",
-          "INVALID_AUTH_HEADER_FORMAT",
-        ),
-      );
+      res
+        .status(401)
+        .json(
+          errorResponse(
+            "Invalid Authorization header format. Expected 'Bearer <token>'.",
+            "INVALID_AUTH_HEADER_FORMAT",
+          ),
+        );
       return;
     }
 
@@ -104,6 +114,61 @@ export function auth(
 
     // Verify and decode JWT token
     const payload = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
+
+    // Find session in database
+    const sessions = await sessionRepository.findByToken(token);
+
+    // Check if session exists and is not expired
+    if (sessions.length === 0) {
+      logger.warn(
+        {
+          userId: payload.userId,
+          path: req.path,
+          method: req.method,
+          requestId: getRequestId(),
+        },
+        "Session not found",
+      );
+
+      res
+        .status(401)
+        .json(
+          errorResponse(
+            "Session has been invalidated. Please login again.",
+            "SESSION_INVALID",
+          ),
+        );
+      return;
+    }
+
+    const session = sessions[0];
+
+    // Check if session is expired
+    if (session.expiresAt < new Date()) {
+      logger.info(
+        {
+          userId: payload.userId,
+          sessionId: session.id,
+          path: req.path,
+          method: req.method,
+          requestId: getRequestId(),
+        },
+        "Session expired, deleting automatically",
+      );
+
+      // Delete expired session automatically
+      await sessionRepository.deleteByToken(token);
+
+      res
+        .status(401)
+        .json(
+          errorResponse(
+            "Session has expired. Please login again.",
+            "SESSION_INVALID",
+          ),
+        );
+      return;
+    }
 
     // Attach user info to request
     req.userId = payload.userId;
@@ -141,8 +206,6 @@ export function auth(
       "Authentication failed",
     );
 
-    res.status(401).json(
-      errorResponse(message, errorCode),
-    );
+    res.status(401).json(errorResponse(message, errorCode));
   }
 }

@@ -6,12 +6,9 @@ ensuring consistency with the FastAPI application.
 """
 
 import asyncio
-import logging
 
 from app.dependency_injection.container import Container
 from app.services.rag_service import build_vectorstore
-
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
 async def embed_documents() -> None:
@@ -29,16 +26,18 @@ async def embed_documents() -> None:
 
     # Get dependencies from container
     settings = container.settings()
-    weaviate_client = container.weaviate_client()
+    ctx = container.context()
+    weaviate_client = container.weaviate_async_client()
     embeddings = container.embeddings()
 
     try:
         # Connect to Weaviate
         await weaviate_client.connect()
-        logging.info("✅ Connected to Weaviate")
+        ctx.logger.info("✅ Connected to Weaviate")
 
         # Run the embedding pipeline
         split_docs = await build_vectorstore(
+            ctx=ctx,
             weaviate_client=weaviate_client,
             settings=settings,
             embeddings=embeddings,
@@ -46,20 +45,20 @@ async def embed_documents() -> None:
             save_embeddings_json=True,
         )
 
-        logging.info(f"✅ Successfully processed {len(split_docs)} document chunks")
+        ctx.logger.info(f"✅ Successfully processed {len(split_docs)} document chunks")
 
     except Exception as e:
-        logging.error(f"❌ Error during document embedding: {str(e)}")
+        ctx.logger.error(f"❌ Error during document embedding: {str(e)}")
         raise
     finally:
         # Close Weaviate client connection
         try:
             await weaviate_client.close()
-            logging.info("✅ Weaviate client connection closed")
+            ctx.logger.info("✅ Weaviate client connection closed")
         except Exception as e:
-            logging.warning(f"⚠️ Could not close Weaviate client cleanly: {str(e)}")
+            ctx.logger.warning(f"⚠️ Could not close Weaviate client cleanly: {str(e)}")
 
 
 if __name__ == "__main__":
     asyncio.run(embed_documents())
-    logging.info("🎉 Document embedding complete!")
+    # Note: Final log message removed as Context is not available in main scope

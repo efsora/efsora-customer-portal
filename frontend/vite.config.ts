@@ -40,6 +40,8 @@ export default defineConfig({
             '#constants/*': path.resolve(__dirname, 'src/constants/*'),
             '#models': path.resolve(__dirname, 'src/presentation/models'),
             '#models/*': path.resolve(__dirname, 'src/presentation/models/*'),
+            '#icons': path.resolve(__dirname, 'src/icons'),
+            '#icons/*': path.resolve(__dirname, 'src/icons/*'),
         },
     },
 });

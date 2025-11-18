@@ -27,6 +27,22 @@
     {
       "description": "User management endpoints",
       "name": "Users"
+    },
+    {
+      "description": "Company management endpoints",
+      "name": "Companies"
+    },
+    {
+      "description": "Project management endpoints",
+      "name": "Projects"
+    },
+    {
+      "description": "Milestone management endpoints",
+      "name": "Milestones"
+    },
+    {
+      "description": "Event tracking endpoints",
+      "name": "Events"
     }
   ],
   "components": {
@@ -63,15 +79,10 @@
               },
               "code": {
                 "type": "string",
-                "enum": [
-                  "COMMAND_EXECUTION_ERROR"
-                ]
+                "enum": ["COMMAND_EXECUTION_ERROR"]
               }
             },
-            "required": [
-              "message",
-              "code"
-            ]
+            "required": ["message", "code"]
           },
           {
             "type": "object",
@@ -95,25 +106,17 @@
               },
               "code": {
                 "type": "string",
-                "enum": [
-                  "CONFLICT"
-                ]
+                "enum": ["CONFLICT"]
               },
               "conflictType": {
                 "type": "string",
-                "enum": [
-                  "email"
-                ]
+                "enum": ["email"]
               },
               "email": {
                 "type": "string"
               }
             },
-            "required": [
-              "message",
-              "code",
-              "conflictType"
-            ]
+            "required": ["message", "code", "conflictType"]
           },
           {
             "type": "object",
@@ -137,26 +140,14 @@
               },
               "code": {
                 "type": "string",
-                "enum": [
-                  "FORBIDDEN"
-                ]
+                "enum": ["FORBIDDEN"]
               },
               "resourceType": {
                 "type": "string",
-                "enum": [
-                  "auth",
-                  "comment",
-                  "post",
-                  "user"
-                ]
+                "enum": ["auth", "comment", "post", "user"]
               }
             },
-            "required": [
-              "message",
-              "resourceId",
-              "code",
-              "resourceType"
-            ]
+            "required": ["message", "resourceId", "code", "resourceType"]
           },
           {
             "type": "object",
@@ -180,15 +171,10 @@
               },
               "code": {
                 "type": "string",
-                "enum": [
-                  "INTERNAL_ERROR"
-                ]
+                "enum": ["INTERNAL_ERROR"]
               }
             },
-            "required": [
-              "message",
-              "code"
-            ]
+            "required": ["message", "code"]
           },
           {
             "type": "object",
@@ -212,26 +198,14 @@
               },
               "code": {
                 "type": "string",
-                "enum": [
-                  "NOT_FOUND"
-                ]
+                "enum": ["NOT_FOUND"]
               },
               "resourceType": {
                 "type": "string",
-                "enum": [
-                  "auth",
-                  "comment",
-                  "post",
-                  "user"
-                ]
+                "enum": ["auth", "comment", "post", "user"]
               }
             },
-            "required": [
-              "message",
-              "resourceId",
-              "code",
-              "resourceType"
-            ]
+            "required": ["message", "resourceId", "code", "resourceType"]
           },
           {
             "type": "object",
@@ -255,15 +229,10 @@
               },
               "code": {
                 "type": "string",
-                "enum": [
-                  "UNAUTHORIZED"
-                ]
+                "enum": ["UNAUTHORIZED"]
               }
             },
-            "required": [
-              "message",
-              "code"
-            ]
+            "required": ["message", "code"]
           },
           {
             "type": "object",
@@ -287,19 +256,13 @@
               },
               "code": {
                 "type": "string",
-                "enum": [
-                  "VALIDATION_ERROR"
-                ]
+                "enum": ["VALIDATION_ERROR"]
               },
               "field": {
                 "type": "string"
               }
             },
-            "required": [
-              "message",
-              "code",
-              "field"
-            ]
+            "required": ["message", "code", "field"]
           }
         ]
       },
@@ -321,21 +284,14 @@
           },
           "success": {
             "type": "boolean",
-            "enum": [
-              false
-            ]
+            "enum": [false]
           },
           "traceId": {
             "type": "string",
             "example": "00-1234567890abcdef-1234567890abcdef-01"
           }
         },
-        "required": [
-          "error",
-          "message",
-          "success",
-          "traceId"
-        ]
+        "required": ["error", "message", "success", "traceId"]
       },
       "PaginationMeta": {
         "type": "object",
@@ -356,27 +312,17 @@
             "example": 100
           }
         },
-        "required": [
-          "page",
-          "size",
-          "total"
-        ]
+        "required": ["page", "size", "total"]
       },
       "CursorMeta": {
         "type": "object",
         "properties": {
           "next_cursor": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "example": "abc123"
           },
           "previous_cursor": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "example": "def456"
           }
         }
@@ -390,10 +336,7 @@
                 "$ref": "#/components/schemas/CursorMeta"
               },
               {
-                "type": [
-                  "object",
-                  "null"
-                ]
+                "type": ["object", "null"]
               }
             ]
           },
@@ -403,10 +346,7 @@
                 "$ref": "#/components/schemas/PaginationMeta"
               },
               {
-                "type": [
-                  "object",
-                  "null"
-                ]
+                "type": ["object", "null"]
               }
             ]
           }
@@ -420,11 +360,9 @@
             "example": "Hello from API"
           }
         },
-        "required": [
-          "message"
-        ]
+        "required": ["message"]
       },
-      "RegisterResponse": {
+      "RegisterUserData": {
         "type": "object",
         "properties": {
           "email": {
@@ -438,23 +376,28 @@
             "example": "550e8400-e29b-41d4-a716-446655440000"
           },
           "name": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "example": "Jane Doe"
+            "type": ["string", "null"],
+            "example": "Jane"
+          },
+          "surname": {
+            "type": ["string", "null"],
+            "example": "Doe"
+          }
+        },
+        "required": ["email", "id", "name", "surname"]
+      },
+      "RegisterResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/RegisterUserData"
           },
           "token": {
             "type": "string",
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
           }
         },
-        "required": [
-          "email",
-          "id",
-          "name",
-          "token"
-        ]
+        "required": ["user", "token"]
       },
       "RegisterBody": {
         "type": "object",
@@ -467,7 +410,12 @@
           "name": {
             "type": "string",
             "minLength": 1,
-            "example": "Jane Doe"
+            "example": "Jane"
+          },
+          "surname": {
+            "type": "string",
+            "minLength": 1,
+            "example": "Doe"
           },
           "password": {
             "type": "string",
@@ -475,20 +423,13 @@
             "example": "securePassword123"
           }
         },
-        "required": [
-          "email",
-          "name",
-          "password"
-        ]
+        "required": ["email", "name", "surname", "password"]
       },
       "UserData": {
         "type": "object",
         "properties": {
           "createdAt": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "format": "date",
             "example": "2025-10-29T10:30:00.000Z"
           },
@@ -503,28 +444,16 @@
             "example": "550e8400-e29b-41d4-a716-446655440000"
           },
           "name": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "example": "Jane Doe"
           },
           "updatedAt": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "format": "date",
             "example": "2025-10-29T10:30:00.000Z"
           }
         },
-        "required": [
-          "createdAt",
-          "email",
-          "id",
-          "name",
-          "updatedAt"
-        ]
+        "required": ["createdAt", "email", "id", "name", "updatedAt"]
       },
       "LoginResponse": {
         "type": "object",
@@ -537,10 +466,7 @@
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
           }
         },
-        "required": [
-          "user",
-          "token"
-        ]
+        "required": ["user", "token"]
       },
       "LoginBody": {
         "type": "object",
@@ -555,10 +481,716 @@
             "example": "securePassword123"
           }
         },
+        "required": ["email", "password"]
+      },
+      "LogoutResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Logged out successfully"
+          }
+        },
+        "required": ["message"]
+      },
+      "ExtendedUserData": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "jane.doe@example.com"
+          },
+          "name": {
+            "type": ["string", "null"],
+            "example": "Jane Doe"
+          },
+          "surname": {
+            "type": ["string", "null"],
+            "example": "Smith"
+          },
+          "bio": {
+            "type": ["string", "null"],
+            "example": "Senior developer with 10 years experience"
+          },
+          "companyId": {
+            "type": ["integer", "null"],
+            "example": 1
+          },
+          "roleId": {
+            "type": ["integer", "null"],
+            "example": 3
+          },
+          "projectId": {
+            "type": ["integer", "null"],
+            "example": 5
+          },
+          "createdAt": {
+            "type": ["string", "null"],
+            "format": "date",
+            "example": "2025-10-29T10:30:00.000Z"
+          },
+          "updatedAt": {
+            "type": ["string", "null"],
+            "format": "date",
+            "example": "2025-10-29T10:30:00.000Z"
+          }
+        },
         "required": [
+          "id",
           "email",
-          "password"
+          "name",
+          "surname",
+          "bio",
+          "companyId",
+          "roleId",
+          "projectId",
+          "createdAt",
+          "updatedAt"
         ]
+      },
+      "AssignToCompanyBody": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "companyId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 1
+          }
+        },
+        "required": ["userId", "companyId"]
+      },
+      "AssignToProjectBody": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "projectId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 5
+          }
+        },
+        "required": ["userId", "projectId"]
+      },
+      "AssignRoleBody": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "roleId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 3
+          }
+        },
+        "required": ["userId", "roleId"]
+      },
+      "UpdateProfileBody": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "name": {
+            "type": "string",
+            "example": "Jane Doe"
+          },
+          "surname": {
+            "type": "string",
+            "example": "Smith"
+          },
+          "bio": {
+            "type": "string",
+            "example": "Senior developer with 10 years experience"
+          }
+        },
+        "required": ["userId"]
+      },
+      "UpdatePasswordBody": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "currentPassword": {
+            "type": "string",
+            "minLength": 1,
+            "example": "currentPassword123"
+          },
+          "newPassword": {
+            "type": "string",
+            "minLength": 8,
+            "example": "newPassword123"
+          }
+        },
+        "required": ["userId", "currentPassword", "newPassword"]
+      },
+      "CompanyResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Acme Corporation"
+          },
+          "logoUrl": {
+            "type": ["string", "null"],
+            "format": "uri",
+            "example": "https://example.com/logo.png"
+          },
+          "adminUserId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-01-15T10:00:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-01-15T10:00:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "logoUrl",
+          "adminUserId",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateCompanyBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 200,
+            "example": "Acme Corporation"
+          },
+          "logoUrl": {
+            "type": ["string", "null"],
+            "format": "uri",
+            "example": "https://example.com/logo.png"
+          },
+          "adminUserId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          }
+        },
+        "required": ["name"]
+      },
+      "UpdateCompanyBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 200,
+            "example": "Updated Company Name"
+          },
+          "logoUrl": {
+            "type": ["string", "null"],
+            "format": "uri",
+            "example": "https://example.com/new-logo.png"
+          },
+          "adminUserId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          }
+        }
+      },
+      "ProjectResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Website Redesign"
+          },
+          "companyId": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "status": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-01-15T10:00:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-01-15T10:00:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "companyId",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateProjectBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 200,
+            "example": "Website Redesign"
+          },
+          "companyId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "status": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1
+          }
+        },
+        "required": ["name", "companyId"]
+      },
+      "TeamMember": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john.doe@example.com"
+          },
+          "name": {
+            "type": ["string", "null"],
+            "example": "John"
+          },
+          "surname": {
+            "type": ["string", "null"],
+            "example": "Doe"
+          },
+          "bio": {
+            "type": ["string", "null"],
+            "example": "Senior developer"
+          },
+          "companyId": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "roleId": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "projectId": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-01-15T10:00:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-01-15T10:00:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "name",
+          "surname",
+          "bio",
+          "companyId",
+          "roleId",
+          "projectId",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "GetYourTeamResponse": {
+        "type": "object",
+        "properties": {
+          "customerTeam": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TeamMember"
+            },
+            "example": [
+              {
+                "id": "123e4567-e89b-12d3-a456-426614174000",
+                "email": "john.doe@company.com",
+                "name": "John",
+                "surname": "Doe",
+                "bio": "Senior developer",
+                "companyId": 2,
+                "roleId": 1,
+                "projectId": 1,
+                "createdAt": "2025-01-15T10:00:00Z",
+                "updatedAt": "2025-01-15T10:00:00Z"
+              }
+            ]
+          },
+          "efsoraTeam": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TeamMember"
+            },
+            "example": [
+              {
+                "id": "223e4567-e89b-12d3-a456-426614174001",
+                "email": "jane.smith@efsora.com",
+                "name": "Jane",
+                "surname": "Smith",
+                "bio": "Project manager",
+                "companyId": 1,
+                "roleId": 2,
+                "projectId": 1,
+                "createdAt": "2025-01-15T10:00:00Z",
+                "updatedAt": "2025-01-15T10:00:00Z"
+              }
+            ]
+          }
+        },
+        "required": ["customerTeam", "efsoraTeam"]
+      },
+      "UpdateProjectBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 200,
+            "example": "Updated Project Name"
+          },
+          "status": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 2
+          }
+        }
+      },
+      "MilestoneResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "Q1 Milestone",
+            "description": "Milestone title"
+          },
+          "projectId": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "assigneeUserId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "status": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1,
+            "description": "Progress status ID"
+          },
+          "dueDate": {
+            "type": ["string", "null"],
+            "format": "date",
+            "example": "2025-03-01T00:00:00Z"
+          },
+          "description": {
+            "type": ["string", "null"],
+            "example": "Complete initial design phase"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-01-15T10:00:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-01-15T10:00:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "projectId",
+          "assigneeUserId",
+          "status",
+          "dueDate",
+          "description",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateMilestoneBody": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "example": "Q1 Milestone",
+            "description": "Milestone title"
+          },
+          "projectId": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "assigneeUserId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "status": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1,
+            "description": "Progress status ID"
+          },
+          "dueDate": {
+            "type": ["string", "null"],
+            "format": "date",
+            "example": "2025-03-01T00:00:00Z"
+          },
+          "description": {
+            "type": ["string", "null"],
+            "maxLength": 1000,
+            "example": "Complete initial design phase"
+          }
+        },
+        "required": ["title"]
+      },
+      "UpdateMilestoneBody": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "example": "Updated Q1 Milestone",
+            "description": "Milestone title"
+          },
+          "projectId": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "assigneeUserId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "status": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1,
+            "description": "Progress status ID"
+          },
+          "dueDate": {
+            "type": ["string", "null"],
+            "format": "date",
+            "example": "2025-03-15T00:00:00Z"
+          },
+          "description": {
+            "type": ["string", "null"],
+            "maxLength": 1000,
+            "example": "Updated milestone description"
+          }
+        }
+      },
+      "EventResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "Kickoff Meeting",
+            "description": "Event title"
+          },
+          "eventDatetime": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-01-15T10:00:00Z"
+          },
+          "description": {
+            "type": ["string", "null"],
+            "example": "Kickoff meeting completed"
+          },
+          "ownerUserId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "milestoneId": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "status": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 2
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-01-15T10:00:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-01-15T10:00:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "eventDatetime",
+          "description",
+          "ownerUserId",
+          "milestoneId",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateEventBody": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "example": "Kickoff Meeting",
+            "description": "Event title"
+          },
+          "eventDatetime": {
+            "type": ["string", "null"],
+            "format": "date",
+            "example": "2025-01-15T10:00:00Z"
+          },
+          "description": {
+            "type": ["string", "null"],
+            "example": "Kickoff meeting completed"
+          },
+          "ownerUserId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "milestoneId": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "status": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 2
+          }
+        },
+        "required": ["title", "eventDatetime"]
+      },
+      "UpdateEventBody": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "example": "Updated Kickoff Meeting",
+            "description": "Event title"
+          },
+          "eventDatetime": {
+            "type": ["string", "null"],
+            "format": "date",
+            "example": "2025-01-20T14:00:00Z"
+          },
+          "description": {
+            "type": ["string", "null"],
+            "example": "Updated event description"
+          },
+          "ownerUserId": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "milestoneId": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "status": {
+            "type": ["integer", "null"],
+            "exclusiveMinimum": 0,
+            "example": 3
+          }
+        }
       }
     },
     "parameters": {}
@@ -568,9 +1200,7 @@
       "get": {
         "description": "Check if the server is running and healthy",
         "summary": "Health check",
-        "tags": [
-          "System"
-        ],
+        "tags": ["System"],
         "responses": {
           "200": {
             "description": "Server is healthy",
@@ -585,9 +1215,7 @@
                     },
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "ok"
-                      ],
+                      "enum": ["ok"],
                       "example": "ok"
                     },
                     "timestamp": {
@@ -595,11 +1223,7 @@
                       "example": "2025-10-31T10:30:00.000Z"
                     }
                   },
-                  "required": [
-                    "message",
-                    "status",
-                    "timestamp"
-                  ]
+                  "required": ["message", "status", "timestamp"]
                 }
               }
             }
@@ -611,9 +1235,7 @@
       "get": {
         "description": "Simple health/test endpoint that returns a greeting message",
         "summary": "Hello endpoint",
-        "tags": [
-          "Hello"
-        ],
+        "tags": ["Hello"],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -637,29 +1259,20 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": [
-                            "object",
-                            "null"
-                          ]
+                          "type": ["object", "null"]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [
-                        true
-                      ]
+                      "enum": [true]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": [
-                    "data",
-                    "success",
-                    "traceId"
-                  ]
+                  "required": ["data", "success", "traceId"]
                 }
               }
             }
@@ -669,11 +1282,9 @@
     },
     "/api/v1/auth/register": {
       "post": {
-        "description": "Register a new user account with email, name, and password",
+        "description": "Register a new user account with email, name, and password. Creates a session in the database for immediate authentication. The returned JWT token is tied to an active session that can be invalidated on logout.",
         "summary": "Register user",
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "requestBody": {
           "content": {
             "application/json": {
@@ -685,7 +1296,7 @@
         },
         "responses": {
           "200": {
-            "description": "User registered successfully with JWT token",
+            "description": "User registered successfully with JWT token and active session created",
             "content": {
               "application/json": {
                 "schema": {
@@ -706,29 +1317,20 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": [
-                            "object",
-                            "null"
-                          ]
+                          "type": ["object", "null"]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [
-                        true
-                      ]
+                      "enum": [true]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": [
-                    "data",
-                    "success",
-                    "traceId"
-                  ]
+                  "required": ["data", "success", "traceId"]
                 }
               }
             }
@@ -768,11 +1370,9 @@
     },
     "/api/v1/auth/login": {
       "post": {
-        "description": "Login with email and password to receive JWT authentication token",
+        "description": "Login with email and password to receive JWT authentication token. Creates a new session in the database that ties the token to an active session. Each login creates a unique session that can be independently invalidated.",
         "summary": "Login user",
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "requestBody": {
           "content": {
             "application/json": {
@@ -784,7 +1384,7 @@
         },
         "responses": {
           "200": {
-            "description": "Login successful with JWT token",
+            "description": "Login successful with JWT token and new session created",
             "content": {
               "application/json": {
                 "schema": {
@@ -805,29 +1405,20 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": [
-                            "object",
-                            "null"
-                          ]
+                          "type": ["object", "null"]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [
-                        true
-                      ]
+                      "enum": [true]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": [
-                    "data",
-                    "success",
-                    "traceId"
-                  ]
+                  "required": ["data", "success", "traceId"]
                 }
               }
             }
@@ -865,6 +1456,83 @@
         }
       }
     },
+    "/api/v1/auth/logout": {
+      "post": {
+        "description": "Logout the authenticated user by deleting their session from the database. This immediately invalidates the JWT token - any subsequent requests using this token will fail authentication. Provides production-ready security without requiring Redis or token blacklist. The client should also clear the token from local storage.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Logout user",
+        "tags": ["Auth"],
+        "requestBody": {
+          "content": {}
+        },
+        "responses": {
+          "200": {
+            "description": "Logout successful, session deleted from database, token immediately invalidated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/LogoutResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/users": {
       "get": {
         "description": "Retrieve all users. Requires authentication.",
@@ -874,9 +1542,7 @@
           }
         ],
         "summary": "Get all users",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "200": {
             "description": "List of users",
@@ -903,29 +1569,20 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": [
-                            "object",
-                            "null"
-                          ]
+                          "type": ["object", "null"]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [
-                        true
-                      ]
+                      "enum": [true]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": [
-                    "data",
-                    "success",
-                    "traceId"
-                  ]
+                  "required": ["data", "success", "traceId"]
                 }
               }
             }
@@ -962,9 +1619,7 @@
           }
         ],
         "summary": "Get user by ID",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "parameters": [
           {
             "schema": {
@@ -1000,29 +1655,20 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": [
-                            "object",
-                            "null"
-                          ]
+                          "type": ["object", "null"]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [
-                        true
-                      ]
+                      "enum": [true]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": [
-                    "data",
-                    "success",
-                    "traceId"
-                  ]
+                  "required": ["data", "success", "traceId"]
                 }
               }
             }
@@ -1039,6 +1685,2590 @@
           },
           "403": {
             "description": "Forbidden - Insufficient permissions for this resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/assign-company": {
+      "post": {
+        "description": "Assign a user to a company. Requires authentication.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Assign user to company",
+        "tags": ["Users"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignToCompanyBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User assigned to company successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ExtendedUserData"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/assign-project": {
+      "post": {
+        "description": "Assign a user to a project. Requires authentication.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Assign user to project",
+        "tags": ["Users"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignToProjectBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User assigned to project successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ExtendedUserData"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/assign-role": {
+      "post": {
+        "description": "Assign a role to a user. Requires authentication.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Assign role to user",
+        "tags": ["Users"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignRoleBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role assigned to user successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ExtendedUserData"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/profile": {
+      "put": {
+        "description": "Update user profile information. Requires authentication.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Update user profile",
+        "tags": ["Users"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ExtendedUserData"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/password": {
+      "put": {
+        "description": "Update user password. Requires current password for verification. Requires authentication.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Update user password",
+        "tags": ["Users"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePasswordBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ExtendedUserData"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/companies": {
+      "post": {
+        "summary": "Create company",
+        "description": "Create a new company with the provided data",
+        "tags": ["Companies"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCompanyBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Company created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/CompanyResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - Resource already exists or conflict occurred",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all companies",
+        "description": "Retrieve all companies",
+        "tags": ["Companies"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Companies retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CompanyResponse"
+                      }
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/companies/{id}": {
+      "get": {
+        "summary": "Get company by ID",
+        "description": "Retrieve company information by ID",
+        "tags": ["Companies"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Company retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/CompanyResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update company",
+        "description": "Update company information",
+        "tags": ["Companies"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCompanyBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Company updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/CompanyResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete company",
+        "description": "Delete a company by ID",
+        "tags": ["Companies"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Company deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "example": 1
+                        }
+                      },
+                      "required": ["id"]
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects": {
+      "post": {
+        "summary": "Create project",
+        "description": "Create a new project within a company",
+        "tags": ["Projects"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProjectBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Project created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ProjectResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - Resource already exists or conflict occurred",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all projects",
+        "description": "Retrieve all projects, optionally filtered by company ID",
+        "tags": ["Projects"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "example": 1,
+              "description": "Filter projects by company ID"
+            },
+            "required": false,
+            "description": "Filter projects by company ID",
+            "name": "companyId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Projects retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ProjectResponse"
+                      }
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{id}": {
+      "get": {
+        "summary": "Get project by ID",
+        "description": "Retrieve project information by ID",
+        "tags": ["Projects"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Project retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ProjectResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update project",
+        "description": "Update project information (partial update)",
+        "tags": ["Projects"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProjectBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Project updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ProjectResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete project",
+        "description": "Delete a project by ID",
+        "tags": ["Projects"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Project deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "example": 1
+                        }
+                      },
+                      "required": ["id"]
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/team": {
+      "get": {
+        "summary": "Get project team members",
+        "description": "Retrieve team members for a project, split into customer team and efsora team. Automatically uses the authenticated user's company ID.",
+        "tags": ["Projects"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "example": 1,
+              "description": "Project ID to get team members for"
+            },
+            "required": true,
+            "description": "Project ID to get team members for",
+            "name": "projectId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Team members retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/GetYourTeamResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/milestones": {
+      "post": {
+        "summary": "Create milestone",
+        "description": "Create a new milestone with the provided data",
+        "tags": ["Milestones"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMilestoneBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Milestone created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/MilestoneResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all milestones",
+        "description": "Retrieve all milestones",
+        "tags": ["Milestones"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Milestones retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/MilestoneResponse"
+                      }
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/milestones/{id}": {
+      "get": {
+        "summary": "Get milestone by ID",
+        "description": "Retrieve milestone information by ID",
+        "tags": ["Milestones"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Milestone retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/MilestoneResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update milestone",
+        "description": "Update milestone information",
+        "tags": ["Milestones"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMilestoneBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Milestone updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/MilestoneResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete milestone",
+        "description": "Delete a milestone by ID",
+        "tags": ["Milestones"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Milestone deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "example": 1
+                        }
+                      },
+                      "required": ["id"]
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events": {
+      "post": {
+        "summary": "Create event",
+        "description": "Create a new event",
+        "tags": ["Events"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEventBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Event created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/EventResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all events",
+        "description": "Retrieve all events",
+        "tags": ["Events"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Events retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/EventResponse"
+                      }
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events/{id}": {
+      "get": {
+        "summary": "Get event by ID",
+        "description": "Retrieve a specific event by ID",
+        "tags": ["Events"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/EventResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update event",
+        "description": "Update an existing event",
+        "tags": ["Events"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEventBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Event updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/EventResponse"
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error - Invalid request body, params, or query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Requested resource does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete event",
+        "description": "Delete an event",
+        "tags": ["Events"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["id", "message"]
+                    },
+                    "error": {
+                      "type": "null"
+                    },
+                    "message": {
+                      "type": "null"
+                    },
+                    "meta": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        {
+                          "type": ["object", "null"]
+                        }
+                      ]
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "traceId": {
+                      "type": "string",
+                      "example": "00-1234567890abcdef-1234567890abcdef-01"
+                    }
+                  },
+                  "required": ["data", "success", "traceId"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
             "content": {
               "application/json": {
                 "schema": {

@@ -1,6 +1,5 @@
 import glob
 import json
-import logging
 import os
 from typing import Any
 
@@ -8,8 +7,10 @@ from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain_core.documents import Document
 from semantic_chunker.core import SemanticChunker
 
+from app.core.context import Context
 
-def load_documents(data_dir: str) -> list[Document]:
+
+def load_documents(ctx: Context, data_dir: str) -> list[Document]:
     """Load all .txt and .pdf files from data_dir into LangChain Documents."""
     docs: list[Document] = []
 
@@ -23,11 +24,12 @@ def load_documents(data_dir: str) -> list[Document]:
         pdf_loader = PyPDFLoader(file_path)
         docs.extend(pdf_loader.load())
 
-    logging.info(f" Loaded {len(docs)} raw documents from '{data_dir}'")
+    ctx.logger.info(f" Loaded {len(docs)} raw documents from '{data_dir}'")
     return docs
 
 
 def build_semantic_chunks_per_doc(
+    ctx: Context,
     all_docs: list[Document],
     max_tokens: int,
 ) -> list[Document]:
@@ -60,11 +62,12 @@ def build_semantic_chunks_per_doc(
             src = doc.metadata.get("source", "unknown") if hasattr(doc, "metadata") else "unknown"
             split_docs.append(Document(page_content=merged["text"], metadata={"source": src}))
 
-    logging.info(f" SemanticChunker produced {len(split_docs)} merged chunks (per-doc)")
+    ctx.logger.info(f" SemanticChunker produced {len(split_docs)} merged chunks (per-doc)")
     return split_docs
 
 
 def save_chunks_and_embeddings(
+    ctx: Context,
     split_docs: list[Document],
     embedding_vectors: list[list[float]],
     output_dir: str,
@@ -99,7 +102,7 @@ def save_chunks_and_embeddings(
             for i, doc in enumerate(split_docs):
                 f.write(f"--- Chunk {i} ---\n")
                 f.write(doc.page_content + "\n\n")
-        logging.info(f"{len(split_docs)} chunks saved to {chunks_file}")
+        ctx.logger.info(f"{len(split_docs)} chunks saved to {chunks_file}")
 
     metadata = {
         "total_chunks": len(split_docs),
@@ -123,11 +126,11 @@ def save_chunks_and_embeddings(
         embeddings_file = os.path.join(output_dir, "embeddings.json")
         with open(embeddings_file, "w", encoding="utf-8") as f:
             json.dump(embedded_chunks, f, indent=2, ensure_ascii=False)
-        logging.info(f" Embeddings saved to {embeddings_file}")
+        ctx.logger.info(f" Embeddings saved to {embeddings_file}")
 
     metadata_file = os.path.join(output_dir, "metadata.json")
     with open(metadata_file, "w", encoding="utf-8") as f:
         json.dump(metadata, f, indent=2, ensure_ascii=False)
-    logging.info(f" Metadata saved to {metadata_file}")
+    ctx.logger.info(f" Metadata saved to {metadata_file}")
 
     return metadata

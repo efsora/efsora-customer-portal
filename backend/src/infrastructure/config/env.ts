@@ -38,7 +38,11 @@ const envSchema = z.object({
     .string()
     .min(1, "JWT_SECRET is required")
     .min(32, "JWT_SECRET must be at least 32 characters long"),
-  AI_SERVICE_URL: z.string().url().optional().default("http://localhost:8000"),
+  AI_SERVICE_URL: z
+    .string()
+    .url("Invalid AI_SERVICE_URL")
+    .optional()
+    .default("http://localhost:8000"),
 });
 
 export type Env = z.infer<typeof envSchema>;

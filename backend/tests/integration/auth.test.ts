@@ -1,30 +1,11 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
-import {
-  setupTestDatabase,
-  createTestDb,
-  cleanupDatabase,
-  teardownTestDatabase,
-  getTestDb,
-} from "../helpers/database";
+import { describe, it, expect, beforeEach } from "vitest";
 import { run } from "#lib/result/index";
 import { login, createUser } from "#core/users/index";
+import { cleanupDatabase } from "../helpers/database";
 
 describe("Auth Workflows", () => {
-  // Setup: Start container and run migrations (once for all tests)
-  beforeAll(async () => {
-    const connectionString = await setupTestDatabase();
-    createTestDb(connectionString);
-  }, 60000); // 60s timeout for container startup
-
-  // Cleanup: Truncate tables before each test for isolation
   beforeEach(async () => {
-    const db = getTestDb();
-    await cleanupDatabase(db);
-  });
-
-  // Teardown: Stop container after all tests
-  afterAll(async () => {
-    await teardownTestDatabase();
+    await cleanupDatabase();
   });
 
   describe("login workflow", () => {
@@ -33,7 +14,8 @@ describe("Auth Workflows", () => {
       const registerInput = {
         email: "test@example.com",
         password: "SecurePass123",
-        name: "Test User",
+        name: "Test",
+        surname: "User",
       };
 
       const registerResult = await run(createUser(registerInput));
@@ -50,7 +32,7 @@ describe("Auth Workflows", () => {
       expect(loginResult.status).toBe("Success");
       if (loginResult.status === "Success") {
         expect(loginResult.value.user.email).toBe("test@example.com");
-        expect(loginResult.value.user.name).toBe("Test User");
+        expect(loginResult.value.user.name).toBe("Test");
         expect(loginResult.value.token).toBeDefined();
         expect(typeof loginResult.value.token).toBe("string");
         expect(loginResult.value.token.length).toBeGreaterThan(0);
@@ -77,7 +59,8 @@ describe("Auth Workflows", () => {
       const registerInput = {
         email: "test@example.com",
         password: "SecurePass123",
-        name: "Test User",
+        name: "Test",
+        surname: "User",
       };
 
       await run(createUser(registerInput));
@@ -116,7 +99,8 @@ describe("Auth Workflows", () => {
       const registerInput = {
         email: "user@example.com",
         password: "TestPassword123",
-        name: "Example User",
+        name: "Example",
+        surname: "User",
       };
 
       await run(createUser(registerInput));
@@ -141,7 +125,9 @@ describe("Auth Workflows", () => {
         expect(user).toHaveProperty("updatedAt");
 
         // Verify token is JWT-like (contains dots)
-        expect(token).toMatch(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/);
+        expect(token).toMatch(
+          /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/,
+        );
       }
     });
   });

@@ -1,24 +1,84 @@
 from typing import TypeAlias
 
 from dependency_injector import containers, providers
-from langchain_aws import BedrockEmbeddings
+from langchain_aws import BedrockEmbeddings, ChatBedrock
+from langchain_core.runnables import RunnableSerializable
+from langchain_weaviate import WeaviateVectorStore
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 import weaviate
 
 from app.core.context import Context
 from app.core.settings import Settings, get_settings
 from app.infrastructure.db.engine import create_engine
-from app.infrastructure.weaviate.client import create_weaviate_client
+from app.infrastructure.weaviate.client import (
+    create_weaviate_client,
+    create_weaviate_sync_client,
+)
 
 AsyncSessionMaker: TypeAlias = async_sessionmaker[AsyncSession]
 
 
 def create_embeddings(settings: Settings) -> BedrockEmbeddings:
     """Create Bedrock embeddings model instance."""
-    return BedrockEmbeddings(
-        model_id=settings.EMBED_MODEL,
-        region_name=settings.BEDROCK_REGION,
+    kwargs = {
+        "model_id": settings.EMBED_MODEL,
+        "region_name": settings.BEDROCK_REGION,
+    }
+
+    # Add credentials if provided in settings
+    if settings.AWS_ACCESS_KEY_ID:
+        kwargs["aws_access_key_id"] = settings.AWS_ACCESS_KEY_ID
+    if settings.AWS_SECRET_ACCESS_KEY:
+        kwargs["aws_secret_access_key"] = settings.AWS_SECRET_ACCESS_KEY
+
+    return BedrockEmbeddings(**kwargs)  # type: ignore[arg-type]
+
+
+def create_bedrock_llm(settings: Settings) -> ChatBedrock:
+    """Create Bedrock LLM instance for chat using ChatBedrock (better streaming)."""
+    kwargs = {
+        "model_id": settings.LLM_MODEL,
+        "region_name": settings.BEDROCK_REGION,
+        "model_kwargs": {
+            "temperature": 0.3,
+            "max_tokens": 512,
+            "top_k": 250,
+        },
+        "streaming": True,  # Enable streaming mode
+    }
+
+    # Add credentials if provided in settings
+    if settings.AWS_ACCESS_KEY_ID:
+        kwargs["credentials_profile_name"] = None
+        kwargs["aws_access_key_id"] = settings.AWS_ACCESS_KEY_ID
+    if settings.AWS_SECRET_ACCESS_KEY:
+        kwargs["aws_secret_access_key"] = settings.AWS_SECRET_ACCESS_KEY
+
+    return ChatBedrock(**kwargs)  # type: ignore[arg-type]
+
+
+def create_vectorstore(
+    weaviate_sync_client: weaviate.WeaviateClient,
+    embeddings: BedrockEmbeddings,
+    settings: Settings,
+) -> WeaviateVectorStore:
+    """Create WeaviateVectorStore for document retrieval."""
+    return WeaviateVectorStore(
+        client=weaviate_sync_client,
+        index_name=settings.WEAVIATE_COLLECTION_NAME,
+        text_key="content",
+        embedding=embeddings,
     )
+
+
+def create_rag_chain(
+    vectorstore: WeaviateVectorStore,
+    bedrock_llm: ChatBedrock,
+) -> RunnableSerializable[dict[str, str], str]:
+    """Create RAG chain from vectorstore and LLM."""
+    from app.services.rag_service import build_rag_chain
+
+    return build_rag_chain(vectorstore, bedrock_llm)
 
 
 class Container(containers.DeclarativeContainer):
@@ -43,13 +103,34 @@ class Container(containers.DeclarativeContainer):
     )
 
     # --- Weaviate ---
-    weaviate_client: providers.Singleton[weaviate.WeaviateAsyncClient] = providers.Singleton(
+    weaviate_async_client: providers.Singleton[weaviate.WeaviateAsyncClient] = providers.Singleton(
         create_weaviate_client,
         settings=settings,
     )
+    weaviate_sync_client: providers.Singleton[weaviate.WeaviateClient] = providers.Singleton(
+        create_weaviate_sync_client,
+        settings=settings,
+    )
 
-    # --- Embeddings ---
+    # --- Embeddings & LLM ---
     embeddings: providers.Singleton[BedrockEmbeddings] = providers.Singleton(
         create_embeddings,
         settings=settings,
+    )
+    bedrock_llm: providers.Singleton[ChatBedrock] = providers.Singleton(
+        create_bedrock_llm,
+        settings=settings,
+    )
+
+    # --- RAG Components ---
+    vectorstore: providers.Singleton[WeaviateVectorStore] = providers.Singleton(
+        create_vectorstore,
+        weaviate_sync_client=weaviate_sync_client,
+        embeddings=embeddings,
+        settings=settings,
+    )
+    rag_chain: providers.Singleton[RunnableSerializable[dict[str, str], str]] = providers.Singleton(
+        create_rag_chain,
+        vectorstore=vectorstore,
+        bedrock_llm=bedrock_llm,
     )

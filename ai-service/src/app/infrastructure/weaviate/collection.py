@@ -1,10 +1,12 @@
-import logging
-
 import weaviate
 from weaviate.classes.config import Configure, DataType, Property, VectorDistances
 
+from app.core.context import Context
 
-async def ensure_weaviate_collection(client: weaviate.WeaviateAsyncClient, name: str) -> None:
+
+async def ensure_weaviate_collection(
+    ctx: Context, client: weaviate.WeaviateAsyncClient, name: str
+) -> None:
     """Create collection if it does not exist (async)."""
     collections = await client.collections.list_all()
     existing = list(collections.keys())
@@ -20,6 +22,6 @@ async def ensure_weaviate_collection(client: weaviate.WeaviateAsyncClient, name:
             vectorizer_config=Configure.Vectorizer.none(),
             vector_index_config=Configure.VectorIndex.hnsw(distance_metric=VectorDistances.COSINE),
         )
-        logging.info(f"🆕 Created collection: {name}")
+        ctx.logger.info(f"🆕 Created collection: {name}")
     else:
-        logging.info(f"ℹ️ Collection '{name}' already exists.")
+        ctx.logger.info(f"ℹ️ Collection '{name}' already exists.")

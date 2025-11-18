@@ -11,10 +11,11 @@ export const registerBodySchema = z
     email: z
       .email("Invalid email format")
       .openapi({ example: "jane.doe@example.com" }),
-    name: z
+    name: z.string().min(1, "Name is required").openapi({ example: "Jane" }),
+    surname: z
       .string()
-      .min(1, "Name is required")
-      .openapi({ example: "Jane Doe" }),
+      .min(1, "Surname is required")
+      .openapi({ example: "Doe" }),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters long")
@@ -30,9 +31,7 @@ export const loginBodySchema = z
     email: z
       .email("Invalid email format")
       .openapi({ example: "jane.doe@example.com" }),
-    password: z
-      .string()
-      .openapi({ example: "securePassword123" }),
+    password: z.string().openapi({ example: "securePassword123" }),
   })
   .openapi("LoginBody");
 
@@ -50,13 +49,21 @@ export const userDataSchema = z
   .openapi("UserData");
 
 /**
- * Registration response schema (user + token)
+ * Registration response schema (nested: user + token)
+ * Best practice: separates user data from authentication token
  */
 export const registerResponseSchema = z
   .object({
-    email: z.email().openapi({ example: "jane.doe@example.com" }),
-    id: z.uuid().openapi({ example: "550e8400-e29b-41d4-a716-446655440000" }),
-    name: z.string().nullable().openapi({ example: "Jane Doe" }),
+    user: z
+      .object({
+        email: z.email().openapi({ example: "jane.doe@example.com" }),
+        id: z
+          .uuid()
+          .openapi({ example: "550e8400-e29b-41d4-a716-446655440000" }),
+        name: z.string().nullable().openapi({ example: "Jane" }),
+        surname: z.string().nullable().openapi({ example: "Doe" }),
+      })
+      .openapi("RegisterUserData"),
     token: z
       .string()
       .openapi({ example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." }),
@@ -76,6 +83,15 @@ export const loginResponseSchema = z
   .openapi("LoginResponse");
 
 /**
+ * Logout response schema
+ */
+export const logoutResponseSchema = z
+  .object({
+    message: z.string().openapi({ example: "Logged out successfully" }),
+  })
+  .openapi("LogoutResponse");
+
+/**
  * Validation schemas for routes
  */
 export const registerSchema = {
@@ -90,4 +106,5 @@ export type RegisterBody = z.infer<typeof registerBodySchema>;
 export type LoginBody = z.infer<typeof loginBodySchema>;
 export type RegisterResponse = z.infer<typeof registerResponseSchema>;
 export type LoginResponse = z.infer<typeof loginResponseSchema>;
+export type LogoutResponse = z.infer<typeof logoutResponseSchema>;
 export type UserDataResponse = z.infer<typeof userDataSchema>;

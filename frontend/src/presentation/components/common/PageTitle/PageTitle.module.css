@@ -1,0 +1,13 @@
+.container {
+    margin-bottom: 20px;
+}
+
+.title {
+    font-size: 2rem;
+    color: #2b376d;
+    font-weight: 900;
+}
+
+.subtitle {
+    color: var(--color-neutral-grey-600);
+}
