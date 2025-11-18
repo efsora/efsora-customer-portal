@@ -9,6 +9,7 @@ import {
 } from '#api/mockData';
 import PageTitle from '#presentation/components/common/PageTitle/PageTitle';
 import { Table } from '#presentation/components/common/Table/Table';
+import styles from './Documents.module.css';
 
 export function Documents() {
     const [activeTag, setActiveTag] = useState<string | null>(null);
@@ -16,7 +17,7 @@ export function Documents() {
     const [selectedFilters, setSelectedFilters] = useState<Map<FilterType, Set<string>>>(new Map());
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [expandedCategories, setExpandedCategories] = useState<Set<FilterType>>(
-        new Set(FILTER_CATEGORIES.map(cat => cat.type)) // Başlangıçta hepsi açık
+        new Set(FILTER_CATEGORIES.map(cat => cat.type)) 
     );
 
     const toggleCategoryExpand = (filterType: FilterType) => {
