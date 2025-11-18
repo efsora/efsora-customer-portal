@@ -222,7 +222,7 @@ export function YourTeam() {
 
                 <div className={styles.teamContainer}>
                     <div>
-                        <div className={styles.teamTitle}>Your Team</div>
+                        <div className={styles.teamTitle}>AllSober Team</div>
                         <div className={styles.teamSubtitle}>
                             Team members from your organization.
                         </div>
