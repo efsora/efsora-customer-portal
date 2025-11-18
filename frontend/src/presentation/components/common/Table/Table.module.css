@@ -34,6 +34,8 @@
 .status {
     width: fit-content;
     display: flex;
+    height: 100%;
+    align-items: center;
 }
 
 .table td {

@@ -1,13 +1,13 @@
 import { useMutation } from '@tanstack/react-query';
 
 import {
-    register as registerApi,
     login as loginApi,
     logout as logoutApi,
+    register as registerApi,
 } from '#api/methods/auth.api';
 import type {
-    RegisterRequest,
     LoginRequest,
+    RegisterRequest,
 } from '#api/types/auth/request.types';
 import { useAuthStore } from '#store/authStore';
 
@@ -33,6 +33,7 @@ export const useRegister = () => {
                         id: data.user.id,
                         email: data.user.email,
                         name: data.user.name || null,
+                        surname: data.user.surname || null,
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString(),
                     },
@@ -65,6 +66,7 @@ export const useLogin = () => {
                         id: data.user.id,
                         email: data.user.email,
                         name: data.user.name || null,
+                        surname: data.user.surname || null,
                         createdAt: data.user.createdAt || '',
                         updatedAt: data.user.updatedAt || '',
                     },

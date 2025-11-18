@@ -1,33 +1,6 @@
-import styles from './MilestoneList.module.css';
+import { MILESTONES } from '#api/mockData';
 import { Milestone } from '../Milestone/Milestone';
-import type { MilestoneProps } from '../Milestone/Milestone';
-
-const MILESTONES: MilestoneProps[] = [
-    {
-        title: 'Initial Contact & NDA',
-        dueDate: '20 Oct 2025',
-        assignedPerson: 'Michael Chen',
-        status: 'revision',
-    },
-    {
-        title: 'Initial Contact & NDA',
-        dueDate: '20 Oct 2025',
-        assignedPerson: 'Michael Chen',
-        status: 'delivered',
-    },
-    {
-        title: 'Initial Contact & NDA',
-        dueDate: '20 Oct 2025',
-        assignedPerson: 'Michael Chen',
-        status: 'waiting',
-    },
-    {
-        title: 'Initial Contact & NDA',
-        dueDate: '20 Oct 2025',
-        assignedPerson: 'Michael Chen',
-        status: 'completed',
-    },
-];
+import styles from './MilestoneList.module.css';
 
 export function MilestoneList() {
     return (

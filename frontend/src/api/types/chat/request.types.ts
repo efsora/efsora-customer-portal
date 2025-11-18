@@ -1,7 +1,8 @@
-import type { operations } from '../../../../schema';
+export interface ChatStreamRequest {
+    message: string;
+    sessionId: string;
+}
 
-export type ChatStreamRequest =
-    operations['chatStream']['requestBody']['content']['application/json'];
-
-export type GetChatHistoryParams =
-    operations['getChatHistory']['parameters']['path'];
+export interface GetChatHistoryParams {
+    sessionId: string;
+}

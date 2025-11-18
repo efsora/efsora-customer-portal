@@ -25,7 +25,7 @@
     display: flex;
     border-radius: 8px;
     padding-left: 8px;
-    padding-right: 8px;
+    padding-right: 16px;
     transition: all 0.3s ease;
 }
 
@@ -39,4 +39,15 @@
 
 .logout:hover {
     background-color: var(--color-error-50);
+}
+
+.profilePhoto {
+    height: 36px;
+    width: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--color-primary-50);
+    border-radius: 50%;
+    color: var(--color-primary-500);
 }

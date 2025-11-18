@@ -1,0 +1,63 @@
+.card {
+    display: flex;
+    justify-content: space-between;
+    gap: 36px;
+    background-color: white;
+    border-radius: 16px;
+    border: 1px solid var(--color-neutral-grey-200);
+    padding: 24px;
+    flex: 1;
+}
+
+.cardTitle {
+    color: var(--color-neutral-grey-600);
+    font-size: 16px;
+}
+
+.cardIcon {
+    border-radius: 8px;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.cardValue {
+    font-weight: 600;
+    font-size: 30px;
+    margin-top: 8px;
+    color: var(--color-neutral-grey-500)
+}
+
+.cardSubValue {
+    font-size: 13px;
+}
+
+/* Signature Card - Info */
+.signature .cardSubValue {
+    color: var(--color-info-600);
+}
+
+.icon_signature {
+    background-color: var(--color-info-100);
+}
+
+/* Invoices Card - Primary */
+.invoices .cardSubValue {
+    color: var(--color-primary-500);
+}
+
+.icon_invoices {
+    background-color: var(--color-primary-50);
+}
+
+/* Progress Card - Green/Success */
+.progress .cardSubValue {
+    color: var(--color-success-600);
+}
+
+.icon_progress {
+    background-color: var(--color-success-100);
+}

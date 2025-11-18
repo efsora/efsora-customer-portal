@@ -1,14 +1,18 @@
-import type { operations } from '../../../../schema';
-
 // Chat message type from history response
-export type ChatMessage = NonNullable<
-    operations['getChatHistory']['responses']['200']['content']['application/json']['messages']
->[number];
+export interface ChatMessage {
+    id: string;
+    role: 'user' | 'assistant';
+    content: string;
+    createdAt: string;
+}
 
 // Chat history response (array of messages)
-export type ChatHistoryResponse =
-    operations['getChatHistory']['responses']['200']['content']['application/json'];
+export interface ChatHistoryResponse {
+    messages: ChatMessage[];
+}
 
 // Error response
-export type ChatErrorResponse =
-    operations['chatStream']['responses']['401']['content']['application/json'];
+export interface ChatErrorResponse {
+    message: string;
+    code: string;
+}

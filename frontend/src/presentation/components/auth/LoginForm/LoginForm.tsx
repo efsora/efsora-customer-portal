@@ -3,10 +3,10 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
+import styles from './LoginForm.module.css';
 
 import { useLogin } from '#api/hooks/useAuth';
 
-import styles from './LoginForm.module.css';
 
 /**
  * Login form validation schema
@@ -123,13 +123,7 @@ export const LoginForm = () => {
                             </button>
 
                             <div>
-                                Don't have an account?{' '}
-                                <a
-                                    href="/register"
-                                    className={styles.inlineLink}
-                                >
-                                    Contact us.
-                                </a>
+                                Don't have an account? Contact us.
                             </div>
                         </div>
                     </form>

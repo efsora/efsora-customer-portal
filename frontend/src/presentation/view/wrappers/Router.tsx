@@ -6,6 +6,7 @@ import { ProtectedRoute } from '#presentation/components/auth/ProtectedRoute';
 import { PublicRoute } from '#presentation/components/auth/PublicRoute';
 import Dashboard from '#presentation/pages/Dashboard/Dashboard';
 import { Documents } from '#presentation/pages/Documents/Documents';
+import { Help } from '#presentation/pages/Help/Help';
 import { Login } from '#presentation/pages/Login/Login';
 import { NoPage } from '#presentation/pages/NoPage';
 import Timeline from '#presentation/pages/Timeline';
@@ -45,6 +46,7 @@ export default function Router() {
                 <Route path="/timeline" element={<Timeline />} />
                 <Route path="/documents" element={<Documents />} />
                 <Route path="/yourteam" element={<YourTeam />} />
+                <Route path="/help" element={<Help />} />
                 <Route path="*" element={<NoPage />} />
             </Route>
         </Routes>
