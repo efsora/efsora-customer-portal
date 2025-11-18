@@ -1,6 +1,6 @@
+import { ACTIVE_MILESTONE, RECENT_UPDATES } from '#api/mockData';
 import Tag from '#presentation/components/common/Tag/Tag';
 
-import { ACTIVE_MILESTONE, RECENT_UPDATES } from '#api/mockData';
 import styles from './ActiveMilestone.module.css';
 
 function Title() {
@@ -9,17 +9,29 @@ function Title() {
             <div className="flex gap-4">
                 <img src="milestone-icon.svg" alt="milestone-icon" />
                 <div>
-                    <div className={styles.activeMilestoneTitle}>{ACTIVE_MILESTONE.title}</div>
-                    <div className='flex gap-4 text-xs text-gray-500'>
+                    <div className={styles.activeMilestoneTitle}>
+                        {ACTIVE_MILESTONE.title}
+                    </div>
+                    <div className="flex gap-4 text-xs text-gray-500">
                         <div>{ACTIVE_MILESTONE.assignedPerson}</div>
-                        <div>
-                            Due: {ACTIVE_MILESTONE.dueDate}
-                        </div>
+                        <div>Due: {ACTIVE_MILESTONE.dueDate}</div>
                     </div>
                 </div>
             </div>
 
-            <Tag status={ACTIVE_MILESTONE.status as any} />
+            <Tag
+                status={
+                    ACTIVE_MILESTONE.status as
+                        | 'scheduled'
+                        | 'inProgress'
+                        | 'waiting'
+                        | 'internalReview'
+                        | 'delivered'
+                        | 'completed'
+                        | 'revision'
+                        | 'blocked'
+                }
+            />
         </div>
     );
 }

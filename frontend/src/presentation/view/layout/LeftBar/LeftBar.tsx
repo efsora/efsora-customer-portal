@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import NavigationMenu from '../NavigationMenu/NavigationMenu';
+
 import styles from './LeftBar.module.css';
+import NavigationMenu from '../NavigationMenu/NavigationMenu';
 
 export default function LeftBar() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -8,7 +9,10 @@ export default function LeftBar() {
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target as Node)
+            ) {
                 setIsDropdownOpen(false);
             }
         };
@@ -37,15 +41,23 @@ export default function LeftBar() {
                         className={styles.customerButton}
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     >
-                        <div className='flex gap-2'>
+                        <div className="flex gap-2">
                             <img src="allsober-logo.svg" alt="allsober" />
                             <div>
-                                <div className={styles.customerTitle}>AllSober</div>
-                                <div className={styles.customerSubtitle}>EMR Platform</div>
+                                <div className={styles.customerTitle}>
+                                    AllSober
+                                </div>
+                                <div className={styles.customerSubtitle}>
+                                    EMR Platform
+                                </div>
                             </div>
                         </div>
                         <img
-                            src={isDropdownOpen ? "dropdown-up.svg" : "dropdown.svg"}
+                            src={
+                                isDropdownOpen
+                                    ? 'dropdown-up.svg'
+                                    : 'dropdown.svg'
+                            }
                             alt="dropdown"
                             className={styles.dropdownIcon}
                         />
@@ -60,7 +72,7 @@ export default function LeftBar() {
                     )}
                 </div>
             </div>
-            
+
             <NavigationMenu />
         </div>
     );

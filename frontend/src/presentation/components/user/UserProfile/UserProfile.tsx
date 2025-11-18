@@ -1,26 +1,30 @@
-import Dropdown from "#components/common/Dropdown/Dropdown";
-import { useGetUserById } from "#hooks/useUser";
-import { useCurrentUser } from "#store/authStore";
-import { useNavigate } from "react-router-dom";
-import Logout from "../../common/Logout";
-import styles from "./UserProfile.module.css";
+import { useNavigate } from 'react-router-dom';
+
+import Dropdown from '#components/common/Dropdown/Dropdown';
+import { useGetUserById } from '#hooks/useUser';
+import { useCurrentUser } from '#store/authStore';
+
+import styles from './UserProfile.module.css';
+import Logout from '../../common/Logout';
 
 export default function UserProfile() {
     const navigate = useNavigate();
     const currentUser = useCurrentUser();
-    const userId = currentUser?.id || "";
-    const {
-        data: user,
-        isLoading,
-        isError,
-    } = useGetUserById(userId);
+    const userId = currentUser?.id || '';
+    const { data: user, isLoading, isError } = useGetUserById(userId);
 
     // Generate initials from name and surname
-    const getInitials = (name: string | null | undefined, surname: string | null | undefined) => {
-        const fullName = [name, surname].filter(Boolean).join(" ");
-        if (!fullName) return "U";
+    const getInitials = (
+        name: string | null | undefined,
+        surname: string | null | undefined,
+    ) => {
+        const fullName = [name, surname].filter(Boolean).join(' ');
+        if (!fullName) return 'U';
         const words = fullName.trim().split(/\s+/);
-        return words.map((word) => word.charAt(0).toUpperCase()).join("").slice(0, 2);
+        return words
+            .map((word) => word.charAt(0).toUpperCase())
+            .join('')
+            .slice(0, 2);
     };
 
     if (isLoading) return <p>Loading...</p>;
@@ -29,9 +33,15 @@ export default function UserProfile() {
     return (
         <div className={styles.container}>
             <div className={styles.userProfileContainer}>
-                <div className={styles.profilePhoto}>{getInitials(user?.data?.name, user?.data?.surname)}</div>
+                <div className={styles.profilePhoto}>
+                    {getInitials(user?.data?.name, user?.data?.surname)}
+                </div>
                 <div>
-                    <p>{[user?.data?.name, user?.data?.surname].filter(Boolean).join(" ") || "Unknown User"}</p>
+                    <p>
+                        {[user?.data?.name, user?.data?.surname]
+                            .filter(Boolean)
+                            .join(' ') || 'Unknown User'}
+                    </p>
                     <p className={styles.userRole}>{/*Customer*/}</p>
                 </div>
             </div>
@@ -83,7 +93,9 @@ export default function UserProfile() {
                 */}
                 <div className={styles.dropdownItem}>
                     <img src="help.svg" alt="help" />
-                    <button onClick={() => navigate("/help")}>Help & Support</button>
+                    <button onClick={() => navigate('/help')}>
+                        Help & Support
+                    </button>
                 </div>
 
                 <div className="separator" />
