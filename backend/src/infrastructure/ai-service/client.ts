@@ -194,6 +194,7 @@ export class AIServiceClient {
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
+      let buffer = ""; // Buffer for incomplete lines
 
       try {
         // Stream reading loop - breaks when stream is complete (done === true)
@@ -211,19 +212,32 @@ export class AIServiceClient {
           const chunk = decoder.decode(result.value as Uint8Array, {
             stream: true,
           });
-          const lines = chunk.split("\n");
 
-          for (const line of lines) {
-            if (line.startsWith("data: ")) {
-              const data = line.slice(6).trim();
-              if (data && !data.startsWith("[Error]")) {
-                yield data;
-              } else if (data.startsWith("[Error]")) {
-                logger.error(
-                  { sessionId, error: data },
-                  "AI service returned error",
-                );
-                throw new Error(data.slice(8));
+          // Add to buffer and process complete SSE messages
+          buffer += chunk;
+
+          // SSE messages end with \n\n - split on that boundary
+          const messages = buffer.split("\n\n");
+
+          // Keep the last incomplete message in buffer
+          buffer = messages.pop() ?? "";
+
+          // Process complete messages
+          for (const message of messages) {
+            const lines = message.split("\n");
+            for (const line of lines) {
+              if (line.startsWith("data: ")) {
+                // Don't trim - preserve intentional spacing from Bedrock
+                const data = line.slice(6);
+                if (data && !data.startsWith("[Error]")) {
+                  yield data;
+                } else if (data.startsWith("[Error]")) {
+                  logger.error(
+                    { sessionId, error: data },
+                    "AI service returned error",
+                  );
+                  throw new Error(data.slice(8));
+                }
               }
             }
           }
