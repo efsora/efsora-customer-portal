@@ -22,8 +22,6 @@
 .quickAccessButtonWrapper {
     display: flex;
     padding: 8px;
-    border-radius: 8px;
-    border: 1px solid #e4e4e4;
     font-size: small;
     gap: 12px;
     align-items: center;
@@ -31,7 +29,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     width: 42px;
-    background-color: white;
+    border-radius: 8px;
 }
 
 .quickAccessButtonWrapper:hover {

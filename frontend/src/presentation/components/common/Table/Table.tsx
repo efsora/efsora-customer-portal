@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
-import styles from './Table.module.css';
 import Tag from '../Tag/Tag';
 import VersionDropdown from '../VersionDropdown/VersionDropdown';
+import styles from './Table.module.css';
 
 interface FileRow {
     id: string;
@@ -37,7 +37,7 @@ export function Table({ files }: TableProps) {
     };
 
     return (
-        <div className={styles.container}>
+        <div className={`container ${styles.container}`}>
             <table className={styles.table}>
                 <thead>
                     <tr>

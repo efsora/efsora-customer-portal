@@ -11,7 +11,7 @@ export function QuickAccess() {
                         href="https://www.figma.com"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={styles.quickAccessButtonWrapper}
+                        className={`container ${styles.quickAccessButtonWrapper}`}
                     >
                         <Tooltip content="Figma" position="left">
                             <button className={styles.quickAccessButton}>
@@ -25,7 +25,7 @@ export function QuickAccess() {
                     href="https://www.linear.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={styles.quickAccessButtonWrapper}
+                    className={`container ${styles.quickAccessButtonWrapper}`}
                 >
                     <Tooltip content="Linear" position="left">
                         <button className={styles.quickAccessButton}>
@@ -37,7 +37,7 @@ export function QuickAccess() {
                     href="https://www.slack.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={styles.quickAccessButtonWrapper}
+                    className={`container ${styles.quickAccessButtonWrapper}`}
                 >
                     <Tooltip content="Slack" position="left">
                         <button className={styles.quickAccessButton}>
@@ -49,7 +49,7 @@ export function QuickAccess() {
                     href="https://www.figma.com/files/recent"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={styles.quickAccessButtonWrapper}
+                    className={`container ${styles.quickAccessButtonWrapper}`}
                 >
                     <Tooltip content="Notion" position="left">
                         <button className={styles.quickAccessButton}>
@@ -61,7 +61,7 @@ export function QuickAccess() {
                     href="https://www.github.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={styles.quickAccessButtonWrapper}
+                    className={`container ${styles.quickAccessButtonWrapper}`}
                 >
                     <Tooltip content="GitHub" position="left">
                         <button className={styles.quickAccessButton}>
@@ -73,7 +73,7 @@ export function QuickAccess() {
                     href="https://drive.google.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={styles.quickAccessButtonWrapper}
+                    className={`container ${styles.quickAccessButtonWrapper}`}
                 >
                     <Tooltip content="Google Drive" position="left">
                         <button className={styles.quickAccessButton}>

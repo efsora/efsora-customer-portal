@@ -18,7 +18,7 @@ export function CurrentMilestone() {
 
     return (
         <div className={styles.container}>
-            <div className={styles.currentMilestoneContainer}>
+            <div className={`container ${styles.currentMilestoneContainer}`}>
                 <p className={styles.currentMilestoneText}>Current Milestone</p>
                 <div className={styles.milestones}>
                     {previousMilestone && (
