@@ -7,7 +7,7 @@ function Title() {
     return (
         <div className="flex gap-4 justify-between">
             <div className="flex gap-4">
-                <img src="milestone-icon.svg" alt="milestone-icon" />
+                <img src="/dashboard/milestone-icon.svg" alt="milestone-icon" />
                 <div>
                     <div className={styles.activeMilestoneTitle}>
                         {ACTIVE_MILESTONE.title}
@@ -57,9 +57,9 @@ function RecentUpdates() {
     const updates = RECENT_UPDATES;
 
     const statusDotIcons: Record<string, string> = {
-        past: 'future-dot.svg',
-        present: 'present-dot.svg',
-        future: 'past-dot.svg',
+        past: '/dashboard/future-dot.svg',
+        present: '/dashboard/present-dot.svg',
+        future: '/dashboard/past-dot.svg',
     };
 
     return (

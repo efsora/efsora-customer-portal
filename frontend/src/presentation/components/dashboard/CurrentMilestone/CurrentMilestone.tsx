@@ -24,7 +24,7 @@ export function CurrentMilestone() {
                     {previousMilestone && (
                         <div className={styles.milestoneItem}>
                             <div className="flex items-center gap-2 text-gray-500 text-sm">
-                                <img src="check.svg" alt="previous" />
+                                <img src="/dashboard/check.svg" alt="previous" />
                                 <div>Previous</div>
                             </div>
                             <p className={styles.milestoneItemDescription}>
@@ -41,7 +41,7 @@ export function CurrentMilestone() {
                     {nextMilestone && (
                         <div className={styles.milestoneItem}>
                             <div className="flex items-center gap-2 text-gray-500 text-sm">
-                                <img src="circle.svg" alt="next" />
+                                <img src="/dashboard/circle.svg" alt="next" />
                                 <div>Next</div>
                             </div>
                             <p className={styles.milestoneItemDescription}>

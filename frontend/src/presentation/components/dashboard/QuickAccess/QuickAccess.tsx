@@ -15,7 +15,7 @@ export function QuickAccess() {
                     >
                         <Tooltip content="Figma" position="left">
                             <button className={styles.quickAccessButton}>
-                                <img src="figma.svg" alt="figma" />
+                                <img src="/dashboard/figma.svg" alt="figma" />
                             </button>
                         </Tooltip>
                     </a>
@@ -29,7 +29,7 @@ export function QuickAccess() {
                 >
                     <Tooltip content="Linear" position="left">
                         <button className={styles.quickAccessButton}>
-                            <img src="linear.svg" alt="linear" />
+                            <img src="/dashboard/linear.svg" alt="linear" />
                         </button>
                     </Tooltip>
                 </a>
@@ -41,7 +41,7 @@ export function QuickAccess() {
                 >
                     <Tooltip content="Slack" position="left">
                         <button className={styles.quickAccessButton}>
-                            <img src="slack.svg" alt="slack" />
+                            <img src="/dashboard/slack.svg" alt="slack" />
                         </button>
                     </Tooltip>
                 </a>
@@ -53,7 +53,7 @@ export function QuickAccess() {
                 >
                     <Tooltip content="Notion" position="left">
                         <button className={styles.quickAccessButton}>
-                            <img src="notion.svg" alt="notion" />
+                            <img src="/dashboard/notion.svg" alt="notion" />
                         </button>
                     </Tooltip>
                 </a>
@@ -65,7 +65,7 @@ export function QuickAccess() {
                 >
                     <Tooltip content="GitHub" position="left">
                         <button className={styles.quickAccessButton}>
-                            <img src="github.svg" alt="github" />
+                            <img src="/dashboard/github.svg" alt="github" />
                         </button>
                     </Tooltip>
                 </a>
@@ -77,7 +77,7 @@ export function QuickAccess() {
                 >
                     <Tooltip content="Google Drive" position="left">
                         <button className={styles.quickAccessButton}>
-                            <img src="google-drive.svg" alt="google-drive" />
+                            <img src="/dashboard/google-drive.svg" alt="google-drive" />
                         </button>
                     </Tooltip>
                 </a>
