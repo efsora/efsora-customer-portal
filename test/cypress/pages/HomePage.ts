@@ -10,6 +10,7 @@ export class HomePage extends BasePage {
     welcomeMessage: '[data-testid="welcome-message"]',
     userProfile: '[data-testid="user-profile"]',
     logoutButton: '[data-testid="logout-button"]',
+    userDropdownTrigger: 'img[alt="toggle dropdown"]',
     navigationMenu: '[data-testid="navigation-menu"]',
     searchInput: '[data-testid="search-input"]',
     searchButton: '[data-testid="search-button"]',
@@ -21,7 +22,7 @@ export class HomePage extends BasePage {
   };
 
   constructor() {
-    super('/home');
+    super('/');
   }
 
   /**
@@ -47,10 +48,30 @@ export class HomePage extends BasePage {
   }
 
   /**
-   * Click logout button
+   * Open user profile dropdown
+   */
+  openUserDropdown(): this {
+    this.click(this.selectors.userDropdownTrigger);
+    return this;
+  }
+
+  /**
+   * Click logout button (opens dropdown first if needed)
    */
   logout(): this {
+    this.openUserDropdown();
+    // Wait for logout button to be visible after dropdown opens
+    this.waitForElement(this.selectors.logoutButton);
     this.click(this.selectors.logoutButton);
+    return this;
+  }
+
+  /**
+   * Verify logout button is not visible
+   */
+  verifyLogoutButtonNotExist(): this {
+    // Check that logout button element doesn't exist in the DOM
+    this.getElement(this.selectors.logoutButton).should('not.exist');
     return this;
   }
 
@@ -164,10 +185,10 @@ export class HomePage extends BasePage {
   }
 
   /**
-   * Verify user is logged in (by checking for user profile element)
+   * Verify user is logged in (by checking for welcome message)
    */
   verifyUserLoggedIn(): this {
-    this.waitForElement(this.selectors.userProfile);
+    this.waitForElement(this.selectors.welcomeMessage);
     return this;
   }
 

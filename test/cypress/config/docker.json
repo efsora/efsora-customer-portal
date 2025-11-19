@@ -1,0 +1,27 @@
+{
+  "baseUrl": "http://frontend:5174",
+  "apiUrl": "http://backend:3000/api/v1",
+  "environment": "docker",
+  "testUser": {
+    "username": "docker_testuser",
+    "password": "DockerPass123!",
+    "email": "testuser.docker@example.com"
+  },
+  "testAdmin": {
+    "username": "docker_admin",
+    "password": "DockerAdminPass123!",
+    "email": "admin.docker@example.com"
+  },
+  "timeout": {
+    "short": 10000,
+    "medium": 20000,
+    "long": 60000
+  },
+  "retries": {
+    "runMode": 2,
+    "openMode": 0
+  },
+  "video": true,
+  "screenshotOnRunFailure": true,
+  "debug": true
+}

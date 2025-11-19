@@ -75,11 +75,11 @@ Cypress.Commands.add('getLocalStorage', (key: string) => {
 });
 
 /**
- * Clear local storage
+ * Clear local storage (overwrite built-in command)
  * @example cy.clearLocalStorage()
  */
-Cypress.Commands.add('clearLocalStorage', () => {
-  cy.window().then((window) => {
+Cypress.Commands.overwrite('clearLocalStorage', (originalFn) => {
+  return cy.window().then((window) => {
     window.localStorage.clear();
   });
 });
@@ -181,3 +181,7 @@ Cypress.Commands.add('elementExists', (selector: string) => {
     return $body.find(selector).length > 0;
   });
 });
+
+// Note: Test case IDs are now linked using the qase() function wrapper
+// Example: qase(123, it('test name', () => { ... }))
+// See: cypress/e2e/ui/login.cy.ts for examples
