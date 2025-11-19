@@ -127,7 +127,6 @@ export default function UserProfile() {
                                 <img
                                     src={isOpen ? '/dropdown-up.svg' : '/dropdown.svg'}
                                     alt="menu"
-                                    className={styles.dropdownIcon}
                                 />
                             </>
                         )}
@@ -136,8 +135,6 @@ export default function UserProfile() {
                 items={menuItems}
                 align="right"
                 position="bottom"
-                className={styles.userDropdown}
-                fullWidth={true}
             />
         </div>
         
