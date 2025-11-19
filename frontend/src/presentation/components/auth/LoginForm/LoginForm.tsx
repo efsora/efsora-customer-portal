@@ -56,10 +56,16 @@ export const LoginForm = () => {
     };
 
     return (
-        <div className={styles.container}>
-            <div className={styles.formContainer}>
+        <div className={styles.container} data-testid="login-page-container">
+            <div
+                className={styles.formContainer}
+                data-testid="login-form-wrapper"
+            >
                 <div className={styles.innerContainer}>
-                    <div className={styles.title}>
+                    <div
+                        className={styles.title}
+                        data-testid="login-form-title"
+                    >
                         <img src="efsora-labs-brand.svg" alt="efsora-brand" />
                         <div className={styles.subtitle}>
                             <div className={styles.welcome}>Welcome</div>
@@ -69,13 +75,20 @@ export const LoginForm = () => {
 
                     <form
                         className={styles.form}
+                        data-testid="login-form"
                         onSubmit={handleSubmit(onSubmit)}
                     >
                         {serverError && (
-                            <div className="rounded-md bg-red-50 p-4">
+                            <div
+                                className="rounded-md bg-red-50 p-4"
+                                data-testid="login-form-error-alert"
+                            >
                                 <div className="flex">
                                     <div className="ml-3">
-                                        <h3 className="text-sm font-medium text-red-800">
+                                        <h3
+                                            className="text-sm font-medium text-red-800"
+                                            data-testid="login-form-error-message"
+                                        >
                                             {serverError}
                                         </h3>
                                     </div>
@@ -83,8 +96,14 @@ export const LoginForm = () => {
                             </div>
                         )}
 
-                        <div className={styles.inputContainers}>
-                            <div className={styles.inputContainer}>
+                        <div
+                            className={styles.inputContainers}
+                            data-testid="login-form-inputs-container"
+                        >
+                            <div
+                                className={styles.inputContainer}
+                                data-testid="login-form-email-field"
+                            >
                                 <label htmlFor="email">Email</label>
                                 <input
                                     {...register('email')}
@@ -93,11 +112,19 @@ export const LoginForm = () => {
                                     autoComplete="email"
                                     placeholder="you@company.com"
                                     className={styles.input}
+                                    data-testid="login-form-email-input"
                                 />
-                                {errors.email && <p>{errors.email.message}</p>}
+                                {errors.email && (
+                                    <p data-testid="login-form-email-error">
+                                        {errors.email.message}
+                                    </p>
+                                )}
                             </div>
 
-                            <div className={styles.inputContainer}>
+                            <div
+                                className={styles.inputContainer}
+                                data-testid="login-form-password-field"
+                            >
                                 <label htmlFor="password">Password</label>
                                 <input
                                     {...register('password')}
@@ -106,23 +133,39 @@ export const LoginForm = () => {
                                     autoComplete="current-password"
                                     placeholder="******"
                                     className={styles.input}
+                                    data-testid="login-form-password-input"
                                 />
                                 {errors.password && (
-                                    <div>{errors.password.message}</div>
+                                    <div data-testid="login-form-password-error">
+                                        {errors.password.message}
+                                    </div>
                                 )}
                             </div>
                         </div>
 
-                        <div className={styles.singInButtonContainer}>
+                        <div
+                            className={styles.singInButtonContainer}
+                            data-testid="login-form-submit-container"
+                        >
                             <button
                                 type="submit"
                                 disabled={isPending}
                                 className={styles.signInButton}
+                                data-testid="login-form-submit-button"
                             >
                                 {isPending ? 'Signing in...' : 'Sign in'}
                             </button>
 
-                            <div>Don't have an account? Contact us.</div>
+                            <div data-testid="login-form-signup-section">
+                                Don't have an account?{' '}
+                                <a
+                                    href="/register"
+                                    data-testid="login-form-signup-link"
+                                >
+                                    Contact us
+                                </a>
+                                .
+                            </div>
                         </div>
                     </form>
                 </div>

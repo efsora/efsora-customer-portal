@@ -19,7 +19,11 @@ export default function Logout() {
     return (
         <>
             {isAuthenticated && (
-                <button onClick={handleLogout} disabled={isPending}>
+                <button
+                    onClick={handleLogout}
+                    disabled={isPending}
+                    data-testid="logout-button"
+                >
                     {isPending ? 'Logging out...' : 'Logout'}
                 </button>
             )}
