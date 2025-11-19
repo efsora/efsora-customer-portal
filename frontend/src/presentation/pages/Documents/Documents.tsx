@@ -19,9 +19,10 @@ export function Documents() {
         Map<FilterType, Set<string>>
     >(new Map());
     const [searchQuery, setSearchQuery] = useState<string>('');
+    // All filter categories start collapsed by default
     const [expandedCategories, setExpandedCategories] = useState<
         Set<FilterType>
-    >(new Set(FILTER_CATEGORIES.map((cat) => cat.type)));
+    >(new Set());
 
     const toggleCategoryExpand = (filterType: FilterType) => {
         const newExpanded = new Set(expandedCategories);
