@@ -1,30 +1,26 @@
-import { useEffect, useRef, useState } from 'react';
+import MenuDropdown from '#components/common/MenuDropdown/MenuDropdown';
 
-import styles from './LeftBar.module.css';
 import NavigationMenu from '../NavigationMenu/NavigationMenu';
+import styles from './LeftBar.module.css';
 
 export default function LeftBar() {
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
+    // Sample customer/project data - can be connected to API
+    const customers = [
+        { id: 'allsober', name: 'AllSober', subtitle: 'EMR Platform' },
+        // Add more customers as needed
+    ];
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target as Node)
-            ) {
-                setIsDropdownOpen(false);
-            }
-        };
+    const currentCustomer = customers[0];
 
-        if (isDropdownOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [isDropdownOpen]);
+    // Menu items for customer dropdown
+    const customerMenuItems = customers.map((customer) => ({
+        type: 'button' as const,
+        label: customer.name,
+        onClick: () => {
+            // Handle customer change
+            console.log(`Switched to ${customer.name}`);
+        },
+    }));
 
     return (
         <div className={styles.leftBarContainer}>
@@ -36,40 +32,42 @@ export default function LeftBar() {
                         className={styles.efsoraBrand}
                     />
                 </div>
-                <div className={styles.customerContainer} ref={dropdownRef}>
-                    <button
-                        className={styles.customerButton}
-                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    >
-                        <div className="flex gap-2">
-                            <img src="allsober-logo.svg" alt="allsober" />
-                            <div>
-                                <div className={styles.customerTitle}>
-                                    AllSober
-                                </div>
-                                <div className={styles.customerSubtitle}>
-                                    EMR Platform
-                                </div>
-                            </div>
-                        </div>
-                        <img
-                            src={
-                                isDropdownOpen
-                                    ? 'dropdown-up.svg'
-                                    : 'dropdown.svg'
-                            }
-                            alt="dropdown"
-                            className={styles.dropdownIcon}
-                        />
-                    </button>
 
-                    {isDropdownOpen && (
-                        <div className={styles.projectDropdownMenu}>
-                            <button className={styles.projectOption}>
-                                AllSober
+                {/* Customer selector dropdown */}
+                <div className={styles.customerContainer}>
+                    <MenuDropdown
+                        trigger={(isOpen) => (
+                            <button className={styles.customerButton}>
+                                <div className="flex gap-2">
+                                    <img
+                                        src="allsober-logo.svg"
+                                        alt={currentCustomer.name}
+                                    />
+                                    <div>
+                                        <div className={styles.customerTitle}>
+                                            {currentCustomer.name}
+                                        </div>
+                                        <div className={styles.customerSubtitle}>
+                                            {currentCustomer.subtitle}
+                                        </div>
+                                    </div>
+                                </div>
+                                <img
+                                    src={
+                                        isOpen
+                                            ? 'dropdown-up.svg'
+                                            : 'dropdown.svg'
+                                    }
+                                    alt="dropdown"
+                                    className={styles.dropdownIcon}
+                                />
                             </button>
-                        </div>
-                    )}
+                        )}
+                        items={customerMenuItems}
+                        align="right"
+                        position="bottom"
+                        fullWidth
+                    />
                 </div>
             </div>
 

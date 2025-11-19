@@ -11,11 +11,11 @@ export function QuickAccess() {
                         href="https://www.figma.com"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={styles.quickAccessButtonWrapper}
+                        className={`container ${styles.quickAccessButtonWrapper}`}
                     >
                         <Tooltip content="Figma" position="left">
                             <button className={styles.quickAccessButton}>
-                                <img src="figma.svg" alt="figma" />
+                                <img src="/dashboard/figma.svg" alt="figma" />
                             </button>
                         </Tooltip>
                     </a>
@@ -25,11 +25,11 @@ export function QuickAccess() {
                     href="https://www.linear.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={styles.quickAccessButtonWrapper}
+                    className={`container ${styles.quickAccessButtonWrapper}`}
                 >
                     <Tooltip content="Linear" position="left">
                         <button className={styles.quickAccessButton}>
-                            <img src="linear.svg" alt="linear" />
+                            <img src="/dashboard/linear.svg" alt="linear" />
                         </button>
                     </Tooltip>
                 </a>
@@ -37,11 +37,11 @@ export function QuickAccess() {
                     href="https://www.slack.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={styles.quickAccessButtonWrapper}
+                    className={`container ${styles.quickAccessButtonWrapper}`}
                 >
                     <Tooltip content="Slack" position="left">
                         <button className={styles.quickAccessButton}>
-                            <img src="slack.svg" alt="slack" />
+                            <img src="/dashboard/slack.svg" alt="slack" />
                         </button>
                     </Tooltip>
                 </a>
@@ -49,11 +49,11 @@ export function QuickAccess() {
                     href="https://www.figma.com/files/recent"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={styles.quickAccessButtonWrapper}
+                    className={`container ${styles.quickAccessButtonWrapper}`}
                 >
                     <Tooltip content="Notion" position="left">
                         <button className={styles.quickAccessButton}>
-                            <img src="notion.svg" alt="notion" />
+                            <img src="/dashboard/notion.svg" alt="notion" />
                         </button>
                     </Tooltip>
                 </a>
@@ -61,11 +61,11 @@ export function QuickAccess() {
                     href="https://www.github.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={styles.quickAccessButtonWrapper}
+                    className={`container ${styles.quickAccessButtonWrapper}`}
                 >
                     <Tooltip content="GitHub" position="left">
                         <button className={styles.quickAccessButton}>
-                            <img src="github.svg" alt="github" />
+                            <img src="/dashboard/github.svg" alt="github" />
                         </button>
                     </Tooltip>
                 </a>
@@ -73,11 +73,11 @@ export function QuickAccess() {
                     href="https://drive.google.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={styles.quickAccessButtonWrapper}
+                    className={`container ${styles.quickAccessButtonWrapper}`}
                 >
                     <Tooltip content="Google Drive" position="left">
                         <button className={styles.quickAccessButton}>
-                            <img src="google-drive.svg" alt="google-drive" />
+                            <img src="/dashboard/google-drive.svg" alt="google-drive" />
                         </button>
                     </Tooltip>
                 </a>

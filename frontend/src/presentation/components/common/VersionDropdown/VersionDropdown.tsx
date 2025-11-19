@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
-
+import MenuDropdown from '../MenuDropdown/MenuDropdown';
 import styles from './VersionDropdown.module.css';
 
 interface VersionDropdownProps {
@@ -8,55 +7,32 @@ interface VersionDropdownProps {
     onChange: (val: string) => void;
 }
 
+/**
+ * Version selector dropdown
+ * Refactored to use centralized MenuDropdown component
+ */
 export default function VersionDropdown({
     options,
     value,
     onChange,
 }: VersionDropdownProps) {
-    const [open, setOpen] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(e.target as Node)
-            ) {
-                setOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () =>
-            document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+    const menuItems = options.map((option) => ({
+        type: 'button' as const,
+        label: option,
+        onClick: () => onChange(option),
+    }));
 
     return (
-        <div className={styles.dropdown} ref={dropdownRef}>
-            <div className={styles.selected} onClick={() => setOpen(!open)}>
-                {value}
-                <img
-                    src={open ? '/dropdown-up.svg' : '/dropdown.svg'}
-                    alt="dropdown arrow"
-                    className={styles.arrow}
-                />
-            </div>
-
-            {open && (
-                <ul className={styles.options}>
-                    {options.map((option) => (
-                        <li
-                            key={option}
-                            className={styles.option}
-                            onClick={() => {
-                                onChange(option);
-                                setOpen(false);
-                            }}
-                        >
-                            {option}
-                        </li>
-                    ))}
-                </ul>
-            )}
-        </div>
+        <MenuDropdown
+            trigger={
+                <div className={styles.selected}>
+                    {value}
+                    <img src="/dropdown.svg" alt="dropdown arrow" className={styles.arrow} />
+                </div>
+            }
+            items={menuItems}
+            align="right"
+            fullWidth={true}
+        />
     );
 }

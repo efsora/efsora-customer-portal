@@ -33,7 +33,7 @@ export function DashboardCard({
     const config = CARD_CONFIG[cardType];
 
     return (
-        <div className={`${styles.card} ${styles[cardType]}`}>
+        <div className={`${styles.card} ${styles[cardType]} container`}>
             <div className="flex flex-col justify-between">
                 <div className={styles.cardTitle}>{title}</div>
                 <div>
