@@ -13,8 +13,11 @@ export interface HealthResponse {
 
 export class HealthService extends BaseApiService {
   constructor(baseUrl?: string) {
-    // Health endpoint is at root level (http://localhost:3000/health), not under /api
-    super(baseUrl || 'http://localhost:3000');
+    // Health endpoint is at root level (/health), not under /api/v1
+    // Extract base URL from apiUrl (remove /api/v1 suffix) or use provided baseUrl
+    const apiUrl = Cypress.env('apiUrl') || 'http://localhost:3000/api/v1';
+    const healthBaseUrl = apiUrl.replace(/\/api\/v1$/, '');
+    super(baseUrl || healthBaseUrl);
   }
 
   /**

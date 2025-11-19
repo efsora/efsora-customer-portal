@@ -40,6 +40,9 @@ lerna-debug.log*
 .env.test.local
 .env.production.local
 
+# Keep .env.docker committed (used by Docker Compose)
+!.env.docker
+
 # Testing
 coverage/
 .nyc_output/

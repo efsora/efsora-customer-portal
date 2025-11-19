@@ -39,7 +39,8 @@ export default defineConfig({
   },
   video: false,
   e2e: {
-    baseUrl: 'http://localhost:5174',
+    // Environment variables take precedence, fallback to localhost for local development
+    baseUrl: process.env.CYPRESS_BASE_URL || 'http://localhost:5174',
     specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
     supportFile: 'cypress/support/e2e.ts',
     videosFolder: 'cypress/videos',
@@ -59,7 +60,8 @@ export default defineConfig({
       openMode: 0,
     },
     env: {
-      apiUrl: 'http://localhost:3000/api/v1',
+      // Environment variables take precedence, fallback to localhost for local development
+      apiUrl: process.env.CYPRESS_API_URL || 'http://localhost:3000/api/v1',
     },
     setupNodeEvents(on, config) {
       const environment = config.env.environment || 'dev';
@@ -67,8 +69,20 @@ export default defineConfig({
 
       if (fs.existsSync(configFile)) {
         const envConfig = JSON.parse(fs.readFileSync(configFile, 'utf-8'));
-        config.baseUrl = envConfig.baseUrl || config.baseUrl;
-        config.env = { ...config.env, ...envConfig };
+
+        // Merge priority: CLI env vars > config file > defaults
+        // Only override if not already set by environment variables
+        if (!process.env.CYPRESS_BASE_URL && envConfig.baseUrl) {
+          config.baseUrl = envConfig.baseUrl;
+        }
+
+        config.env = {
+          ...config.env,
+          ...envConfig,
+          // Ensure apiUrl from env var takes precedence
+          apiUrl: process.env.CYPRESS_API_URL || envConfig.apiUrl || config.env.apiUrl
+        };
+
         console.log(`Loaded ${environment} environment configuration`);
       } else {
         console.warn(`Config file not found: ${configFile}, using default configuration`);
