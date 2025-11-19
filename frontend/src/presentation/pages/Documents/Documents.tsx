@@ -7,6 +7,7 @@ import {
     MOCK_FILES,
     type FilterType,
 } from '#api/mockData';
+import MenuDropdown from '#components/common/MenuDropdown/MenuDropdown';
 import PageTitle from '#presentation/components/common/PageTitle/PageTitle';
 import { Table } from '#presentation/components/common/Table/Table';
 
@@ -14,7 +15,6 @@ import styles from './Documents.module.css';
 
 export function Documents() {
     const [activeTag, setActiveTag] = useState<string | null>(null);
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedFilters, setSelectedFilters] = useState<
         Map<FilterType, Set<string>>
     >(new Map());
@@ -175,112 +175,133 @@ export function Documents() {
                     </div>
 
                     <div className={styles.dropdownContainer}>
-                        <button
-                            className={styles.dropdownButton}
-                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                        >
-                            <img src="/documents/filter.svg" alt="" />
-                            <span>Filter By</span>
-                            <img
-                                src={
-                                    isDropdownOpen
-                                        ? 'dropdown-up.svg'
-                                        : 'dropdown.svg'
-                                }
-                            />
-                        </button>
-                        {isDropdownOpen && (
-                            <div className={styles.dropdownMenu}>
-                                {FILTER_CATEGORIES.map((category) => {
-                                    const filterOptions = getFilterOptions(
-                                        category.type,
-                                    );
-                                    const selectedOptionsForCategory =
-                                        selectedFilters.get(category.type) ||
-                                        new Set();
-                                    const isExpanded = expandedCategories.has(
-                                        category.type,
-                                    );
-
-                                    return (
-                                        <div key={category.type}>
-                                            <div
-                                                className={
-                                                    styles.filterCategoryTitle
-                                                }
-                                                onClick={() =>
-                                                    toggleCategoryExpand(
+                        <MenuDropdown
+                            trigger={(isOpen) => (
+                                <button className={styles.dropdownButton}>
+                                    <img src="/documents/filter.svg" alt="" />
+                                    <span>Filter By</span>
+                                    <img
+                                        src={
+                                            isOpen
+                                                ? 'dropdown-up.svg'
+                                                : 'dropdown.svg'
+                                        }
+                                    />
+                                </button>
+                            )}
+                            items={[
+                                {
+                                    type: 'custom',
+                                    render: (
+                                        <div
+                                            className={styles.dropdownMenu}
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            {FILTER_CATEGORIES.map((category) => {
+                                                const filterOptions =
+                                                    getFilterOptions(
                                                         category.type,
-                                                    )
-                                                }
-                                            >
-                                                <span>{category.label}</span>
-                                                <img
-                                                    src={
-                                                        isExpanded
-                                                            ? 'dropdown-up.svg'
-                                                            : 'dropdown.svg'
-                                                    }
-                                                    alt="toggle"
-                                                    className={
-                                                        styles.filterCategoryIcon
-                                                    }
-                                                />
-                                            </div>
-                                            {isExpanded && (
-                                                <>
-                                                    {filterOptions.map(
-                                                        (option) => (
-                                                            <label
-                                                                key={`${category.type}-${option}`}
-                                                                className={
-                                                                    styles.dropdownOption
+                                                    );
+                                                const selectedOptionsForCategory =
+                                                    selectedFilters.get(
+                                                        category.type,
+                                                    ) || new Set();
+                                                const isExpanded =
+                                                    expandedCategories.has(
+                                                        category.type,
+                                                    );
+
+                                                return (
+                                                    <div key={category.type}>
+                                                        <div
+                                                            className={
+                                                                styles.filterCategoryTitle
+                                                            }
+                                                            onClick={() =>
+                                                                toggleCategoryExpand(
+                                                                    category.type,
+                                                                )
+                                                            }
+                                                        >
+                                                            <span>
+                                                                {
+                                                                    category.label
                                                                 }
-                                                            >
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={selectedOptionsForCategory.has(
-                                                                        option,
-                                                                    )}
-                                                                    onChange={() =>
-                                                                        handleFilterToggle(
-                                                                            category.type,
-                                                                            option,
-                                                                        )
-                                                                    }
+                                                            </span>
+                                                            <img
+                                                                src={
+                                                                    isExpanded
+                                                                        ? 'dropdown-up.svg'
+                                                                        : 'dropdown.svg'
+                                                                }
+                                                                alt="toggle"
+                                                                className={
+                                                                    styles.filterCategoryIcon
+                                                                }
+                                                            />
+                                                        </div>
+                                                        {isExpanded && (
+                                                            <>
+                                                                {filterOptions.map(
+                                                                    (option) => (
+                                                                        <label
+                                                                            key={`${category.type}-${option}`}
+                                                                            className={
+                                                                                styles.dropdownOption
+                                                                            }
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                checked={selectedOptionsForCategory.has(
+                                                                                    option,
+                                                                                )}
+                                                                                onChange={() =>
+                                                                                    handleFilterToggle(
+                                                                                        category.type,
+                                                                                        option,
+                                                                                    )
+                                                                                }
+                                                                                className={
+                                                                                    styles.checkbox
+                                                                                }
+                                                                            />
+                                                                            <span
+                                                                                className={
+                                                                                    styles.checkmark
+                                                                                }
+                                                                            >
+                                                                                {selectedOptionsForCategory.has(
+                                                                                    option,
+                                                                                )
+                                                                                    ? '✓'
+                                                                                    : ''}
+                                                                            </span>
+                                                                            <span>
+                                                                                {
+                                                                                    option
+                                                                                }
+                                                                            </span>
+                                                                        </label>
+                                                                    ),
+                                                                )}
+                                                                <div
                                                                     className={
-                                                                        styles.checkbox
+                                                                        styles.filterSeparator
                                                                     }
                                                                 />
-                                                                <span
-                                                                    className={
-                                                                        styles.checkmark
-                                                                    }
-                                                                >
-                                                                    {selectedOptionsForCategory.has(
-                                                                        option,
-                                                                    )
-                                                                        ? '✓'
-                                                                        : ''}
-                                                                </span>
-                                                                <span>
-                                                                    {option}
-                                                                </span>
-                                                            </label>
-                                                        ),
-                                                    )}
-                                                    <div
-                                                        className={
-                                                            styles.filterSeparator
-                                                        }
-                                                    />
-                                                </>
-                                            )}
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
-                                    );
-                                })}
-                            </div>
-                        )}
+                                    ),
+                                },
+                            ]}
+                            align="right"
+                            position="bottom"
+                            fullWidth={true}
+                        />
                     </div>
                 </div>
 
