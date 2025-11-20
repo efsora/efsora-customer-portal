@@ -143,7 +143,7 @@ export const RegisterForm = () => {
                             </div>
 
                             <div className={styles.inputContainer}>
-                                <label htmlFor="email">Email address</label>
+                                <label htmlFor="email">Email</label>
                                 <input
                                     {...register('email')}
                                     id="email"
