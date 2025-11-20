@@ -158,7 +158,10 @@ export const RegisterForm = () => {
                             </div>
 
                             <div className={styles.inputContainer}>
-                                <label htmlFor="password">Password</label>
+                                <label htmlFor="password">
+                                    Password
+                                    <span className={styles.hint}>Minimum 12 characters</span>
+                                </label>
                                 <div className={styles.passwordInputWrapper}>
                                     <input
                                         {...register('password')}
