@@ -85,19 +85,11 @@ async def chat_stream(
                 # Extract text from chunk (ChatBedrock returns strings with StrOutputParser)
                 text = chunk if isinstance(chunk, str) else str(chunk)
 
-                # Smart spacing: ChatBedrock splits words mid-token
-                # Add space if there's no whitespace between alphanumeric boundaries
-                if text and assistant_chunks:
-                    prev_chunk = assistant_chunks[-1]
-                    if prev_chunk:
-                        prev_char = prev_chunk[-1]
-                        curr_char = text[0]
+                # DEBUG: Log what Bedrock is sending
+                ctx.logger.debug(f"Bedrock chunk: {repr(text)}")
 
-                        # Add space if both boundaries are alphanumeric (word continuation)
-                        if prev_char.isalnum() and curr_char.isalnum():
-                            text = " " + text
-
-                # Stream the chunk
+                # Stream the chunk as-is without spacing manipulation
+                # Bedrock streaming preserves proper word boundaries and spacing
                 if text:  # Only send non-empty chunks
                     assistant_chunks.append(text)
                     yield f"data: {text}\n\n"

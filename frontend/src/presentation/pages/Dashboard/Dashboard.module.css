@@ -1,5 +1,6 @@
 .pageLayout {
     display: flex;
+    flex-direction: column;
     width: 100%;
     flex: 1;
     gap: 24px;
@@ -10,4 +11,20 @@
     flex: 1;
     width: 100%;
     height: 100%;
+}
+
+.cardContainer {
+    display: flex;
+    width: 100%;
+    gap: 24px;
+}
+
+.cards {
+    display: flex;
+    gap: 24px;
+    flex: 1;
+}
+
+.quickAccess {
+    padding: 24px 36px;
 }

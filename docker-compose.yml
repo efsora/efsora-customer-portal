@@ -54,24 +54,24 @@ services:
     ports:
       - "${BACKEND_PORT:-3000}:3000"
     environment:
-      NODE_ENV: development
-      PORT: 3000
-      DATABASE_URL: postgresql://backend_user:backend_password@postgres:5432/backend_db
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${BACKEND_PORT:-3000}
+      DATABASE_URL: ${DATABASE_URL}
       # Database connection for wait script
-      DB_HOST: postgres
-      DB_USER: backend_user
-      DB_NAME: backend_db
-      PGPASSWORD: backend_password
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_USER: ${DB_USER:-backend_user}
+      DB_NAME: ${DB_NAME:-backend_db}
+      PGPASSWORD: ${PGPASSWORD}
       # Other services
-      AI_SERVICE_URL: http://ai-service:8000
-      JWT_SECRET: docker-dev-secret-key-32chars-minimum-length-required
-      ENABLE_TRACING: "true"
-      TRACING_SAMPLE_RATE: "1.0"
-      OTEL_SERVICE_NAME: backend-api
-      # OTEL_EXPORTER_OTLP_ENDPOINT: Optional - if not set, traces go to console via ConsoleSpanExporter
-      METRICS_ENABLED: "true"
-      LOG_LEVEL: debug
-      LOGGER_PRETTY: "true"
+      AI_SERVICE_URL: ${AI_SERVICE_URL:-http://ai-service:8000}
+      JWT_SECRET: ${JWT_SECRET}
+      ENABLE_TRACING: ${ENABLE_TRACING:-true}
+      TRACING_SAMPLE_RATE: ${TRACING_SAMPLE_RATE:-1.0}
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME:-backend-api}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+      METRICS_ENABLED: ${METRICS_ENABLED:-true}
+      LOG_LEVEL: ${LOG_LEVEL:-debug}
+      LOGGER_PRETTY: ${LOGGER_PRETTY:-true}
     depends_on:
       postgres:
         condition: service_healthy
@@ -91,8 +91,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: ""  # Empty string to use relative URLs (nginx proxy)
-        VITE_NODE_ENV: production
+        VITE_API_URL: ${VITE_API_URL:-}  # Empty string to use relative URLs (nginx proxy)
+        VITE_NODE_ENV: ${VITE_NODE_ENV:-production}
     container_name: full-stack-frontend
     restart: unless-stopped
     ports:
@@ -113,26 +113,28 @@ services:
     restart: unless-stopped
     ports:
       - "${AI_SERVICE_PORT:-8000}:8000"
-
     environment:
-      ENV: dev
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
+      ENV: ${ENV:-dev}
+      APP_NAME: ${APP_NAME:-fastapi-backend}
+      LOG_LEVEL: ${AI_LOG_LEVEL:-INFO}
+      LOG_FORMAT: ${AI_LOG_FORMAT:-json}
+      POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
       POSTGRES_DB: ${POSTGRES_DB:-app_db}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       AI_SCHEMA: ${AI_SCHEMA:-ai_schema}
       BACKEND_SCHEMA: ${BACKEND_SCHEMA:-backend_schema}
-      WEAVIATE_HOST: weaviate
-      WEAVIATE_PORT: 8080
-      WEAVIATE_GRPC_PORT: 50051
-      WEAVIATE_COLLECTION_NAME: EFSORA_CustomerPortal
-      DATA_DIR: /app/data/
-      OUTPUT_DIR: /app/output/
-      SEMANTIC_MAX_TOKENS: 512
-      EMBED_MODEL: amazon.titan-embed-text-v2:0
-      BEDROCK_REGION: us-east-1
-      LLM_MODEL: global.anthropic.claude-sonnet-4-20250514-v1:0
+      WEAVIATE_HOST: ${WEAVIATE_HOST:-weaviate}
+      WEAVIATE_PORT: ${WEAVIATE_PORT:-8080}
+      WEAVIATE_GRPC_PORT: ${WEAVIATE_GRPC_PORT:-50051}
+      WEAVIATE_COLLECTION_NAME: ${WEAVIATE_COLLECTION_NAME:-EFSORA_CustomerPortal}
+      DATA_DIR: ${DATA_DIR:-/app/data/}
+      OUTPUT_DIR: ${OUTPUT_DIR:-/app/output/}
+      SEMANTIC_MAX_TOKENS: ${SEMANTIC_MAX_TOKENS:-512}
+      EMBED_MODEL: ${EMBED_MODEL:-amazon.titan-embed-text-v2:0}
+      BEDROCK_REGION: ${BEDROCK_REGION:-us-east-1}
+      LLM_MODEL: ${LLM_MODEL:-global.anthropic.claude-sonnet-4-20250514-v1:0}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
 

@@ -49,6 +49,25 @@ If the answer is not in the context, say you don't know. You can acknowledge gre
 
 IMPORTANT: Write with proper spacing and complete words. Format your response with clear sentence structure.
 
+Additional Requirements:
+- Do not begin your answer with phrases such as:
+    "Based on the retrieved context",
+    "Based on the context",
+    "According to the context",
+    "From the given context",
+    or any similar meta-references.
+- Do not reference the act of using context in any form.
+- Do not add commentary, disclaimers, or process explanations.
+- Do not provide references for now.
+- For non-opinion questions, provide a direct and definitive answer if supported by the context.
+- Always answer using the following structure:
+    1. Answer: A clear and direct response.
+    2. Details: Only if explicitly supported by the retrieved context for interpretation questions.
+- If the context does not contain the answer, respond only: "I don't know."
+- If the user greets you, you may respond naturally.
+- Do not invent facts.
+
+
 Conversation history:
 {history}
 

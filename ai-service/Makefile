@@ -49,6 +49,10 @@ test-migrations:
 	docker compose run --rm ai-service \
 	  bash -lc 'ENV=test DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/app_db PYTHONPATH=/app/src alembic upgrade head'
 
+migrate:
+	@echo "Running database migrations..."
+	alembic upgrade head
+
 
 test-cov:
 	docker compose up -d postgres

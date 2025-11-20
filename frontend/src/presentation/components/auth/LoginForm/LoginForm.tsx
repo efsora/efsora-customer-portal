@@ -122,15 +122,7 @@ export const LoginForm = () => {
                                 {isPending ? 'Signing in...' : 'Sign in'}
                             </button>
 
-                            <div>
-                                Don't have an account?{' '}
-                                <a
-                                    href="/register"
-                                    className={styles.inlineLink}
-                                >
-                                    Contact us.
-                                </a>
-                            </div>
+                            <div>Don't have an account? Contact us.</div>
                         </div>
                     </form>
                 </div>

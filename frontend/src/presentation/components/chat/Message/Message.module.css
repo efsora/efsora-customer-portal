@@ -67,3 +67,57 @@
     opacity: 0.5;
     align-self: flex-end;
 }
+
+/* Markdown styles */
+.paragraph {
+    margin: 0 0 8px 0;
+    line-height: 1.6;
+}
+
+.paragraph:last-child {
+    margin-bottom: 0;
+}
+
+.inlineCode {
+    background-color: rgba(0, 0, 0, 0.08);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+}
+
+.codeBlock {
+    background-color: rgba(0, 0, 0, 0.08);
+    border-radius: 6px;
+    padding: 12px;
+    margin: 8px 0;
+    overflow-x: auto;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+}
+
+.codeBlock code {
+    background-color: transparent;
+    padding: 0;
+    font-family: inherit;
+}
+
+.list {
+    margin: 8px 0;
+    padding-left: 24px;
+}
+
+.list li {
+    margin: 4px 0;
+    line-height: 1.6;
+}
+
+.link {
+    color: var(--color-primary-blue);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.link:hover {
+    opacity: 0.8;
+}

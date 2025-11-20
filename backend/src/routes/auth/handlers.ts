@@ -4,6 +4,9 @@ import {
   createUser,
   login,
 } from "#core/users/index";
+import { getRequestId } from "#infrastructure/logger/context";
+import { logger } from "#infrastructure/logger/index";
+import { sessionRepository } from "#infrastructure/repositories/drizzle";
 import { matchResponse } from "#lib/result/combinators";
 import { run } from "#lib/result/index";
 import {
@@ -13,9 +16,6 @@ import {
 } from "#lib/types/response";
 import type { AuthenticatedRequest } from "#middlewares/auth";
 import type { ValidatedRequest } from "#middlewares/validate";
-import { sessionRepository } from "#infrastructure/repositories/drizzle";
-import { logger } from "#infrastructure/logger/index";
-import { getRequestId } from "#infrastructure/logger/context";
 
 import type { LoginBody, LogoutResponse, RegisterBody } from "./schemas";
 
@@ -64,6 +64,7 @@ export async function handleLogin(
           id: data.user.id,
           email: data.user.email,
           name: data.user.name,
+          surname: data.user.surname,
           createdAt: data.user.createdAt,
           updatedAt: data.user.updatedAt,
         },

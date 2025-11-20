@@ -79,12 +79,12 @@ export function hashPasswordForCreation(data: ValidatedCreationData): Result<{
  * Handles the result of user creation in the database.
  *
  * @param user - User returned from database or undefined if creation failed
- * @returns Result with user data (without token yet) on success, or Failure on error
+ * @returns Result with full user entity (with timestamps) on success, or Failure on error
  *
  * @example
  * ```ts
  * // Unit test - success case
- * const mockUser = { id: 'uuid-123', email: 'test@example.com', name: 'Test User' };
+ * const mockUser = { id: 'uuid-123', email: 'test@example.com', name: 'Test User', createdAt: new Date(), updatedAt: new Date() };
  * const result = handleSaveNewUserResult(mockUser);
  * expect(result.status).toBe('Success');
  *
@@ -142,8 +142,9 @@ export function saveNewUser(data: {
 /**
  * Adds authentication token to user result
  * Generates JWT token for the newly created user and wraps in proper structure
+ * Uses mapUserToUserData to ensure consistency with login flow
  *
- * @param userData - User data from database (id, email, name)
+ * @param user - Full user entity from database (with timestamps)
  * @returns Result with nested structure: { user: {...}, token: "..." }
  */
 export function addAuthToken(userData: {

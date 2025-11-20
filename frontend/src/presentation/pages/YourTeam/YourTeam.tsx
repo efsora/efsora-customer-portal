@@ -56,7 +56,7 @@ function TeamMember({ member }: TeamMemberProps) {
     };
 
     return (
-        <div className={styles.teamMemberContainer}>
+        <div className={`container ${styles.teamMemberContainer}`}>
             <div className={styles.topContainer}>
                 <div className={styles.pp} style={ppStyle}>
                     {member.initials}
@@ -206,7 +206,7 @@ export function YourTeam() {
             />
 
             <div className={styles.teams}>
-                <div className={styles.teamContainer}>
+                <div className={`container ${styles.teamContainer}`}>
                     <div>
                         <div className={styles.teamTitle}>Efsora Team</div>
                         <div className={styles.teamSubtitle}>
@@ -220,9 +220,9 @@ export function YourTeam() {
                     </div>
                 </div>
 
-                <div className={styles.teamContainer}>
+                <div className={`container ${styles.teamContainer}`}>
                     <div>
-                        <div className={styles.teamTitle}>Your Team</div>
+                        <div className={styles.teamTitle}>AllSober Team</div>
                         <div className={styles.teamSubtitle}>
                             Team members from your organization.
                         </div>

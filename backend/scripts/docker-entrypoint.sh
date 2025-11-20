@@ -13,9 +13,9 @@ echo "✅ Database is ready!"
 
 echo "🔄 Running database migrations..."
 
-# Run migrations using the proper migration script
+# Run migrations using Make command
 # Working directory is already /app from Dockerfile
-npx tsx scripts/run-migrations.ts
+make db-migrate 2>&1
 
 if [ $? -eq 0 ]; then
   echo "✅ Migrations completed successfully!"

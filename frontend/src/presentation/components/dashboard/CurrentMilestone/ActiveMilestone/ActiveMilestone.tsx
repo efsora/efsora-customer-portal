@@ -1,3 +1,4 @@
+import { ACTIVE_MILESTONE, RECENT_UPDATES } from '#api/mockData';
 import Tag from '#presentation/components/common/Tag/Tag';
 
 import styles from './ActiveMilestone.module.css';
@@ -6,19 +7,31 @@ function Title() {
     return (
         <div className="flex gap-4 justify-between">
             <div className="flex gap-4">
-                <img src="milestone-icon.svg" alt="milestone-icon" />
+                <img src="/dashboard/milestone-icon.svg" alt="milestone-icon" />
                 <div>
                     <div className={styles.activeMilestoneTitle}>
-                        Design Phase Review
+                        {ACTIVE_MILESTONE.title}
                     </div>
                     <div className="flex gap-4 text-xs text-gray-500">
-                        <div>Michael Chen</div>
-                        <div>Due: Oct 20, 2025</div>
+                        <div>{ACTIVE_MILESTONE.assignedPerson}</div>
+                        <div>Due: {ACTIVE_MILESTONE.dueDate}</div>
                     </div>
                 </div>
             </div>
 
-            <Tag status="inProgress" />
+            <Tag
+                status={
+                    ACTIVE_MILESTONE.status as
+                        | 'scheduled'
+                        | 'inProgress'
+                        | 'waiting'
+                        | 'internalReview'
+                        | 'delivered'
+                        | 'completed'
+                        | 'revision'
+                        | 'blocked'
+                }
+            />
         </div>
     );
 }
@@ -41,34 +54,12 @@ function ProgressBar() {
 }
 
 function RecentUpdates() {
-    const updates = [
-        {
-            date: 'Oct 18, 2025',
-            time: '2:30 PM',
-            description: 'Wireframes approved by client.',
-            owner: 'Sarah Johnson',
-            status: 'past',
-        },
-        {
-            date: 'Oct 16, 2025',
-            time: '10:15 AM',
-            description: 'Initial design concepts shared with the team.',
-            owner: 'Michael Chen',
-            status: 'present',
-        },
-        {
-            date: 'Oct 15, 2025',
-            time: '4:00 PM',
-            description: 'Feedback session scheduled for Oct 15, 2025.',
-            owner: 'Emily Rodriguez',
-            status: 'future',
-        },
-    ];
+    const updates = RECENT_UPDATES;
 
     const statusDotIcons: Record<string, string> = {
-        past: 'future-dot.svg',
-        present: 'present-dot.svg',
-        future: 'past-dot.svg',
+        past: '/dashboard/future-dot.svg',
+        present: '/dashboard/present-dot.svg',
+        future: '/dashboard/past-dot.svg',
     };
 
     return (

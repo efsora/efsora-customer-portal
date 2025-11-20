@@ -20,14 +20,14 @@ export interface MilestoneProps {
 }
 
 const ICON_MAP: Record<MilestoneStatus, string> = {
-    scheduled: 'milestone-scheduled.svg',
-    inProgress: 'milestone-wip.svg',
-    waiting: 'milestone-wait.svg',
-    internalReview: 'milestone-rew.svg',
-    delivered: 'milestone-delivered.svg',
-    completed: 'milestone-completed.svg',
-    revision: 'milestone-revision.svg',
-    blocked: 'milestone-blocked.svg',
+    scheduled: 'timeline/milestone-scheduled.svg',
+    inProgress: 'timeline/milestone-wip.svg',
+    waiting: 'timeline/milestone-wait.svg',
+    internalReview: 'timeline/milestone-rew.svg',
+    delivered: 'timeline/milestone-delivered.svg',
+    completed: 'timeline/milestone-completed.svg',
+    revision: 'timeline/milestone-revision.svg',
+    blocked: 'timeline/milestone-blocked.svg',
 };
 
 export function Milestone({
@@ -52,11 +52,11 @@ export function Milestone({
                     <div>{title}</div>
                     <div className={styles.subheader}>
                         <div className="flex items-center gap-1">
-                            <img src="milestone-due.svg" alt="due" />
+                            <img src="/timeline/milestone-due.svg" alt="due" />
                             Due: {dueDate}
                         </div>
                         <div className="flex items-center gap-1">
-                            <img src="milestone-person.svg" alt="person" />
+                            <img src="/timeline/milestone-person.svg" alt="person" />
                             {assignedPerson}
                         </div>
                     </div>
