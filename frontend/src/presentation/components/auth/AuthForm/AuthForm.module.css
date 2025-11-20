@@ -7,6 +7,8 @@
     color: var(--color-neutral-grey-600);
     width: 464px;
     padding: 16px;
+    height: 100%;
+    overflow-y: auto;
 }
 
 .formContainer {
@@ -144,4 +146,9 @@
     color: var(--color-neutral-grey-400);
     font-weight: 500;
     margin-top: 8px;
+}
+
+.errorMessage {
+    color: var(--color-error-500);
+    font-size: 13px;
 }

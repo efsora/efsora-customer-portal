@@ -123,7 +123,7 @@ export const RegisterForm = () => {
                                     className={styles.input}
                                 />
                                 {errors.name && (
-                                    <p>{errors.name.message}</p>
+                                    <p className={styles.errorMessage}>{errors.name.message}</p>
                                 )}
                             </div>
 
@@ -138,7 +138,7 @@ export const RegisterForm = () => {
                                     className={styles.input}
                                 />
                                 {errors.surname && (
-                                    <p>{errors.surname.message}</p>
+                                    <p className={styles.errorMessage}>{errors.surname.message}</p>
                                 )}
                             </div>
 
@@ -153,7 +153,7 @@ export const RegisterForm = () => {
                                     className={styles.input}
                                 />
                                 {errors.email && (
-                                    <p>{errors.email.message}</p>
+                                    <p className={styles.errorMessage}>{errors.email.message}</p>
                                 )}
                             </div>
 
@@ -185,7 +185,7 @@ export const RegisterForm = () => {
                                     </button>
                                 </div>
                                 {errors.password && (
-                                    <p>{errors.password.message}</p>
+                                    <p className={styles.errorMessage}>{errors.password.message}</p>
                                 )}
                             </div>
 
@@ -214,7 +214,7 @@ export const RegisterForm = () => {
                                     </button>
                                 </div>
                                 {errors.confirmPassword && (
-                                    <p>{errors.confirmPassword.message}</p>
+                                    <p className={styles.errorMessage}>{errors.confirmPassword.message}</p>
                                 )}
                             </div>
                         </div>
