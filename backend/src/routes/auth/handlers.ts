@@ -1,8 +1,10 @@
 import {
   CreateUserResult,
   LoginResult,
+  SendInvitationResult,
   createUser,
   login,
+  sendInvitation,
 } from "#core/users/index";
 import { getRequestId } from "#infrastructure/logger/context";
 import { logger } from "#infrastructure/logger/index";
@@ -17,7 +19,12 @@ import {
 import type { AuthenticatedRequest } from "#middlewares/auth";
 import type { ValidatedRequest } from "#middlewares/validate";
 
-import type { LoginBody, LogoutResponse, RegisterBody } from "./schemas";
+import type {
+  LoginBody,
+  LogoutResponse,
+  RegisterBody,
+  SendInvitationBody,
+} from "./schemas";
 
 /**
  * POST /auth/register
@@ -152,4 +159,32 @@ export async function handleLogout(
       message: "Failed to logout. Please try again.",
     });
   }
+}
+
+/**
+ * POST /auth/send-invitation
+ * Send a portal invitation to a user
+ *
+ * Creates a PENDING invitation record with 48-hour expiration.
+ * Email sending will be implemented in the future.
+ *
+ * @param req - Request with email in body
+ * @returns Success response with invitation details
+ */
+export async function handleSendInvitation(
+  req: ValidatedRequest<{ body: SendInvitationBody }>,
+): Promise<AppResponse<SendInvitationResult>> {
+  const body = req.validated.body;
+  const result = await run(sendInvitation(body));
+
+  return matchResponse(result, {
+    onSuccess: (data) =>
+      createSuccessResponse({
+        email: data.email,
+        status: data.status,
+        dueDate: data.dueDate,
+        message: data.message,
+      }),
+    onFailure: (error) => createFailureResponse(error),
+  });
 }

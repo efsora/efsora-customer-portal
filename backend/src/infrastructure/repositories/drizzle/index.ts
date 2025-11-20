@@ -4,14 +4,15 @@
  */
 
 // Factory Functions (Production Implementations)
-import { createUserRepository } from "#infrastructure/repositories/drizzle/UserRepository";
-import { createSessionRepository } from "#infrastructure/repositories/drizzle/SessionRepository";
+import { createChatRepository } from "#infrastructure/repositories/drizzle/ChatRepository";
 import { createCompanyRepository } from "#infrastructure/repositories/drizzle/CompanyRepository";
+import { createEventRepository } from "#infrastructure/repositories/drizzle/EventRepository";
+import { createMilestoneRepository } from "#infrastructure/repositories/drizzle/MilestoneRepository";
+import { createPortalMailInvitationRepository } from "#infrastructure/repositories/drizzle/PortalMailInvitationRepository";
 import { createProjectRepository } from "#infrastructure/repositories/drizzle/ProjectRepository";
 import { createRoleRepository } from "#infrastructure/repositories/drizzle/RoleRepository";
-import { createMilestoneRepository } from "#infrastructure/repositories/drizzle/MilestoneRepository";
-import { createEventRepository } from "#infrastructure/repositories/drizzle/EventRepository";
-import { createChatRepository } from "#infrastructure/repositories/drizzle/ChatRepository";
+import { createSessionRepository } from "#infrastructure/repositories/drizzle/SessionRepository";
+import { createUserRepository } from "#infrastructure/repositories/drizzle/UserRepository";
 
 export {
   createUserRepository,
@@ -52,6 +53,11 @@ export {
   createChatRepository,
   type ChatRepository,
 } from "#infrastructure/repositories/drizzle/ChatRepository";
+
+export {
+  createPortalMailInvitationRepository,
+  type PortalMailInvitationRepository,
+} from "#infrastructure/repositories/drizzle/PortalMailInvitationRepository";
 
 // Singleton Instances
 import { db } from "#db/client";
@@ -95,3 +101,9 @@ export const eventRepository = createEventRepository(db);
  * Singleton chat repository instance
  */
 export const chatRepository = createChatRepository(db);
+
+/**
+ * Singleton portal mail invitation repository instance
+ */
+export const portalMailInvitationRepository =
+  createPortalMailInvitationRepository(db);
