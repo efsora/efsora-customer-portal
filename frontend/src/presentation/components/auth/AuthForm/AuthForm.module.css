@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     gap: 32px;
     color: var(--color-neutral-grey-600);
     width: 464px;
@@ -70,7 +71,7 @@
     width: 100%;
 }
 
-.signInButton {
+.button {
     background-color: var(--color-primary-500);
     width: 100%;
     border-radius: 8px;
@@ -83,7 +84,7 @@
     color: var(--color-primary-500);
 }
 
-.singInButtonContainer {
+.buttonContainer {
     display: flex;
     flex-direction: column;
     gap: 32px;

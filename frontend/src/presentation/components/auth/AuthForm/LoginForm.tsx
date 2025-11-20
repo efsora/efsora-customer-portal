@@ -6,7 +6,7 @@ import { z } from 'zod';
 
 import { useLogin } from '#api/hooks/useAuth';
 
-import styles from './LoginForm.module.css';
+import styles from './AuthForm.module.css';
 
 /**
  * Login form validation schema
@@ -113,11 +113,11 @@ export const LoginForm = () => {
                             </div>
                         </div>
 
-                        <div className={styles.singInButtonContainer}>
+                        <div className={styles.buttonContainer}>
                             <button
                                 type="submit"
                                 disabled={isPending}
-                                className={styles.signInButton}
+                                className={styles.button}
                             >
                                 {isPending ? 'Signing in...' : 'Sign in'}
                             </button>
