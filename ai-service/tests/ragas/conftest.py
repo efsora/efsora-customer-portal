@@ -205,6 +205,35 @@ def traditional_evaluation_config() -> dict[str, Any]:
 # REAL RAG SYSTEM FIXTURES (for integration testing with actual RAG pipeline)
 # ============================================================================
 
+def collect_sse_response(response_text: str) -> str:
+    """
+    Parse SSE (Server-Sent Events) response and extract clean text.
+
+    SSE format has each chunk prefixed with "data: " and separated by "\n\n".
+    This function removes the SSE formatting to get the actual response text.
+
+    Args:
+        response_text: Raw SSE response with "data: " prefixes
+
+    Returns:
+        Clean combined text without SSE formatting artifacts
+
+    Example:
+        Input:  "data: Hello\n\ndata:  world\n\ndata: !\n\n"
+        Output: "Hello world!"
+    """
+    chunks = response_text.split("\n\n")
+    cleaned_chunks = []
+
+    for chunk in chunks:
+        chunk = chunk.strip()
+        if chunk and chunk.startswith("data: "):
+            # Remove "data: " prefix (6 characters)
+            cleaned_chunks.append(chunk[6:])
+
+    return "".join(cleaned_chunks)
+
+
 @pytest_asyncio.fixture(scope="module")
 async def real_rag_client() -> AsyncGenerator[AsyncClient, None]:
     """
@@ -219,23 +248,6 @@ async def real_rag_client() -> AsyncGenerator[AsyncClient, None]:
     """
     async with AsyncClient(base_url="http://localhost:8000", timeout=30.0) as client:
         yield client
-
-
-async def collect_sse_response(response_text: str) -> str:
-    """
-    Helper function to collect and combine SSE streaming chunks.
-
-    Args:
-        response_text: Raw SSE response text with chunks
-
-    Returns:
-        Combined text from all chunks
-    """
-    # SSE format: each chunk ends with \n\n
-    chunks = response_text.split("\n\n")
-    # Filter out empty chunks and combine
-    combined = "".join(chunk.strip() for chunk in chunks if chunk.strip())
-    return combined
 
 
 @pytest_asyncio.fixture(scope="module")
@@ -263,7 +275,10 @@ async def real_rag_system(real_rag_client: AsyncClient) -> Any:
             top_k: int = 5  # Default matches RAG chain's retriever k=5
         ) -> dict[str, Any]:
             """
-            Call the real RAG system via /api/v1/chat/stream endpoint.
+            Call the real RAG system via /api/v1/chat/stream endpoint (SSE streaming).
+
+            Tests the PRODUCTION streaming endpoint to ensure streaming logic
+            (smart spacing, SSE formatting, chunk accumulation) works correctly.
 
             Args:
                 query: User question
@@ -272,7 +287,7 @@ async def real_rag_system(real_rag_client: AsyncClient) -> Any:
             Returns:
                 Dict with query, retrieved_contexts, and response
             """
-            # Call the real chat endpoint
+            # Call the streaming chat endpoint (production code path)
             response = await self.client.post(
                 "/api/v1/chat/stream",
                 json={"message": query}
@@ -284,39 +299,21 @@ async def real_rag_system(real_rag_client: AsyncClient) -> Any:
                     f"RAG endpoint returned status {response.status_code}: {response.text}"
                 )
 
-            # Collect streaming response
-            response_text = response.text
-            combined_response = await collect_sse_response(response_text)
+            # Parse SSE response to extract clean text
+            response_text = collect_sse_response(response.text)
 
-            # ================================================================
-            # IMPORTANT: Retrieved contexts are currently not returned by API
-            # ================================================================
+            # Note: Retrieved contexts are not currently returned by the API.
+            # This causes 3 ragas metrics to auto-skip:
+            # - Faithfulness (hallucination detection)
+            # - Context Precision (retrieval quality)
+            # - Context Recall (retrieval completeness)
             #
-            # The /api/v1/chat/stream endpoint only returns the LLM response text
-            # and does not include the retrieved contexts that were used to generate
-            # the response. This causes 3 critical ragas metrics to auto-skip:
-            #
-            # 1. Faithfulness - Cannot detect hallucinations without contexts
-            # 2. Context Precision - Cannot measure retrieval quality
-            # 3. Context Recall - Cannot measure retrieval completeness
-            #
-            # WHY contexts are missing:
-            # - The RAG chain uses StrOutputParser() which discards intermediate data
-            # - The streaming endpoint only yields text chunks, no metadata
-            #
-            # WHAT is needed:
-            # - Modify the endpoint to return retrieved contexts alongside the response
-            # - Options: SSE metadata event, query parameter, or separate endpoint
-            #
-            # For detailed implementation requirements, see:
-            # tests/ragas/RAG_API_REQUIREMENTS.md
-            #
-            # Until the API is updated, faithfulness/precision/recall tests will skip.
-            # ================================================================
+            # To enable these metrics, modify the endpoint to return retrieved contexts.
+            # See tests/ragas/RAG_API_REQUIREMENTS.md for implementation options.
             return {
                 "query": query,
                 "retrieved_contexts": [],  # Empty until API returns contexts
-                "response": combined_response,
+                "response": response_text,
             }
 
     return RealRAGSystem(real_rag_client)
