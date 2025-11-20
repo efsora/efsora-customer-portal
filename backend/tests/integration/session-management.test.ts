@@ -8,7 +8,6 @@
  * - Expired session handling
  */
 
-import { createUser } from "#core/users/workflows/create-user";
 import { login } from "#core/users/workflows/login";
 import { session } from "#db/schema";
 import {
@@ -19,6 +18,7 @@ import { run } from "#lib/result/index";
 import { eq } from "drizzle-orm";
 import { describe, expect, it, beforeEach } from "vitest";
 import { cleanupDatabase, getTestDb } from "../helpers/database";
+import { createTestUser } from "../helpers/invitation";
 
 describe("Session Management Integration Tests", () => {
   beforeEach(async () => {
@@ -33,7 +33,7 @@ describe("Session Management Integration Tests", () => {
         name: "New User",
       };
 
-      const result = await run(createUser(input));
+      const result = await createTestUser(input);
 
       expect(result.status).toBe("Success");
 
@@ -63,7 +63,7 @@ describe("Session Management Integration Tests", () => {
         password: "SecurePassword123!",
         name: "Login User",
       };
-      await run(createUser(registerInput));
+      await createTestUser(registerInput);
 
       // Clear session from registration
       const db = getTestDb();
@@ -100,7 +100,7 @@ describe("Session Management Integration Tests", () => {
         password: "SecurePassword123!",
         name: "Multi User",
       };
-      await run(createUser(registerInput));
+      await createTestUser(registerInput);
 
       const db = getTestDb();
       await db.delete(session);
@@ -136,7 +136,7 @@ describe("Session Management Integration Tests", () => {
         password: "SecurePassword123!",
         name: "Valid User",
       };
-      const result = await run(createUser(input));
+      const result = await createTestUser(input);
 
       expect(result.status).toBe("Success");
 
@@ -163,7 +163,7 @@ describe("Session Management Integration Tests", () => {
         password: "SecurePassword123!",
         name: "Expired User",
       };
-      const result = await run(createUser(input));
+      const result = await createTestUser(input);
 
       expect(result.status).toBe("Success");
 
@@ -192,7 +192,7 @@ describe("Session Management Integration Tests", () => {
         password: "SecurePassword123!",
         name: "Delete User",
       };
-      const result = await run(createUser(input));
+      const result = await createTestUser(input);
 
       expect(result.status).toBe("Success");
 
@@ -216,7 +216,7 @@ describe("Session Management Integration Tests", () => {
         password: "SecurePassword123!",
         name: "Multi Session User",
       };
-      const registerResult = await run(createUser(registerInput));
+      const registerResult = await createTestUser(registerInput);
 
       expect(registerResult.status).toBe("Success");
 
@@ -254,21 +254,17 @@ describe("Session Management Integration Tests", () => {
 
     it("should delete expired sessions", async () => {
       // Create two users with sessions
-      const user1 = await run(
-        createUser({
-          email: "user1@example.com",
-          password: "Password123!",
-          name: "User 1",
-        }),
-      );
+      const user1 = await createTestUser({
+        email: "user1@example.com",
+        password: "Password123!",
+        name: "User 1",
+      });
 
-      const user2 = await run(
-        createUser({
-          email: "user2@example.com",
-          password: "Password123!",
-          name: "User 2",
-        }),
-      );
+      const user2 = await createTestUser({
+        email: "user2@example.com",
+        password: "Password123!",
+        name: "User 2",
+      });
 
       expect(user1.status).toBe("Success");
       expect(user2.status).toBe("Success");
@@ -306,7 +302,7 @@ describe("Session Management Integration Tests", () => {
         password: "SecurePassword123!",
         name: "Cascade User",
       };
-      const result = await run(createUser(input));
+      const result = await createTestUser(input);
 
       expect(result.status).toBe("Success");
 

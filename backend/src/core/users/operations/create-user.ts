@@ -2,6 +2,7 @@ import type { NewUser } from "#db/schema";
 import { SESSION_EXPIRES_IN_MS } from "#infrastructure/auth/constants";
 import { generateAuthToken } from "#infrastructure/auth/token";
 import {
+  portalMailInvitationRepository,
   sessionRepository,
   userRepository,
 } from "#infrastructure/repositories/drizzle";
@@ -35,6 +36,58 @@ export function mapRegisterDataToUser(
         surname: input.surname,
         password: result.password,
       }),
+  );
+}
+
+/**
+ * Validates that the user has a valid invitation
+ * Only users with PENDING, non-expired invitations can register
+ */
+export function validateInvitation(
+  data: ValidatedCreationData,
+): Result<ValidatedCreationData> {
+  return command(
+    async () => {
+      const email = Email.toString(data.email);
+      const invitation =
+        await portalMailInvitationRepository.findByEmail(email);
+      return invitation;
+    },
+    (invitation) => {
+      if (!invitation) {
+        return fail({
+          code: "USER_INVITATION_NOT_FOUND",
+          message:
+            "No invitation found for this email address. Please contact an administrator to request access.",
+        });
+      }
+
+      if (invitation.status === "CANCELLED") {
+        return fail({
+          code: "USER_INVITATION_CANCELLED",
+          message:
+            "This invitation has been cancelled. Please contact an administrator.",
+        });
+      }
+
+      const now = new Date();
+      if (invitation.dueDate < now) {
+        return fail({
+          code: "USER_INVITATION_EXPIRED",
+          message:
+            "This invitation has expired. Please contact an administrator to request a new invitation.",
+        });
+      }
+
+      if (invitation.status !== "PENDING") {
+        return fail({
+          code: "USER_INVITATION_NOT_FOUND",
+          message: "This invitation is no longer valid.",
+        });
+      }
+
+      return success(data);
+    },
   );
 }
 
@@ -188,6 +241,32 @@ export function createRegisterSession(
       });
 
       return sessions[0];
+    },
+    () => {
+      return success(createUserResult);
+    },
+  );
+}
+
+/**
+ * Mark invitation as ACCEPTED after successful registration
+ *
+ * Updates the invitation status to ACCEPTED to prevent reuse
+ * and track that the invitation has been successfully consumed.
+ *
+ * @param createUserResult - Create user result with user data
+ * @returns Result with the same create user result
+ */
+export function markInvitationAsAccepted(
+  createUserResult: CreateUserResult,
+): Result<CreateUserResult> {
+  return command(
+    async () => {
+      await portalMailInvitationRepository.updateStatus(
+        createUserResult.user.email,
+        "ACCEPTED",
+      );
+      return true;
     },
     () => {
       return success(createUserResult);

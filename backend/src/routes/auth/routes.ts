@@ -3,8 +3,17 @@ import { validate } from "#middlewares/validate";
 import { auth } from "#middlewares/auth";
 import { Router } from "express";
 
-import { handleRegister, handleLogin, handleLogout } from "./handlers";
-import { registerSchema, loginSchema } from "./schemas";
+import {
+  handleRegister,
+  handleLogin,
+  handleLogout,
+  handleSendInvitation,
+} from "./handlers";
+import {
+  registerSchema,
+  loginSchema,
+  sendInvitationBodySchema,
+} from "./schemas";
 
 const router = Router();
 
@@ -31,5 +40,17 @@ router.post("/login", validate(loginSchema), handleResult(handleLogin));
  * Returns success response - client should clear token from storage
  */
 router.post("/logout", auth, handleResult(handleLogout));
+
+/**
+ * POST /auth/send-invitation
+ * Send a portal invitation to a user (public endpoint - no authentication required)
+ * Creates a PENDING invitation record with 48-hour expiration
+ * TODO: Add email sending functionality
+ */
+router.post(
+  "/send-invitation",
+  validate({ body: sendInvitationBodySchema }),
+  handleResult(handleSendInvitation),
+);
 
 export default router;

@@ -8,7 +8,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { eq } from "drizzle-orm";
 import { run } from "#lib/result/index";
-import { updateUserProfile, updateUserPassword, createUser } from "#core/users";
+import { updateUserProfile, updateUserPassword } from "#core/users";
 import type {
   UpdateProfileInput,
   UpdatePasswordInput,
@@ -16,6 +16,7 @@ import type {
 } from "#core/users";
 import { users } from "#db/schema";
 import { cleanupDatabase, getTestDb } from "../helpers/database";
+import { createTestUser } from "../helpers/invitation";
 import bcrypt from "bcrypt";
 
 describe("User Profile Integration Tests", () => {
@@ -31,7 +32,7 @@ describe("User Profile Integration Tests", () => {
       password: testPassword,
       name: "Profile Test",
     };
-    const userResult = await run(createUser(userInput));
+    const userResult = await createTestUser(userInput);
     if (userResult.status === "Success") {
       testUserId = userResult.value.user.id;
     }

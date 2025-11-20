@@ -98,3 +98,13 @@ export type AssignmentResult = ExtendedUserData;
  * Result for profile update operation
  */
 export type ProfileUpdateResult = ExtendedUserData;
+
+/**
+ * Result for sending portal invitation
+ */
+export type SendInvitationResult = {
+  email: string;
+  status: string;
+  dueDate: Date;
+  message: string;
+};
