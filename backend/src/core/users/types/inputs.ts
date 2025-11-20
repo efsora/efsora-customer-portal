@@ -71,3 +71,10 @@ export type UpdatePasswordInput = {
   currentPassword: string;
   newPassword: string;
 };
+
+/**
+ * Input for sending portal invitation
+ */
+export type SendInvitationInput = {
+  email: string;
+};

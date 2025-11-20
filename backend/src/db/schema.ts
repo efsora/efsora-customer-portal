@@ -1,12 +1,12 @@
-import { sql, relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
+  integer,
   pgTable,
+  serial,
   text,
   timestamp,
-  uuid,
-  serial,
-  integer,
   unique,
+  uuid,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -63,6 +63,26 @@ export const sessionRelations = relations(session, ({ one }) => ({
     references: [users.id],
   }),
 }));
+
+/**
+ * Portal Mail Invitations Table
+ * Stores email invitations for registration
+ * Only users with valid, non-expired invitations can register
+ */
+export const portalMailInvitations = pgTable("portal_mail_invitations", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  status: text("status").notNull().default("PENDING"), // "PENDING", "ACCEPTED", "CANCELLED"
+  dueDate: timestamp("due_date").notNull(), // Invitation expires after this date (default: 48h from creation)
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+export type PortalMailInvitation = typeof portalMailInvitations.$inferSelect;
+export type NewPortalMailInvitation = typeof portalMailInvitations.$inferInsert;
 
 /**
  * Companies Table

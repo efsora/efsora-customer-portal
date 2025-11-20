@@ -128,6 +128,7 @@ export async function cleanupDatabase(): Promise<void> {
     "progress_status",
     "session",
     "users",
+    "portal_mail_invitations",
   ];
 
   for (const table of tables) {

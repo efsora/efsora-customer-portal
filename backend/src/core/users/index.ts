@@ -8,6 +8,7 @@ export { createUser } from "./workflows/create-user";
 export { login } from "./workflows/login";
 export { getUserById } from "./workflows/get-user";
 export { getAllUsers } from "./workflows/get-user";
+export { sendInvitation } from "./workflows/send-invitation";
 
 // Workflows - Assignment operations
 export {
@@ -29,6 +30,7 @@ export type {
   AssignRoleInput,
   UpdateProfileInput,
   UpdatePasswordInput,
+  SendInvitationInput,
 } from "./types/inputs";
 
 // Public types - Outputs
@@ -40,6 +42,7 @@ export type {
   ExtendedUserData,
   AssignmentResult,
   ProfileUpdateResult,
+  SendInvitationResult,
 } from "./types/outputs";
 
 // Public types - Errors
@@ -55,6 +58,7 @@ export type {
   UserProjectNotFoundError,
   UserRoleNotFoundError,
   UserCurrentPasswordInvalidError,
+  UserInvitationAlreadyExistsError,
 } from "./types/errors";
 
 // Value objects

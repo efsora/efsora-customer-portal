@@ -6,6 +6,7 @@ import { handleLogout } from "#routes/auth/handlers";
 import type { LogoutResponse } from "#routes/auth/schemas";
 import { describe, expect, it, beforeEach } from "vitest";
 import { cleanupDatabase } from "../helpers/database";
+import { createTestInvitation } from "../helpers/invitation";
 
 describe("Logout Endpoint Integration Tests", () => {
   beforeEach(async () => {
@@ -14,7 +15,9 @@ describe("Logout Endpoint Integration Tests", () => {
 
   describe("POST /auth/logout", () => {
     it("should logout successfully with valid authentication", async () => {
-      // First, create a user to get a userId and token
+      // First, create invitation and user to get a userId and token
+      await createTestInvitation("logout-test@example.com");
+
       const registerInput = {
         email: "logout-test@example.com",
         password: "SecurePass123",
@@ -56,7 +59,9 @@ describe("Logout Endpoint Integration Tests", () => {
     });
 
     it("should return success response with proper structure", async () => {
-      // Create a user
+      // Create invitation and user
+      await createTestInvitation("structure-test@example.com");
+
       const registerInput = {
         email: "structure-test@example.com",
         password: "SecurePass123",
@@ -101,6 +106,10 @@ describe("Logout Endpoint Integration Tests", () => {
     });
 
     it("should handle logout for different users independently", async () => {
+      // Create invitations for two users
+      await createTestInvitation("logout-user1@example.com");
+      await createTestInvitation("logout-user2@example.com");
+
       // Create two users with unique emails to avoid conflicts
       const user1Result = await run(
         createUser({
