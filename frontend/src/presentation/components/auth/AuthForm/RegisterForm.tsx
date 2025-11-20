@@ -237,7 +237,7 @@ export const RegisterForm = () => {
                                 disabled={isPending}
                                 className={styles.button}
                             >
-                                {isPending ? 'Creating account...' : 'Create account'}
+                                {isPending ? 'Creating Account...' : 'Create Account'}
                             </button>
                         </div>
                     </form>

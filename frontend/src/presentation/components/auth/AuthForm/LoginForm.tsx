@@ -140,7 +140,7 @@ export const LoginForm = () => {
                                 disabled={isPending}
                                 className={styles.button}
                             >
-                                {isPending ? 'Signing in...' : 'Sign in'}
+                                {isPending ? 'Signing In...' : 'Sign In'}
                             </button>
 
                             <div>Don't have an account? Contact us.</div>
