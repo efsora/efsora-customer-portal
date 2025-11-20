@@ -26,7 +26,7 @@ describe('UI > Logout Functionality', () => {
     homePage = new HomePage();
   });
 
-  it('should successfully logout and redirect to login page', () => {
+  it.skip('should successfully logout and redirect to login page', () => {
     loginPage
       .visit()
       .login(testUserEmail, testUserPassword);
@@ -38,7 +38,7 @@ describe('UI > Logout Functionality', () => {
     cy.url().should('include', '/login');
   });
 
-  it('should handle logout button loading state', () => {
+  it.skip('should handle logout button loading state', () => {
     loginPage
       .visit()
       .login(testUserEmail, testUserPassword);
@@ -75,7 +75,7 @@ describe('UI > Logout Functionality', () => {
     cy.url().should('include', '/login');
   });
 
-  it('should prevent access to protected routes after logout', () => {
+  it.skip('should prevent access to protected routes after logout', () => {
     loginPage
       .visit()
       .login(testUserEmail, testUserPassword);

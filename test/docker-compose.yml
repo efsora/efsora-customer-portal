@@ -12,9 +12,9 @@ services:
       - CYPRESS_environment=docker
       - CYPRESS_BASE_URL=http://localhost:5174
       - CYPRESS_API_URL=http://localhost:3000/api/v1
-      - QASE_MODE=${QASE_MODE:-off}
-      - QASE_TOKEN=${QASE_TOKEN}
-      - QASE_PROJECT=${QASE_PROJECT}
+      - QASE_MODE=off
+      - QASE_TOKEN=${QASE_TOKEN:-}
+      - QASE_PROJECT=${QASE_PROJECT:-}
     volumes:
       # Mount source code for live updates during development
       - ./cypress:/app/cypress
