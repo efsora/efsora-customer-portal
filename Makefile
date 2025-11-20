@@ -4,13 +4,14 @@
 # Main commands for managing the full-stack application
 
 .PHONY: help full-stack-up full-stack-up-prod full-stack-down full-stack-logs full-stack-clean full-stack-restart full-stack-rebuild
-.PHONY: dev-up dev-down dev-logs
-.PHONY: backend-test ai-test frontend-test
+.PHONY: install-backend install-frontend install-ai install-all
+.PHONY: backend-test ai-test frontend-test backend-test-coverage ai-test-coverage test-all
 .PHONY: e2e-test e2e-test-api e2e-test-spec e2e-test-local e2e-test-open e2e-test-rebuild
 .PHONY: full-stack-up-with-tests full-stack-down-with-tests
 .PHONY: generate-backend-types generate-ai-types generate-all-types
-.PHONY: backend-shell ai-shell frontend-shell cypress-shell
-.PHONY: db-migrate-backend db-migrate-ai
+.PHONY: backend-shell ai-shell frontend-shell cypress-shell postgres-shell
+.PHONY: db-migrate-backend db-migrate-ai db-migrate-all db-shell-backend db-shell-main
+.PHONY: status health clean-node-modules clean-build clean-all
 
 # ==============================================================================
 # Help
@@ -144,14 +145,26 @@ full-stack-down-with-tests: ## 🛑 Stop all services including test container
 	@echo "✅ All services stopped!"
 
 # ==============================================================================
-# Aliases (for backwards compatibility)
+# Installation Commands (Dockerized Services)
 # ==============================================================================
 
-dev-up: full-stack-up ## 🐛 Alias for full-stack-up (backwards compatibility)
+install-backend: ## 📦 Install backend dependencies in Docker container
+	@echo "📦 Installing backend dependencies in Docker..."
+	docker compose run --rm backend npm install
+	@echo "✅ Backend dependencies installed!"
 
-dev-down: full-stack-down ## 🛑 Alias for full-stack-down (backwards compatibility)
+install-frontend: ## 📦 Install frontend dependencies in Docker container
+	@echo "📦 Installing frontend dependencies in Docker..."
+	docker compose run --rm frontend npm install
+	@echo "✅ Frontend dependencies installed!"
 
-dev-logs: full-stack-logs ## 📊 Alias for full-stack-logs (backwards compatibility)
+install-ai: ## 📦 Install AI service dependencies in Docker container
+	@echo "📦 Installing AI service dependencies in Docker..."
+	docker compose run --rm ai-service uv sync
+	@echo "✅ AI service dependencies installed!"
+
+install-all: install-backend install-frontend install-ai ## 📦 Install all dependencies in Docker containers
+	@echo "✅ All dependencies installed!"
 
 # ==============================================================================
 # Testing Commands
@@ -286,18 +299,18 @@ generate-all-types: generate-backend-types generate-ai-types ## 🔧 Generate al
 
 db-migrate-backend: ## 🗃️  Run backend database migrations
 	@echo "🗃️  Running backend database migrations..."
-	docker compose up -d postgres
-	@echo "   Waiting for PostgreSQL..."
-	@sleep 3
-	cd backend && npx drizzle-kit push
+	docker compose up -d backend
+	@echo "   Waiting for backend container..."
+	@sleep 2
+	docker compose exec backend sh -c "make db-migrate"
 	@echo "✅ Backend migrations completed!"
 
 db-migrate-ai: ## 🗃️  Run AI service database migrations
 	@echo "🗃️  Running AI service database migrations..."
-	docker compose up -d postgres
-	@echo "   Waiting for PostgreSQL..."
-	@sleep 3
-	cd ai-service && make test-migrations
+	docker compose up -d ai-service
+	@echo "   Waiting for AI service container..."
+	@sleep 2
+	docker compose exec ai-service make migrate
 	@echo "✅ AI service migrations completed!"
 
 db-migrate-all: db-migrate-backend db-migrate-ai ## 🗃️  Run all database migrations

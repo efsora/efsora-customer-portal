@@ -4,7 +4,7 @@
 services:
   backend:
     entrypoint: []
-    command: sh -c "npm run generate:openapi && node --inspect=0.0.0.0:9229 --require ./node_modules/tsx/dist/preflight.cjs --import ./node_modules/tsx/dist/loader.mjs --import ./src/instrumentation.ts --watch-path=./src src/index.ts"
+    command: sh -c "npx tsx scripts/run-migrations.ts && npm run generate:openapi && node --inspect=0.0.0.0:9229 --require ./node_modules/tsx/dist/preflight.cjs --import ./node_modules/tsx/dist/loader.mjs --import ./src/instrumentation.ts --watch-path=./src src/index.ts"
     ports:
       - "3000:3000"
       - "9229:9229"  # Node.js debug port
@@ -30,7 +30,8 @@ services:
       - ./frontend/tsconfig.app.json:/app/tsconfig.app.json
       - ./frontend/tsconfig.node.json:/app/tsconfig.node.json
     environment:
-      VITE_API_URL: http://localhost:3000
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:3000}
+      VITE_NODE_ENV: ${VITE_NODE_ENV:-development}
 
   ai-service:
     ports:
