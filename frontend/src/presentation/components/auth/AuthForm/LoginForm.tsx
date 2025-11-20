@@ -95,7 +95,9 @@ export const LoginForm = () => {
                                     placeholder="you@company.com"
                                     className={styles.input}
                                 />
-                                {errors.email && <p className={styles.errorMessage}>{errors.email.message}</p>}
+                                {errors.email && (
+                                    <div className={styles.errorMessage}>{errors.email.message}</div>
+                                )}
                             </div>
 
                             <div className={styles.inputContainer}>
@@ -123,7 +125,7 @@ export const LoginForm = () => {
                                     </button>
                                 </div>
                                 {errors.password && (
-                                    <div className={styles.errorMessage}>{errors.password.message}</div>
+                                    <p className={styles.errorMessage}>{errors.password.message}</p>
                                 )}
                             </div>
                         </div>
