@@ -138,14 +138,17 @@ export const LoginForm = () => {
                             >
                                 {isPending ? 'Signing In...' : 'Sign In'}
                             </button>
-
-                            <div>Don't have an account? Contact us.</div>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <div className={styles.needHelp}>Need help? Contact support@efsora.com</div>
+            <div className={styles.needHelp}>
+                Need help? Contact{' '}
+                <a href="mailto:support@efsora.com" className={styles.emailLink}>
+                    support@efsora.com
+                </a>
+            </div>
         </div>
     );
 };

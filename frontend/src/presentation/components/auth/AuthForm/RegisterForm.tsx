@@ -232,7 +232,12 @@ export const RegisterForm = () => {
                 </div>
             </div>
 
-            <div className={styles.needHelp}>Need help? Contact support@efsora.com</div>
+            <div className={styles.needHelp}>
+                Need help? Contact{' '}
+                <a href="mailto:support@efsora.com" className={styles.emailLink}>
+                    support@efsora.com
+                </a>
+            </div>
 
         </div>
     );
