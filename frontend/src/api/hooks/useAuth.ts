@@ -9,7 +9,11 @@ import type {
     LoginRequest,
     RegisterRequest,
 } from '#api/types/auth/request.types';
-import type { AppResponse } from '#api/types/base.types';
+import type {
+    AppResponse_RegisterResponse_,
+    AppResponse_LoginResponse_,
+    AppResponse_LogoutResponse_,
+} from '#api/types/auth/response.types';
 import { useAuthStore } from '#store/authStore';
 
 /**
@@ -21,7 +25,7 @@ export const useRegister = () => {
 
     return useMutation({
         mutationFn: async (data: RegisterRequest) => {
-            const response = (await registerApi(data)) as AppResponse<unknown>;
+            const response = (await registerApi(data)) as AppResponse_RegisterResponse_;
             if (!response.success) {
                 const errorMessage = response.message || response.error?.message || 'Registration failed';
                 throw new Error(errorMessage);
@@ -56,7 +60,7 @@ export const useLogin = () => {
 
     return useMutation({
         mutationFn: async (data: LoginRequest) => {
-            const response = await loginApi(data);
+            const response = (await loginApi(data)) as AppResponse_LoginResponse_;
             if (!response.success) {
                 throw new Error(response.message || 'Login failed');
             }
@@ -90,7 +94,7 @@ export const useLogout = () => {
 
     return useMutation({
         mutationFn: async () => {
-            const response = await logoutApi();
+            const response = (await logoutApi()) as AppResponse_LogoutResponse_;
             if (!response.success) {
                 throw new Error(response.message || 'Logout failed');
             }
