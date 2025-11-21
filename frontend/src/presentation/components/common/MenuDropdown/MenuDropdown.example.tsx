@@ -13,7 +13,11 @@ export function SimpleMenuExample() {
             trigger={<button>Menu</button>}
             items={[
                 { type: 'button', label: 'Edit', onClick: () => alert('Edit') },
-                { type: 'button', label: 'Delete', onClick: () => alert('Delete') },
+                {
+                    type: 'button',
+                    label: 'Delete',
+                    onClick: () => alert('Delete'),
+                },
             ]}
         />
     );

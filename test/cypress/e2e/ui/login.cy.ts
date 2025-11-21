@@ -1,6 +1,6 @@
-import { LoginPage } from '../../pages/LoginPage';
+import { generateUniqueEmail, sendInvitationAndRegister } from '../../api/authApi';
 import { HomePage } from '../../pages/HomePage';
-import { registerUserAndLogin, generateUniqueEmail } from '../../api/authApi';
+import { LoginPage } from '../../pages/LoginPage';
 
 describe('UI > Login Functionality', () => {
   let loginPage: LoginPage;
@@ -13,7 +13,7 @@ describe('UI > Login Functionality', () => {
     testUserEmail = generateUniqueEmail('login-test');
     testUserPassword = 'TestPassword123!';
 
-    registerUserAndLogin({
+    sendInvitationAndRegister({
       name: 'Login',
       surname: 'TestUser',
       email: testUserEmail,
@@ -62,14 +62,6 @@ describe('UI > Login Functionality', () => {
       .verifyPasswordErrorContains('Password is required');
   });
 
-  it('should navigate to signup page', () => {
-    loginPage
-      .verifyPageLoaded()
-      .clickSignUp();
-
-    cy.url().should('include', '/register');
-  });
-
   it('should clear input fields', () => {
     loginPage
       .verifyPageLoaded()
@@ -88,21 +80,13 @@ describe('UI > Login Functionality', () => {
     loginPage.getPasswordValue().should('equal', '');
   });
 
-  it('should display loading text on submit button while signing in', () => {
-    loginPage
-      .verifyPageLoaded()
-      .enterEmail(testUserEmail)
-      .enterPassword(testUserPassword)
-      .clickSignIn()
-      .verifySignInButtonLoading();
-  });
+
 
   it('should display page title and form elements', () => {
     loginPage
       .verifyPageLoaded()
       .verifyPageTitle()
       .verifyEmailFieldVisible()
-      .verifyPasswordFieldVisible()
-      .verifySignUpLinkVisible();
+      .verifyPasswordFieldVisible();
   });
 });

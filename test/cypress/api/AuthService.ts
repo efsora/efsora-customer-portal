@@ -43,6 +43,14 @@ export class AuthService extends BaseApiService {
   }
 
   /**
+   * Send an invitation to a user
+   * @param email - Email address to send invitation to
+   */
+  public sendInvitation<T = any>(email: string): Cypress.Chainable<Cypress.Response<T>> {
+    return this.post<T>('/auth/send-invitation', { email });
+  }
+
+  /**
    * Register a new user
    * @param payload - Registration data (name, email, password)
    */

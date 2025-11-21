@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { LANGUAGES } from '#constants/languages';
+
 import MenuDropdown from './MenuDropdown/MenuDropdown';
 
 /**

@@ -13,8 +13,25 @@ interface RegisterPayload {
 }
 
 /**
+ * Send an invitation to a user
+ * @param email - Email address to send invitation to
+ * @returns Promise with invitation response
+ */
+export const sendInvitation = (email: string): Cypress.Chainable<any> => {
+  const apiUrl = getApiUrl();
+  const invitationUrl = `${apiUrl}/auth/send-invitation`;
+
+  return cy.request({
+    method: 'POST',
+    url: invitationUrl,
+    body: { email },
+    failOnStatusCode: false,
+  });
+};
+
+/**
  * Register a new user via API
- * @param user - User registration data (name, email, password)
+ * @param user - User registration data (name, email, password, invitationToken)
  * @returns Promise with token and user data
  */
 export const registerUser = (user: RegisterPayload): Cypress.Chainable<any> => {
@@ -95,6 +112,38 @@ export const loginUserAndStoreToken = (
     return cy.window().then((win) => {
       win.localStorage.setItem(storageKey, token);
       return response.body;
+    });
+  });
+};
+
+/**
+ * Send invitation and register a user
+ * The backend validates invitation by email - no token needed
+ * @param user - User registration data (name, surname, email, password)
+ * @param storageKey - Key to store token in localStorage (default: 'authToken')
+ * @returns Promise with registration response
+ */
+export const sendInvitationAndRegister = (
+  user: RegisterPayload,
+  storageKey: string = 'authToken',
+): Cypress.Chainable<any> => {
+  return sendInvitation(user.email).then((invitationResponse: any) => {
+    // Verify invitation was sent successfully
+    expect([200, 201]).to.include(invitationResponse.status);
+    expect(invitationResponse.body.success).to.be.true;
+
+    // Register user - backend will validate invitation by email
+    return registerUser(user).then((registerResponse: any) => {
+      expect([200, 201]).to.include(registerResponse.status);
+      expect(registerResponse.body.success).to.be.true;
+
+      const token = registerResponse.body.data.token;
+
+      // Store auth token in localStorage
+      return cy.window().then((win) => {
+        win.localStorage.setItem(storageKey, token);
+        return registerResponse.body;
+      });
     });
   });
 };

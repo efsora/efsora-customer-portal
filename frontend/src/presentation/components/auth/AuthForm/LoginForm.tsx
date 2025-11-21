@@ -6,7 +6,7 @@ import { z } from 'zod';
 
 import { useLogin } from '#api/hooks/useAuth';
 
-import styles from './LoginForm.module.css';
+import styles from './AuthForm.module.css';
 
 /**
  * Login form validation schema
@@ -28,6 +28,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export const LoginForm = () => {
     const navigate = useNavigate();
     const [serverError, setServerError] = useState<string | null>(null);
+    const [showPassword, setShowPassword] = useState(false);
     const { mutate: loginMutate, isPending } = useLogin();
 
     const {
@@ -115,9 +116,12 @@ export const LoginForm = () => {
                                     data-testid="login-form-email-input"
                                 />
                                 {errors.email && (
-                                    <p data-testid="login-form-email-error">
+                                    <div
+                                        className={styles.errorMessage}
+                                        data-testid="login-form-email-error"
+                                    >
                                         {errors.email.message}
-                                    </p>
+                                    </div>
                                 )}
                             </div>
 
@@ -126,52 +130,80 @@ export const LoginForm = () => {
                                 data-testid="login-form-password-field"
                             >
                                 <label htmlFor="password">Password</label>
-                                <input
-                                    {...register('password')}
-                                    id="password"
-                                    type="password"
-                                    autoComplete="current-password"
-                                    placeholder="******"
-                                    className={styles.input}
-                                    data-testid="login-form-password-input"
-                                />
+                                <div className={styles.passwordInputWrapper}>
+                                    <input
+                                        {...register('password')}
+                                        id="password"
+                                        type={
+                                            showPassword ? 'text' : 'password'
+                                        }
+                                        autoComplete="current-password"
+                                        placeholder="******"
+                                        className={styles.input}
+                                        data-testid="login-form-password-input"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setShowPassword(!showPassword)
+                                        }
+                                        className={styles.eyeButton}
+                                        aria-label={
+                                            showPassword
+                                                ? 'Hide password'
+                                                : 'Show password'
+                                        }
+                                    >
+                                        {showPassword ? (
+                                            <img
+                                                src="/auth/open-eye.svg"
+                                                alt="open-eye"
+                                            />
+                                        ) : (
+                                            <img
+                                                src="/auth/closed-eye.svg"
+                                                alt="closed-eye"
+                                            />
+                                        )}
+                                    </button>
+                                </div>
                                 {errors.password && (
-                                    <div data-testid="login-form-password-error">
+                                    <p
+                                        className={styles.errorMessage}
+                                        data-testid="login-form-password-error"
+                                    >
                                         {errors.password.message}
-                                    </div>
+                                    </p>
                                 )}
                             </div>
                         </div>
 
                         <div
-                            className={styles.singInButtonContainer}
+                            className={styles.buttonContainer}
                             data-testid="login-form-submit-container"
                         >
                             <button
                                 type="submit"
                                 disabled={isPending}
-                                className={styles.signInButton}
+                                className={styles.button}
                                 data-testid="login-form-submit-button"
                             >
-                                {isPending ? 'Signing in...' : 'Sign in'}
+                                {isPending ? 'Signing In...' : 'Sign In'}
                             </button>
-
-                            <div data-testid="login-form-signup-section">
-                                Don't have an account?{' '}
-                                <a
-                                    href="/register"
-                                    data-testid="login-form-signup-link"
-                                >
-                                    Contact us
-                                </a>
-                                .
-                            </div>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <div>Need help? Contact support@efsora.com</div>
+            <div className={styles.needHelp}>
+                Need help? Contact{' '}
+                <a
+                    href="mailto:support@efsora.com"
+                    className={styles.emailLink}
+                >
+                    support@efsora.com
+                </a>
+            </div>
         </div>
     );
 };

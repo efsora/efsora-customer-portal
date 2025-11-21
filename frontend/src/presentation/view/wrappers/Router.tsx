@@ -1,13 +1,13 @@
 import { Route, Routes } from 'react-router-dom';
 
 import Layout from '#layout/Layout/Layout';
-import { RegisterPage } from '#pages/RegisterPage';
 import { ProtectedRoute } from '#presentation/components/auth/ProtectedRoute';
 import { PublicRoute } from '#presentation/components/auth/PublicRoute';
+import { Login } from '#presentation/pages/Auth/Login';
+import { RegisterPage } from '#presentation/pages/Auth/Register';
 import Dashboard from '#presentation/pages/Dashboard/Dashboard';
 import { Documents } from '#presentation/pages/Documents/Documents';
 import { Help } from '#presentation/pages/Help/Help';
-import { Login } from '#presentation/pages/Login/Login';
 import { NoPage } from '#presentation/pages/NoPage';
 import Timeline from '#presentation/pages/Timeline';
 import { YourTeam } from '#presentation/pages/YourTeam/YourTeam';

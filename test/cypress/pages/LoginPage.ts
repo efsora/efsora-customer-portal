@@ -34,10 +34,6 @@ export class LoginPage extends BasePage {
     // Submit button
     submitContainer: '[data-testid="login-form-submit-container"]',
     submitButton: '[data-testid="login-form-submit-button"]',
-
-    // Signup section
-    signupSection: '[data-testid="login-form-signup-section"]',
-    signUpLink: '[data-testid="login-form-signup-link"]',
   };
 
   constructor() {
@@ -75,14 +71,6 @@ export class LoginPage extends BasePage {
     this.enterEmail(email);
     this.enterPassword(password);
     this.clickSignIn();
-    return this;
-  }
-
-  /**
-   * Click sign up link
-   */
-  clickSignUp(): this {
-    this.click(this.selectors.signUpLink);
     return this;
   }
 
@@ -222,14 +210,6 @@ export class LoginPage extends BasePage {
    */
   verifySignInButtonLoading(): this {
     this.getElement(this.selectors.submitButton).should('contain', 'Signing in...');
-    return this;
-  }
-
-  /**
-   * Verify sign up link is visible
-   */
-  verifySignUpLinkVisible(): this {
-    this.waitForElement(this.selectors.signUpLink);
     return this;
   }
 

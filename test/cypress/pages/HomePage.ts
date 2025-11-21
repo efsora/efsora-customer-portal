@@ -10,7 +10,8 @@ export class HomePage extends BasePage {
     welcomeMessage: '[data-testid="welcome-message"]',
     userProfile: '[data-testid="user-profile"]',
     logoutButton: '[data-testid="logout-button"]',
-    userDropdownTrigger: 'img[alt="toggle dropdown"]',
+    helpSupportButton: '[data-testid="help-support-button"]',
+    userDropdownTrigger: '[data-testid="user-dropdown-trigger"]',
     navigationMenu: '[data-testid="navigation-menu"]',
     searchInput: '[data-testid="search-input"]',
     searchButton: '[data-testid="search-button"]',
@@ -56,6 +57,14 @@ export class HomePage extends BasePage {
   }
 
   /**
+   * Close user profile dropdown by clicking trigger again
+   */
+  closeUserDropdown(): this {
+    this.click(this.selectors.userDropdownTrigger);
+    return this;
+  }
+
+  /**
    * Click logout button (opens dropdown first if needed)
    */
   logout(): this {
@@ -67,11 +76,108 @@ export class HomePage extends BasePage {
   }
 
   /**
-   * Verify logout button is not visible
+   * Click logout button (assumes dropdown is already open)
+   */
+  clickLogoutButton(): this {
+    this.click(this.selectors.logoutButton);
+    return this;
+  }
+
+  /**
+   * Verify logout button is not visible (dropdown is closed)
    */
   verifyLogoutButtonNotExist(): this {
     // Check that logout button element doesn't exist in the DOM
     this.getElement(this.selectors.logoutButton).should('not.exist');
+    return this;
+  }
+
+  /**
+   * Verify logout button is visible (dropdown is open)
+   */
+  verifyLogoutButtonVisible(): this {
+    this.getElement(this.selectors.logoutButton).should('be.visible');
+    return this;
+  }
+
+  /**
+   * Verify dropdown is open
+   */
+  verifyDropdownOpen(): this {
+    this.waitForElement(this.selectors.logoutButton);
+    this.getElement(this.selectors.logoutButton).should('be.visible');
+    return this;
+  }
+
+  /**
+   * Verify dropdown is closed
+   */
+  verifyDropdownClosed(): this {
+    this.getElement(this.selectors.logoutButton).should('not.exist');
+    return this;
+  }
+
+  /**
+   * Verify menu item is visible in dropdown
+   * @param menuItemText - Text of the menu item
+   */
+  verifyMenuItemVisible(menuItemText: string): this {
+    cy.contains(menuItemText).should('be.visible');
+    return this;
+  }
+
+  /**
+   * Verify logout button contains specific text
+   * @param text - Expected text (e.g., "Logout" or "Logging out...")
+   */
+  verifyLogoutButtonText(text: string): this {
+    this.getElement(this.selectors.logoutButton).should('contain', text);
+    return this;
+  }
+
+  /**
+   * Click outside the dropdown to close it
+   */
+  clickOutsideDropdown(): this {
+    cy.get('body').click(0, 0);
+    return this;
+  }
+
+  /**
+   * Verify user info is visible in dropdown trigger (desktop)
+   * @param userName - Expected user name
+   * @param email - Expected email
+   */
+  verifyUserInfoInTrigger(userName: string, email: string): this {
+    this.getElement(this.selectors.userDropdownTrigger).should('contain', userName);
+    this.getElement(this.selectors.userDropdownTrigger).should('contain', email);
+    return this;
+  }
+
+  /**
+   * Verify user info is visible in dropdown menu (mobile)
+   * @param userName - Expected user name
+   * @param email - Expected email
+   */
+  verifyUserInfoInMenu(userName: string, email: string): this {
+    cy.contains(userName).should('be.visible');
+    cy.contains(email).should('be.visible');
+    return this;
+  }
+
+  /**
+   * Click help & support button in dropdown
+   */
+  clickHelpSupport(): this {
+    this.click(this.selectors.helpSupportButton);
+    return this;
+  }
+
+  /**
+   * Verify help & support button is visible
+   */
+  verifyHelpSupportButtonVisible(): this {
+    this.getElement(this.selectors.helpSupportButton).should('be.visible');
     return this;
   }
 

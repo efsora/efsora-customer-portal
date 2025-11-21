@@ -86,7 +86,7 @@ import { EditIcon, DeleteIcon, DuplicateIcon } from '#icons';
             className: 'text-red-500',
         },
     ]}
-/>
+/>;
 ```
 
 ### With Disabled Items
@@ -134,11 +134,7 @@ import { EditIcon, DeleteIcon, DuplicateIcon } from '#icons';
 
 ```tsx
 <MenuDropdown
-    trigger={(isOpen) => (
-        <button>
-            {isOpen ? '▲' : '▼'} Menu
-        </button>
-    )}
+    trigger={(isOpen) => <button>{isOpen ? '▲' : '▼'} Menu</button>}
     items={menuItems}
 />
 ```
@@ -150,8 +146,8 @@ import { EditIcon, DeleteIcon, DuplicateIcon } from '#icons';
 <MenuDropdown
     trigger={<button>Menu</button>}
     items={items}
-    position="top"  // 'top' | 'bottom'
-    align="left"    // 'left' | 'right'
+    position="top" // 'top' | 'bottom'
+    align="left" // 'left' | 'right'
 />
 ```
 
@@ -186,9 +182,9 @@ interface ButtonItemProps {
     type: 'button';
     label: string;
     onClick: () => void;
-    icon?: ReactNode;        // Optional icon element
-    disabled?: boolean;       // Optional disabled state
-    className?: string;       // Optional CSS class
+    icon?: ReactNode; // Optional icon element
+    disabled?: boolean; // Optional disabled state
+    className?: string; // Optional CSS class
 }
 
 interface SeparatorItemProps {
@@ -226,11 +222,13 @@ The component uses CSS variables for theming:
 ### VersionDropdown (Old → New)
 
 **Before:**
+
 ```tsx
 <VersionDropdown options={versions} value={current} onChange={handleChange} />
 ```
 
 **After (Already migrated):**
+
 ```tsx
 <MenuDropdown
     trigger={<div className={styles.selected}>{current}</div>}
@@ -245,13 +243,17 @@ The component uses CSS variables for theming:
 ### LanguageSelect (Old → New)
 
 **Before:**
+
 ```tsx
 <select value={language} onChange={handleChange}>
-    {languages.map((l) => <option value={l}>{l}</option>)}
+    {languages.map((l) => (
+        <option value={l}>{l}</option>
+    ))}
 </select>
 ```
 
 **After (Already migrated):**
+
 ```tsx
 <MenuDropdown
     trigger={<span>{currentLanguage}</span>}
@@ -351,7 +353,7 @@ function FilterMenu() {
     const [searchTerm, setSearchTerm] = useState('');
 
     const filteredOptions = FILTERS.filter((f) =>
-        f.toLowerCase().includes(searchTerm.toLowerCase())
+        f.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
     return (

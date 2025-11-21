@@ -1,4 +1,4 @@
-import { generateUniqueEmail } from '../../api/authApi';
+import { generateUniqueEmail, sendInvitationAndRegister } from '../../api/authApi';
 import { RegisterPage } from '../../pages/RegisterPage';
 
 describe('UI > Register Functionality', () => {
@@ -19,7 +19,7 @@ describe('UI > Register Functionality', () => {
       .register('New', 'TestUser', testUserEmail, testUserPassword);
 
     // Verify redirect to home/login page or success message
-    cy.url().should('include', '/', { timeout: 10000 });
+    cy.url().should('include', '/', { timeout: 1000 });
   });
 
   it('should display validation error for empty fields', () => {
@@ -32,20 +32,31 @@ describe('UI > Register Functionality', () => {
   });
 
   it('should display error when email already exists', () => {
-    // Try to register with an email that was already registered
-    registerPage
-      .verifyPageLoaded()
-      .register('Another', 'User', 'testuser.dev@example.com', 'SomePassword123!')
-      .verifyErrorMessageVisible();
+    const duplicateEmail = generateUniqueEmail('duplicate-ui');
+    const duplicatePassword = 'SomePassword123!';
 
-    registerPage.getErrorMessage().should('contain', 'Email already in use');
-  });
+    // First, create a user with this email via API (with invitation)
+    sendInvitationAndRegister({
+      name: 'First',
+      surname: 'User',
+      email: duplicateEmail,
+      password: duplicatePassword,
+    }).then(() => {
+      // Send another invitation for the duplicate attempt
+      cy.request({
+        method: 'POST',
+        url: 'http://localhost:3000/api/v1/auth/send-invitation',
+        body: { email: duplicateEmail },
+        failOnStatusCode: false,
+      }).then(() => {
+        // Now try to register with the same email via UI (should fail)
+        registerPage
+          .verifyPageLoaded()
+          .register('Another', 'User', duplicateEmail, duplicatePassword)
+          .verifyErrorMessageVisible();
 
-  it('should navigate to login page', () => {
-    registerPage
-      .verifyPageLoaded()
-      .clickSignIn();
-
-    cy.url().should('include', '/login');
+        registerPage.getErrorMessage().should('contain', 'Email already in use');
+      });
+    });
   });
 });

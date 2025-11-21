@@ -61,7 +61,9 @@ export default function UserProfile() {
                                           .filter(Boolean)
                                           .join(' ') || 'Unknown User'}
                                   </p>
-                                  <p className={styles.userEmail}>{user?.data?.email}</p>
+                                  <p className={styles.userEmail}>
+                                      {user?.data?.email}
+                                  </p>
                               </div>
                           </div>
                       ),
@@ -79,6 +81,7 @@ export default function UserProfile() {
                     style={{ width: '16px', height: '16px' }}
                 />
             ),
+            testId: 'help-support-button',
         },
         { type: 'separator' as const },
         {
@@ -87,6 +90,10 @@ export default function UserProfile() {
             onClick: () => {
                 logout(undefined, {
                     onSuccess: () => {
+                        navigate('/login');
+                    },
+                    onError: () => {
+                        // Hook already clears auth on error, just need to navigate
                         navigate('/login');
                     },
                 });
@@ -100,33 +107,46 @@ export default function UserProfile() {
             ),
             disabled: isPending,
             className: styles.logoutItem,
+            testId: 'logout-button',
         },
     ];
 
     if (isLoading) return <p>Loading...</p>;
     if (isError) return <p>Error</p>;
 
-    const userName = [user?.data?.name, user?.data?.surname]
-        .filter(Boolean)
-        .join(' ') || 'Unknown User';
+    const userName =
+        [user?.data?.name, user?.data?.surname].filter(Boolean).join(' ') ||
+        'Unknown User';
 
     return (
         <div>
             <MenuDropdown
                 trigger={(isOpen) => (
-                    <div className={`${styles.triggerButton} ${isDesktop ? styles.desktopTrigger : styles.mobileTrigger}`}>
+                    <div
+                        className={`${styles.triggerButton} ${isDesktop ? styles.desktopTrigger : styles.mobileTrigger}`}
+                        data-testid="user-dropdown-trigger"
+                    >
                         <div className={styles.profilePhoto}>
                             {getInitials(user?.data?.name, user?.data?.surname)}
                         </div>
                         {isDesktop && (
                             <>
                                 <div className={styles.userInfo}>
-                                    <p className={styles.desktopUserName}>{userName}</p>
-                                    <p className={styles.desktopUserEmail}>{user?.data?.email}</p>
+                                    <p className={styles.desktopUserName}>
+                                        {userName}
+                                    </p>
+                                    <p className={styles.desktopUserEmail}>
+                                        {user?.data?.email}
+                                    </p>
                                 </div>
                                 <img
-                                    src={isOpen ? '/dropdown-up.svg' : '/dropdown.svg'}
+                                    src={
+                                        isOpen
+                                            ? '/dropdown-up.svg'
+                                            : '/dropdown.svg'
+                                    }
                                     alt="menu"
+                                    data-testid="user-dropdown-icon"
                                 />
                             </>
                         )}
@@ -137,6 +157,5 @@ export default function UserProfile() {
                 position="bottom"
             />
         </div>
-        
     );
 }

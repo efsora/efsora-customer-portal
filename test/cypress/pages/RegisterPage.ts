@@ -47,10 +47,6 @@ export class RegisterPage extends BasePage {
     // Submit button
     submitContainer: '[data-testid="register-form-submit-container"]',
     submitButton: '[data-testid="register-form-submit-button"]',
-
-    // Signin section
-    signInSection: '[data-testid="register-form-signin-section"]',
-    signInLink: '[data-testid="register-form-signin-link"]',
   };
 
   constructor() {
@@ -115,14 +111,6 @@ export class RegisterPage extends BasePage {
     this.enterPassword(password);
     this.enterConfirmPassword(password);
     this.clickCreateAccount();
-    return this;
-  }
-
-  /**
-   * Click sign in link
-   */
-  clickSignIn(): this {
-    this.click(this.selectors.signInLink);
     return this;
   }
 

@@ -56,7 +56,10 @@ export function Milestone({
                             Due: {dueDate}
                         </div>
                         <div className="flex items-center gap-1">
-                            <img src="/timeline/milestone-person.svg" alt="person" />
+                            <img
+                                src="/timeline/milestone-person.svg"
+                                alt="person"
+                            />
                             {assignedPerson}
                         </div>
                     </div>

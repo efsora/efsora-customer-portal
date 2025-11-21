@@ -21,10 +21,13 @@ describe('API > Authentication API Tests', () => {
         password: 'TestPassword123!',
       };
 
-      authService.register(newUser).then((response) => {
-        authService.verifyRegistrationSuccess(response);
-        expect(response.body.data.user.email).to.equal(newUser.email);
-        expect(response.body.data.user.name).to.equal(newUser.name);
+      // Send invitation first (required by backend)
+      authService.sendInvitation(newUser.email).then(() => {
+        authService.register(newUser).then((response) => {
+          authService.verifyRegistrationSuccess(response);
+          expect(response.body.data.user.email).to.equal(newUser.email);
+          expect(response.body.data.user.name).to.equal(newUser.name);
+        });
       });
     });
 
@@ -37,33 +40,42 @@ describe('API > Authentication API Tests', () => {
         password: 'TestPassword123!',
       };
 
-      // Register first user
-      authService.register(firstUser).then(() => {
-        // Try to register with same email
-        authService
-          .register({
-            name: 'Second',
-            surname: 'User',
-            email: email,
-            password: 'DifferentPassword123!',
-          })
-          .then((response) => {
-            authService.verifyConflict(response);
+      // Send invitation and register first user
+      authService.sendInvitation(email).then(() => {
+        authService.register(firstUser).then(() => {
+          // Send another invitation for the same email
+          authService.sendInvitation(email).then(() => {
+            // Try to register with same email
+            authService
+              .register({
+                name: 'Second',
+                surname: 'User',
+                email: email,
+                password: 'DifferentPassword123!',
+              })
+              .then((response) => {
+                authService.verifyConflict(response);
+              });
           });
+        });
       });
     });
 
     it('should return error when name is missing', () => {
-      authService
-        .register({
-          name: '',
-          surname: 'User',
-          email: generateUniqueEmail('no-name'),
-          password: 'TestPassword123!',
-        })
-        .then((response) => {
-          authService.verifyBadRequest(response);
-        });
+      const email = generateUniqueEmail('no-name');
+
+      authService.sendInvitation(email).then(() => {
+        authService
+          .register({
+            name: '',
+            surname: 'User',
+            email: email,
+            password: 'TestPassword123!',
+          })
+          .then((response) => {
+            authService.verifyBadRequest(response);
+          });
+      });
     });
 
     it('should return error when email is missing', () => {
@@ -80,16 +92,20 @@ describe('API > Authentication API Tests', () => {
     });
 
     it('should return error when password is missing', () => {
-      authService
-        .register({
-          name: 'Test',
-          surname: 'User',
-          email: generateUniqueEmail('no-password'),
-          password: '',
-        })
-        .then((response) => {
-          authService.verifyBadRequest(response);
-        });
+      const email = generateUniqueEmail('no-password');
+
+      authService.sendInvitation(email).then(() => {
+        authService
+          .register({
+            name: 'Test',
+            surname: 'User',
+            email: email,
+            password: '',
+          })
+          .then((response) => {
+            authService.verifyBadRequest(response);
+          });
+      });
     });
 
     it('should return error for invalid email format', () => {
@@ -105,6 +121,25 @@ describe('API > Authentication API Tests', () => {
         });
     });
 
+    it('should return error when no invitation exists', () => {
+      const email = generateUniqueEmail('no-invitation');
+
+      authService
+        .register({
+          name: 'Test',
+          surname: 'User',
+          email: email,
+          password: 'TestPassword123!',
+        })
+        .then((response) => {
+          // Backend returns 404 for missing invitation (resource not found)
+          authService.verifyStatus(response, 404);
+          authService.verifyResponseProperty(response, 'success', false);
+          expect(response.body.error).to.not.be.null;
+          expect(response.body.error?.code).to.equal('USER_INVITATION_NOT_FOUND');
+        });
+    });
+
     it('should return token in registration response', () => {
       const newUser = {
         name: 'Token',
@@ -113,10 +148,12 @@ describe('API > Authentication API Tests', () => {
         password: 'TestPassword123!',
       };
 
-      authService.register(newUser).then((response) => {
-        authService.verifyRegistrationSuccess(response);
-        expect(response.body.data.token).to.be.a('string');
-        expect(response.body.data.token.length).to.be.greaterThan(0);
+      authService.sendInvitation(newUser.email).then(() => {
+        authService.register(newUser).then((response) => {
+          authService.verifyRegistrationSuccess(response);
+          expect(response.body.data.token).to.be.a('string');
+          expect(response.body.data.token.length).to.be.greaterThan(0);
+        });
       });
     });
 
@@ -128,10 +165,12 @@ describe('API > Authentication API Tests', () => {
         password: 'TestPassword123!',
       };
 
-      authService.register(newUser).then((response) => {
-        authService.verifyRegistrationSuccess(response);
-        expect(response.body.data.user.id).to.be.a('string');
-        expect(response.body.data.user.id.length).to.be.greaterThan(0);
+      authService.sendInvitation(newUser.email).then(() => {
+        authService.register(newUser).then((response) => {
+          authService.verifyRegistrationSuccess(response);
+          expect(response.body.data.user.id).to.be.a('string');
+          expect(response.body.data.user.id.length).to.be.greaterThan(0);
+        });
       });
     });
   });
@@ -145,8 +184,10 @@ describe('API > Authentication API Tests', () => {
     };
 
     before(() => {
-      // Create user for login tests
-      authService.register(loginTestUser);
+      // Create user for login tests - send invitation first
+      authService.sendInvitation(loginTestUser.email).then(() => {
+        authService.register(loginTestUser);
+      });
     });
 
     it('should successfully login with valid credentials', () => {
@@ -256,11 +297,13 @@ describe('API > Authentication API Tests', () => {
     let userId: string;
 
     before(() => {
-      // Create user and get token and ID
-      authService.register(profileTestUser).then((response) => {
-        authToken = response.body.data.token;
-        userId = response.body.data.user.id;
-        authService.setToken(authToken);
+      // Create user and get token and ID - send invitation first
+      authService.sendInvitation(profileTestUser.email).then(() => {
+        authService.register(profileTestUser).then((response) => {
+          authToken = response.body.data.token;
+          userId = response.body.data.user.id;
+          authService.setToken(authToken);
+        });
       });
     });
 
@@ -304,17 +347,19 @@ describe('API > Authentication API Tests', () => {
         password: 'IntegrationPassword123!',
       };
 
-      // Register
-      authService.register(newUser).then((registerResponse) => {
-        authService.verifyRegistrationSuccess(registerResponse);
-        const registeredToken = registerResponse.body.data.token;
-        const registeredUserId = registerResponse.body.data.user.id;
+      // Send invitation and register
+      authService.sendInvitation(newUser.email).then(() => {
+        authService.register(newUser).then((registerResponse) => {
+          authService.verifyRegistrationSuccess(registerResponse);
+          const registeredToken = registerResponse.body.data.token;
+          const registeredUserId = registerResponse.body.data.user.id;
 
-        // Use token to get user
-        authService.setToken(registeredToken);
-        authService.getUser(registeredUserId).then((profileResponse) => {
-          authService.verifyStatus(profileResponse, 200);
-          expect(profileResponse.body.data.email).to.equal(newUser.email);
+          // Use token to get user
+          authService.setToken(registeredToken);
+          authService.getUser(registeredUserId).then((profileResponse) => {
+            authService.verifyStatus(profileResponse, 200);
+            expect(profileResponse.body.data.email).to.equal(newUser.email);
+          });
         });
       });
     });
@@ -327,17 +372,19 @@ describe('API > Authentication API Tests', () => {
         password: 'NewLoginPassword123!',
       };
 
-      // Register
-      authService.register(newUser).then(() => {
-        // Login with same credentials
-        authService
-          .login({
-            email: newUser.email,
-            password: newUser.password,
-          })
-          .then((loginResponse) => {
-            authService.verifyLoginSuccess(loginResponse);
-          });
+      // Send invitation and register
+      authService.sendInvitation(newUser.email).then(() => {
+        authService.register(newUser).then(() => {
+          // Login with same credentials
+          authService
+            .login({
+              email: newUser.email,
+              password: newUser.password,
+            })
+            .then((loginResponse) => {
+              authService.verifyLoginSuccess(loginResponse);
+            });
+        });
       });
     });
   });
