@@ -7,22 +7,20 @@ This module provides fixtures for:
 - Real RAG system integration via FastAPI test client
 """
 
+from collections.abc import AsyncGenerator
 import os
 from typing import Any
-from collections.abc import AsyncGenerator
 
+from httpx import AsyncClient
 import pytest
 import pytest_asyncio
-from httpx import ASGITransport, AsyncClient
-from fastapi import FastAPI
-from ragas import EvaluationDataset
-from ragas.llms import LangchainLLMWrapper
 from ragas.embeddings import LangchainEmbeddingsWrapper
-
+from ragas.llms import LangchainLLMWrapper
 
 # ============================================================================
 # AWS BEDROCK FIXTURES (for semantic/LLM-based evaluation)
 # ============================================================================
+
 
 @pytest.fixture(scope="session")
 def aws_credentials() -> tuple[str, str, str]:
@@ -42,8 +40,7 @@ def aws_credentials() -> tuple[str, str, str]:
 
     if not access_key_id or not secret_access_key:
         pytest.skip(
-            "AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY not set, "
-            "skipping semantic Ragas tests"
+            "AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY not set, " "skipping semantic Ragas tests"
         )
     return access_key_id, secret_access_key, region
 
@@ -81,15 +78,14 @@ def ragas_embeddings() -> LangchainEmbeddingsWrapper:
     """
     from langchain_community.embeddings import HuggingFaceEmbeddings
 
-    embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2"
-    )
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     return LangchainEmbeddingsWrapper(embeddings)
 
 
 # ============================================================================
 # TRADITIONAL METRICS FIXTURES (Ragas non-LLM metrics - fast and free)
 # ============================================================================
+
 
 @pytest.fixture
 def exact_match_scorer() -> Any:
@@ -140,7 +136,7 @@ def string_similarity_scorer() -> Any:
     Measures similarity using Levenshtein distance algorithm.
     Range: 0.0 to 1.0 (higher is better, 1.0 = identical strings)
     """
-    from ragas.metrics import NonLLMStringSimilarity, DistanceMeasure
+    from ragas.metrics import DistanceMeasure, NonLLMStringSimilarity
 
     return NonLLMStringSimilarity(distance_measure=DistanceMeasure.LEVENSHTEIN)
 
@@ -162,6 +158,7 @@ def string_presence_scorer() -> Any:
 # EVALUATION CONFIGURATION FIXTURES
 # ============================================================================
 
+
 @pytest.fixture
 def semantic_evaluation_config() -> dict[str, Any]:
     """
@@ -169,14 +166,13 @@ def semantic_evaluation_config() -> dict[str, Any]:
     """
     return {
         # Core RAG metrics
-        "faithfulness_threshold": 0.7,           # No hallucination
-        "answer_relevancy_threshold": 0.7,       # On-topic response
-        "context_precision_threshold": 0.6,      # Quality of retrieval
-        "context_recall_threshold": 0.6,         # Completeness of retrieval
-
+        "faithfulness_threshold": 0.7,  # No hallucination
+        "answer_relevancy_threshold": 0.7,  # On-topic response
+        "context_precision_threshold": 0.6,  # Quality of retrieval
+        "context_recall_threshold": 0.6,  # Completeness of retrieval
         # Answer quality metrics
-        "answer_similarity_threshold": 0.7,      # Semantic similarity
-        "answer_correctness_threshold": 0.7,     # Factual correctness
+        "answer_similarity_threshold": 0.7,  # Semantic similarity
+        "answer_correctness_threshold": 0.7,  # Factual correctness
     }
 
 
@@ -187,23 +183,21 @@ def traditional_evaluation_config() -> dict[str, Any]:
     """
     return {
         # Exact matching (binary)
-        "exact_match_threshold": 1.0,            # Exact string match
-
+        "exact_match_threshold": 1.0,  # Exact string match
         # N-gram overlap metrics
-        "bleu_threshold": 0.4,                   # BLEU score
-        "rouge_threshold": 0.5,                  # ROUGE-L F-measure
-
+        "bleu_threshold": 0.4,  # BLEU score
+        "rouge_threshold": 0.5,  # ROUGE-L F-measure
         # String similarity
-        "string_similarity_threshold": 0.7,      # Levenshtein similarity
-
+        "string_similarity_threshold": 0.7,  # Levenshtein similarity
         # Substring matching
-        "string_presence_threshold": 1.0,        # Contains reference
+        "string_presence_threshold": 1.0,  # Contains reference
     }
 
 
 # ============================================================================
 # REAL RAG SYSTEM FIXTURES (for integration testing with actual RAG pipeline)
 # ============================================================================
+
 
 def collect_sse_response(response_text: str) -> str:
     """
@@ -263,6 +257,7 @@ async def real_rag_system(real_rag_client: AsyncClient) -> Any:
     Returns:
         Object with retrieve_and_generate() method that calls the real RAG API
     """
+
     class RealRAGSystem:
         """Wrapper around the real RAG system for testing."""
 
@@ -270,9 +265,7 @@ async def real_rag_system(real_rag_client: AsyncClient) -> Any:
             self.client = client
 
         async def retrieve_and_generate(
-            self,
-            query: str,
-            top_k: int = 5  # Default matches RAG chain's retriever k=5
+            self, query: str, top_k: int = 5  # Default matches RAG chain's retriever k=5
         ) -> dict[str, Any]:
             """
             Call the real RAG system via /api/v1/chat/stream endpoint (SSE streaming).
@@ -288,10 +281,7 @@ async def real_rag_system(real_rag_client: AsyncClient) -> Any:
                 Dict with query, retrieved_contexts, and response
             """
             # Call the streaming chat endpoint (production code path)
-            response = await self.client.post(
-                "/api/v1/chat/stream",
-                json={"message": query}
-            )
+            response = await self.client.post("/api/v1/chat/stream", json={"message": query})
 
             # Check if request was successful
             if response.status_code != 200:
@@ -323,6 +313,7 @@ async def real_rag_system(real_rag_client: AsyncClient) -> Any:
 # CACHED RESPONSES FIXTURES (to avoid redundant API calls in tests)
 # ============================================================================
 
+
 @pytest_asyncio.fixture(scope="module")
 async def cached_traditional_responses(real_rag_system: Any) -> list[dict[str, Any]]:
     """
@@ -346,12 +337,14 @@ async def cached_traditional_responses(real_rag_system: Any) -> list[dict[str, A
         rag_output = await real_rag_system.retrieve_and_generate(item["user_input"])
 
         # Cache the result
-        cached_responses.append({
-            "user_input": rag_output["query"],
-            "response": rag_output["response"],
-            "reference": item["reference"],
-            "retrieved_contexts": rag_output["retrieved_contexts"],
-        })
+        cached_responses.append(
+            {
+                "user_input": rag_output["query"],
+                "response": rag_output["response"],
+                "reference": item["reference"],
+                "retrieved_contexts": rag_output["retrieved_contexts"],
+            }
+        )
 
     return cached_responses
 
@@ -379,11 +372,13 @@ async def cached_semantic_responses(real_rag_system: Any) -> list[dict[str, Any]
         rag_output = await real_rag_system.retrieve_and_generate(item["user_input"])
 
         # Cache the result
-        cached_responses.append({
-            "user_input": rag_output["query"],
-            "response": rag_output["response"],
-            "reference": item["reference"],
-            "retrieved_contexts": rag_output["retrieved_contexts"],
-        })
+        cached_responses.append(
+            {
+                "user_input": rag_output["query"],
+                "response": rag_output["response"],
+                "reference": item["reference"],
+                "retrieved_contexts": rag_output["retrieved_contexts"],
+            }
+        )
 
     return cached_responses

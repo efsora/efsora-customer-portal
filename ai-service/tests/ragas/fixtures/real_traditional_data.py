@@ -9,7 +9,6 @@ IMPORTANT: Update these questions based on the documents you've loaded into Weav
 
 from typing import Any
 
-
 # Factual questions for testing the real RAG system with traditional metrics
 REAL_TRADITIONAL_TEST_DATA: list[dict[str, Any]] = [
     {

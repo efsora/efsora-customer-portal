@@ -9,7 +9,6 @@ IMPORTANT: Update these questions based on the documents you've loaded into Weav
 
 from typing import Any
 
-
 # Questions for testing the real RAG system with semantic metrics
 REAL_SEMANTIC_TEST_DATA: list[dict[str, Any]] = [
     {

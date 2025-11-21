@@ -26,9 +26,7 @@ from typing import Any
 
 import pytest
 from ragas.dataset_schema import SingleTurnSample
-from ragas.metrics import ExactMatch, BleuScore, RougeScore, NonLLMStringSimilarity, StringPresence
-
-from tests.ragas.fixtures.real_traditional_data import REAL_TRADITIONAL_TEST_DATA
+from ragas.metrics import BleuScore, ExactMatch, NonLLMStringSimilarity, RougeScore, StringPresence
 
 
 @pytest.mark.asyncio
@@ -70,7 +68,7 @@ async def test_real_traditional_exact_match(
     avg_score = sum(scores) / len(scores)
 
     print(f"\n{'='*60}")
-    print(f"REAL RAG TRADITIONAL EXACT MATCH TEST")
+    print("REAL RAG TRADITIONAL EXACT MATCH TEST")
     print(f"{'='*60}")
     print(f"Test cases: {len(scores)}")
     print(f"Exact matches: {sum(s == 1.0 for s in scores)}")
@@ -114,7 +112,7 @@ async def test_real_traditional_bleu_score(
     avg_score = sum(scores) / len(scores)
 
     print(f"\n{'='*60}")
-    print(f"REAL RAG TRADITIONAL BLEU SCORE TEST")
+    print("REAL RAG TRADITIONAL BLEU SCORE TEST")
     print(f"{'='*60}")
     print(f"Test cases: {len(scores)}")
     print(f"Average BLEU: {avg_score:.3f}")
@@ -159,7 +157,7 @@ async def test_real_traditional_rouge_score(
     avg_score = sum(scores) / len(scores)
 
     print(f"\n{'='*60}")
-    print(f"REAL RAG TRADITIONAL ROUGE SCORE TEST (ROUGE-L)")
+    print("REAL RAG TRADITIONAL ROUGE SCORE TEST (ROUGE-L)")
     print(f"{'='*60}")
     print(f"Test cases: {len(scores)}")
     print(f"Average ROUGE: {avg_score:.3f}")
@@ -204,7 +202,7 @@ async def test_real_traditional_string_similarity(
     avg_score = sum(scores) / len(scores)
 
     print(f"\n{'='*60}")
-    print(f"REAL RAG TRADITIONAL STRING SIMILARITY TEST")
+    print("REAL RAG TRADITIONAL STRING SIMILARITY TEST")
     print(f"{'='*60}")
     print(f"Test cases: {len(scores)}")
     print(f"Average similarity: {avg_score:.3f}")
@@ -250,7 +248,7 @@ async def test_real_traditional_string_presence(
     present_count = sum(s == 1.0 for s in scores)
 
     print(f"\n{'='*60}")
-    print(f"REAL RAG TRADITIONAL STRING PRESENCE TEST")
+    print("REAL RAG TRADITIONAL STRING PRESENCE TEST")
     print(f"{'='*60}")
     print(f"Test cases: {len(scores)}")
     print(f"References present: {present_count}/{len(scores)}")
@@ -298,24 +296,15 @@ async def test_real_traditional_comprehensive_evaluation(
         )
 
         # Calculate all metrics
-        results["exact_match"].append(
-            await exact_match_scorer.single_turn_ascore(sample)
-        )
-        results["bleu"].append(
-            await bleu_scorer.single_turn_ascore(sample)
-        )
-        results["rouge"].append(
-            await rouge_scorer.single_turn_ascore(sample)
-        )
+        results["exact_match"].append(await exact_match_scorer.single_turn_ascore(sample))
+        results["bleu"].append(await bleu_scorer.single_turn_ascore(sample))
+        results["rouge"].append(await rouge_scorer.single_turn_ascore(sample))
         results["string_similarity"].append(
             await string_similarity_scorer.single_turn_ascore(sample)
         )
 
     # Calculate averages
-    avg_results = {
-        metric: sum(scores) / len(scores)
-        for metric, scores in results.items()
-    }
+    avg_results = {metric: sum(scores) / len(scores) for metric, scores in results.items()}
 
     # Print comprehensive results
     print(f"\n{'='*60}")
@@ -338,16 +327,18 @@ async def test_real_traditional_comprehensive_evaluation(
             status = "✓" if passed else "✗"
             all_passed = all_passed and passed
 
-            print(f"{status} {metric_name.replace('_', ' ').title():<25} "
-                  f"Score: {score:.3f}  Threshold: {threshold}")
+            print(
+                f"{status} {metric_name.replace('_', ' ').title():<25} "
+                f"Score: {score:.3f}  Threshold: {threshold}"
+            )
 
             # Assert individual metrics
-            assert score >= threshold, (
-                f"{metric_name} score {score:.3f} below threshold {threshold}"
-            )
+            assert (
+                score >= threshold
+            ), f"{metric_name} score {score:.3f} below threshold {threshold}"
 
     print(f"{'='*60}")
     print(f"Overall: {'✓ ALL TESTS PASSED' if all_passed else '✗ SOME TESTS FAILED'}")
-    print(f"Execution: Fast (seconds)")
-    print(f"Cost: $0.00")
+    print("Execution: Fast (seconds)")
+    print("Cost: $0.00")
     print(f"{'='*60}\n")

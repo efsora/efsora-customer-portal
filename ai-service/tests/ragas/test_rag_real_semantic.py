@@ -25,19 +25,18 @@ semantic understanding and contextual reasoning.
 from typing import Any
 
 import pytest
-from ragas import EvaluationDataset, evaluate
-from ragas.llms import LangchainLLMWrapper
 from ragas.embeddings import LangchainEmbeddingsWrapper
+from ragas.llms import LangchainLLMWrapper
 from ragas.metrics import (
-    faithfulness,
+    answer_correctness,
     answer_relevancy,
+    answer_similarity,
     context_precision,
     context_recall,
-    answer_similarity,
-    answer_correctness,
+    faithfulness,
 )
 
-from tests.ragas.fixtures.real_semantic_data import REAL_SEMANTIC_TEST_DATA
+from ragas import EvaluationDataset, evaluate
 
 
 @pytest.mark.asyncio
@@ -80,7 +79,7 @@ async def test_real_semantic_faithfulness(
     score = result["faithfulness"]
 
     print(f"\n{'='*60}")
-    print(f"REAL RAG SEMANTIC FAITHFULNESS TEST")
+    print("REAL RAG SEMANTIC FAITHFULNESS TEST")
     print(f"{'='*60}")
     print(f"Score: {score:.3f}")
     print(f"Threshold: {threshold}")
@@ -124,7 +123,7 @@ async def test_real_semantic_answer_relevancy(
     score = result["answer_relevancy"]
 
     print(f"\n{'='*60}")
-    print(f"REAL RAG SEMANTIC ANSWER RELEVANCY TEST")
+    print("REAL RAG SEMANTIC ANSWER RELEVANCY TEST")
     print(f"{'='*60}")
     print(f"Score: {score:.3f}")
     print(f"Threshold: {threshold}")
@@ -175,7 +174,7 @@ async def test_real_semantic_context_precision(
     score = result["context_precision"]
 
     print(f"\n{'='*60}")
-    print(f"REAL RAG SEMANTIC CONTEXT PRECISION TEST")
+    print("REAL RAG SEMANTIC CONTEXT PRECISION TEST")
     print(f"{'='*60}")
     print(f"Score: {score:.3f}")
     print(f"Threshold: {threshold}")
@@ -226,7 +225,7 @@ async def test_real_semantic_context_recall(
     score = result["context_recall"]
 
     print(f"\n{'='*60}")
-    print(f"REAL RAG SEMANTIC CONTEXT RECALL TEST")
+    print("REAL RAG SEMANTIC CONTEXT RECALL TEST")
     print(f"{'='*60}")
     print(f"Score: {score:.3f}")
     print(f"Threshold: {threshold}")
@@ -270,7 +269,7 @@ async def test_real_semantic_answer_similarity(
     score = result["answer_similarity"]
 
     print(f"\n{'='*60}")
-    print(f"REAL RAG SEMANTIC ANSWER SIMILARITY TEST")
+    print("REAL RAG SEMANTIC ANSWER SIMILARITY TEST")
     print(f"{'='*60}")
     print(f"Score: {score:.3f}")
     print(f"Threshold: {threshold}")
@@ -314,7 +313,7 @@ async def test_real_semantic_answer_correctness(
     score = result["answer_correctness"]
 
     print(f"\n{'='*60}")
-    print(f"REAL RAG SEMANTIC ANSWER CORRECTNESS TEST")
+    print("REAL RAG SEMANTIC ANSWER CORRECTNESS TEST")
     print(f"{'='*60}")
     print(f"Score: {score:.3f}")
     print(f"Threshold: {threshold}")
@@ -370,13 +369,13 @@ async def test_real_semantic_comprehensive_evaluation(
             answer_similarity,
             answer_correctness,
         ]
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("NOTE: Skipping context-dependent metrics")
-        print("="*60)
+        print("=" * 60)
         print("Missing: Faithfulness, Context Precision, Context Recall")
         print("Reason:  Endpoint doesn't return retrieved_contexts")
         print("Details: See tests/ragas/RAG_API_REQUIREMENTS.md")
-        print("="*60 + "\n")
+        print("=" * 60 + "\n")
 
     # Configure all metrics
     for metric in metrics:
@@ -401,13 +400,15 @@ async def test_real_semantic_comprehensive_evaluation(
             status = "✓" if passed else "✗"
             all_passed = all_passed and passed
 
-            print(f"{status} {metric_name.replace('_', ' ').title():<25} "
-                  f"Score: {score:.3f}  Threshold: {threshold}")
+            print(
+                f"{status} {metric_name.replace('_', ' ').title():<25} "
+                f"Score: {score:.3f}  Threshold: {threshold}"
+            )
 
             # Assert individual metrics
-            assert score >= threshold, (
-                f"{metric_name} score {score:.3f} below threshold {threshold}"
-            )
+            assert (
+                score >= threshold
+            ), f"{metric_name} score {score:.3f} below threshold {threshold}"
 
     print(f"{'='*60}")
     print(f"Overall: {'✓ ALL TESTS PASSED' if all_passed else '✗ SOME TESTS FAILED'}")
