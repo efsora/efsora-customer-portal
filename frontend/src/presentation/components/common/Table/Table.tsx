@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
-import styles from './Table.module.css';
 import Tag from '../Tag/Tag';
 import VersionDropdown from '../VersionDropdown/VersionDropdown';
+import styles from './Table.module.css';
 
 interface FileRow {
     id: string;

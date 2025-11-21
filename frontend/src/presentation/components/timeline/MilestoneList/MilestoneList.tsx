@@ -1,7 +1,7 @@
 import { MILESTONES } from '#api/mockData';
 
-import styles from './MilestoneList.module.css';
 import { Milestone } from '../Milestone/Milestone';
+import styles from './MilestoneList.module.css';
 
 export function MilestoneList() {
     return (

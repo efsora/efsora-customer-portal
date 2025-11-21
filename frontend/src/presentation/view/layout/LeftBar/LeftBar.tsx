@@ -1,7 +1,7 @@
 import MenuDropdown from '#components/common/MenuDropdown/MenuDropdown';
 
-import styles from './LeftBar.module.css';
 import NavigationMenu from '../NavigationMenu/NavigationMenu';
+import styles from './LeftBar.module.css';
 
 export default function LeftBar() {
     // Sample customer/project data - can be connected to API
@@ -47,9 +47,7 @@ export default function LeftBar() {
                                         <div className={styles.customerTitle}>
                                             {currentCustomer.name}
                                         </div>
-                                        <div
-                                            className={styles.customerSubtitle}
-                                        >
+                                        <div className={styles.customerSubtitle}>
                                             {currentCustomer.subtitle}
                                         </div>
                                     </div>
