@@ -1,11 +1,11 @@
-.container {
-    display: flex;
-    gap: 12px;
-}
+.container {}
 
 .currentMilestoneContainer {
     padding: 16px;
     width: 100%;
+    border: 1px solid var(--color-neutral-grey-200);
+    border-radius: 16px;
+    background-color: white;
 }
 
 .currentMilestoneText {
@@ -17,7 +17,7 @@
 
 .milestones {
     display: grid;
-    grid-template-columns: 2fr 8fr 2fr;
+    grid-template-columns: auto 1fr auto auto auto;
     gap: 12px;
 }
 
