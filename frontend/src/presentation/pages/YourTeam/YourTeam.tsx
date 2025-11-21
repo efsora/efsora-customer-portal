@@ -206,7 +206,7 @@ export function YourTeam() {
             />
 
             <div className={styles.teams}>
-                <div className={`container ${styles.teamContainer}`}>
+                <div className={styles.teamContainer}>
                     <div>
                         <div className={styles.teamTitle}>Efsora Team</div>
                         <div className={styles.teamSubtitle}>

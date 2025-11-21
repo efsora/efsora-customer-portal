@@ -5,7 +5,7 @@ import styles from './MilestoneList.module.css';
 
 export function MilestoneList() {
     return (
-        <div className={`container ${styles.container}`}>
+        <div className={styles.container}>
             {MILESTONES.map((milestone, index) => (
                 <Milestone
                     key={index}

@@ -41,9 +41,8 @@ export default function Home() {
                     </div>
                 </div>
 
-                <div className={styles.currentMilestone}>
-                    <CurrentMilestone />
-                </div>
+                <CurrentMilestone />
+            
             </div>
         </>
     );
