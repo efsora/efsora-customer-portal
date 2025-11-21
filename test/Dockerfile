@@ -1,5 +1,5 @@
 # Use official Cypress Docker image with Node.js and Cypress pre-installed
-FROM cypress/included:13.15.2
+FROM cypress/included:13.17.0
 
 # Set working directory
 WORKDIR /app

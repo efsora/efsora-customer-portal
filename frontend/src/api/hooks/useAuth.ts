@@ -25,16 +25,34 @@ export const useRegister = () => {
 
     return useMutation({
         mutationFn: async (data: RegisterRequest) => {
-            const response = (await registerApi(data)) as AppResponse_RegisterResponse_;
+            const response = (await registerApi(
+                data,
+            )) as AppResponse_RegisterResponse_;
             if (!response.success) {
-                const errorMessage = response.message || response.error?.message || 'Registration failed';
+                const errorMessage =
+                    response.message ||
+                    response.error?.message ||
+                    'Registration failed';
                 throw new Error(errorMessage);
             }
             return response.data;
         },
         onSuccess: (data) => {
-            if (data && typeof data === 'object' && 'token' in data && 'user' in data) {
-                const typedData = data as { token: string; user: { id: string; email: string; name?: string; surname?: string } };
+            if (
+                data &&
+                typeof data === 'object' &&
+                'token' in data &&
+                'user' in data
+            ) {
+                const typedData = data as {
+                    token: string;
+                    user: {
+                        id: string;
+                        email: string;
+                        name?: string;
+                        surname?: string;
+                    };
+                };
                 setAuth(
                     {
                         id: typedData.user.id,
@@ -60,7 +78,9 @@ export const useLogin = () => {
 
     return useMutation({
         mutationFn: async (data: LoginRequest) => {
-            const response = (await loginApi(data)) as AppResponse_LoginResponse_;
+            const response = (await loginApi(
+                data,
+            )) as AppResponse_LoginResponse_;
             if (!response.success) {
                 throw new Error(response.message || 'Login failed');
             }

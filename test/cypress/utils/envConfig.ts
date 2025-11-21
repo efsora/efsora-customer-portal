@@ -16,7 +16,7 @@ export const getEnv = (key: string, defaultValue?: any): any => {
  * Get API URL from environment
  */
 export const getApiUrl = (): string => {
-  return getEnv('apiUrl', 'http://localhost:3000/api');
+  return getEnv('apiUrl', 'http://localhost:3000/api/v1');
 };
 
 /**

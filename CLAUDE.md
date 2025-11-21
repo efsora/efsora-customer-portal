@@ -47,6 +47,13 @@ Full-stack monorepo with microservices architecture:
 - Backend uses Node.js watch mode
 - AI service uses uvicorn --reload
 
+**Test Mode** (`docker-compose.yml` + `docker-compose.dev.yml` + `docker-compose.test.yml`):
+- Adds Cypress test container to the stack
+- Test container only starts when explicitly requested (using `--profile testing` flag)
+- Connects to the same network as other services
+- Test code is mounted as volumes for quick iterations
+- Test artifacts (videos, screenshots) are preserved locally
+
 ### Quick Start Development
 
 ```bash
@@ -187,6 +194,32 @@ make preview
 ```
 
 ### Test (Cypress)
+
+**Using Makefile (Recommended):**
+```bash
+# Run E2E tests in Docker (headless)
+make e2e-test
+
+# Run API tests only in Docker
+make e2e-test-api
+
+# Run specific test spec in Docker
+make e2e-test-spec SPEC="cypress/e2e/example.cy.ts"
+
+# Run tests locally (not in Docker, faster for development)
+make e2e-test-local
+
+# Open Cypress UI locally
+make e2e-test-open
+
+# Start full-stack + test container (if you need the container to persist)
+make full-stack-up-with-tests
+
+# Rebuild test container (after dependency changes)
+make e2e-test-rebuild
+```
+
+**Using npm directly (from test folder):**
 ```bash
 cd test
 
@@ -205,9 +238,6 @@ npm run test:api
 # Run in specific browser
 npm run test:chrome
 npm run test:firefox
-
-# Run tests in Docker
-npm run docker:test
 
 # Lint and format
 npm run lint

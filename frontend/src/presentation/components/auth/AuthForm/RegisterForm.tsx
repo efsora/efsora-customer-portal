@@ -83,11 +83,16 @@ export const RegisterForm = () => {
     };
 
     return (
-        <div className={styles.container}>
-            <div className={styles.formContainer}>
+        <div className={styles.container} data-testid="register-page-container">
+            <div
+                className={styles.formContainer}
+                data-testid="register-form-wrapper"
+            >
                 <div className={styles.innerContainer}>
-
-                    <div className={styles.title}>
+                    <div
+                        className={styles.title}
+                        data-testid="register-form-title"
+                    >
                         <img src="efsora-labs-brand.svg" alt="efsora-brand" />
                         <div className={styles.subtitle}>
                             <div className={styles.welcome}>Welcome</div>
@@ -97,13 +102,20 @@ export const RegisterForm = () => {
 
                     <form
                         className={styles.form}
+                        data-testid="register-form"
                         onSubmit={handleSubmit(onSubmit)}
                     >
                         {serverError && (
-                            <div className="rounded-md bg-red-50 p-4">
+                            <div
+                                className="rounded-md bg-red-50 p-4"
+                                data-testid="register-form-error-alert"
+                            >
                                 <div className="flex">
                                     <div className="ml-3">
-                                        <h3 className="text-sm font-medium text-red-800">
+                                        <h3
+                                            className="text-sm font-medium text-red-800"
+                                            data-testid="register-form-error-message"
+                                        >
                                             {serverError}
                                         </h3>
                                     </div>
@@ -112,7 +124,10 @@ export const RegisterForm = () => {
                         )}
 
                         <div className={styles.inputContainers}>
-                            <div className={styles.inputContainer}>
+                            <div
+                                className={styles.inputContainer}
+                                data-testid="register-form-name-field"
+                            >
                                 <label htmlFor="name">Name</label>
                                 <input
                                     {...register('name')}
@@ -121,9 +136,15 @@ export const RegisterForm = () => {
                                     autoComplete="given-name"
                                     placeholder="e.g., John"
                                     className={styles.input}
+                                    data-testid="register-form-name-input"
                                 />
                                 {errors.name && (
-                                    <p className={styles.errorMessage}>{errors.name.message}</p>
+                                    <p
+                                        className={styles.errorMessage}
+                                        data-testid="register-form-name-error"
+                                    >
+                                        {errors.name.message}
+                                    </p>
                                 )}
                             </div>
 
@@ -138,11 +159,16 @@ export const RegisterForm = () => {
                                     className={styles.input}
                                 />
                                 {errors.surname && (
-                                    <p className={styles.errorMessage}>{errors.surname.message}</p>
+                                    <p className={styles.errorMessage}>
+                                        {errors.surname.message}
+                                    </p>
                                 )}
                             </div>
 
-                            <div className={styles.inputContainer}>
+                            <div
+                                className={styles.inputContainer}
+                                data-testid="register-form-email-field"
+                            >
                                 <label htmlFor="email">Email</label>
                                 <input
                                     {...register('email')}
@@ -151,81 +177,147 @@ export const RegisterForm = () => {
                                     autoComplete="email"
                                     placeholder="you@example.com"
                                     className={styles.input}
+                                    data-testid="register-form-email-input"
                                 />
                                 {errors.email && (
-                                    <p className={styles.errorMessage}>{errors.email.message}</p>
+                                    <p
+                                        className={styles.errorMessage}
+                                        data-testid="register-form-email-error"
+                                    >
+                                        {errors.email.message}
+                                    </p>
                                 )}
                             </div>
 
-                            <div className={styles.inputContainer}>
+                            <div
+                                className={styles.inputContainer}
+                                data-testid="register-form-password-field"
+                            >
                                 <label htmlFor="password">
                                     Password
-                                    <span className={styles.hint}>Minimum 12 characters</span>
+                                    <span className={styles.hint}>
+                                        Minimum 12 characters
+                                    </span>
                                 </label>
                                 <div className={styles.passwordInputWrapper}>
                                     <input
                                         {...register('password')}
                                         id="password"
-                                        type={showPassword ? 'text' : 'password'}
+                                        type={
+                                            showPassword ? 'text' : 'password'
+                                        }
                                         autoComplete="new-password"
                                         placeholder="******"
                                         className={styles.input}
+                                        data-testid="register-form-password-input"
                                     />
                                     <button
                                         type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
+                                        onClick={() =>
+                                            setShowPassword(!showPassword)
+                                        }
                                         className={styles.eyeButton}
-                                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                        aria-label={
+                                            showPassword
+                                                ? 'Hide password'
+                                                : 'Show password'
+                                        }
                                     >
                                         {showPassword ? (
-                                            <img src="/auth/open-eye.svg" alt="open-eye" />
+                                            <img
+                                                src="/auth/open-eye.svg"
+                                                alt="open-eye"
+                                            />
                                         ) : (
-                                            <img src="/auth/closed-eye.svg" alt="closed-eye" />
+                                            <img
+                                                src="/auth/closed-eye.svg"
+                                                alt="closed-eye"
+                                            />
                                         )}
                                     </button>
                                 </div>
                                 {errors.password && (
-                                    <p className={styles.errorMessage}>{errors.password.message}</p>
+                                    <p
+                                        className={styles.errorMessage}
+                                        data-testid="register-form-password-error"
+                                    >
+                                        {errors.password.message}
+                                    </p>
                                 )}
                             </div>
 
-                            <div className={styles.inputContainer}>
-                                <label htmlFor="confirmPassword">Confirm Password</label>
+                            <div
+                                className={styles.inputContainer}
+                                data-testid="register-form-confirm-password-field"
+                            >
+                                <label htmlFor="confirmPassword">
+                                    Confirm Password
+                                </label>
                                 <div className={styles.passwordInputWrapper}>
                                     <input
                                         {...register('confirmPassword')}
                                         id="confirmPassword"
-                                        type={showConfirmPassword ? 'text' : 'password'}
+                                        type={
+                                            showConfirmPassword
+                                                ? 'text'
+                                                : 'password'
+                                        }
                                         autoComplete="new-password"
                                         placeholder="******"
                                         className={styles.input}
+                                        data-testid="register-form-confirm-password-input"
                                     />
                                     <button
                                         type="button"
-                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                        onClick={() =>
+                                            setShowConfirmPassword(
+                                                !showConfirmPassword,
+                                            )
+                                        }
                                         className={styles.eyeButton}
-                                        aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                                        aria-label={
+                                            showConfirmPassword
+                                                ? 'Hide password'
+                                                : 'Show password'
+                                        }
                                     >
                                         {showConfirmPassword ? (
-                                            <img src="/auth/open-eye.svg" alt="open-eye" />
+                                            <img
+                                                src="/auth/open-eye.svg"
+                                                alt="open-eye"
+                                            />
                                         ) : (
-                                            <img src="/auth/closed-eye.svg" alt="closed-eye" />
+                                            <img
+                                                src="/auth/closed-eye.svg"
+                                                alt="closed-eye"
+                                            />
                                         )}
                                     </button>
                                 </div>
                                 {errors.confirmPassword && (
-                                    <p className={styles.errorMessage}>{errors.confirmPassword.message}</p>
+                                    <p
+                                        className={styles.errorMessage}
+                                        data-testid="register-form-confirm-password-error"
+                                    >
+                                        {errors.confirmPassword.message}
+                                    </p>
                                 )}
                             </div>
                         </div>
 
-                        <div className={styles.buttonContainer}>
+                        <div
+                            className={styles.buttonContainer}
+                            data-testid="register-form-submit-container"
+                        >
                             <button
                                 type="submit"
                                 disabled={isPending}
                                 className={styles.button}
+                                data-testid="register-form-submit-button"
                             >
-                                {isPending ? 'Creating Account...' : 'Create Account'}
+                                {isPending
+                                    ? 'Creating Account...'
+                                    : 'Create Account'}
                             </button>
                         </div>
                     </form>
@@ -234,11 +326,13 @@ export const RegisterForm = () => {
 
             <div className={styles.needHelp}>
                 Need help? Contact{' '}
-                <a href="mailto:support@efsora.com" className={styles.emailLink}>
+                <a
+                    href="mailto:support@efsora.com"
+                    className={styles.emailLink}
+                >
                     support@efsora.com
                 </a>
             </div>
-
         </div>
     );
 };

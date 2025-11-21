@@ -1,0 +1,47 @@
+# Test service configuration
+# This file is only used when running e2e tests
+# Run with: docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.test.yml up
+
+services:
+  # Cypress E2E testing service
+  cypress-tests:
+    build:
+      context: ./test
+      dockerfile: Dockerfile
+    container_name: full-stack-cypress-tests
+    ipc: host
+    network_mode: host  # Use host network to access localhost directly (avoids Vite 403)
+    environment:
+      # Cypress configuration
+      CYPRESS_BASE_URL: http://localhost:5174  # Access services via localhost
+      CYPRESS_API_URL: http://localhost:3000/api/v1
+
+      # Test environment
+      CYPRESS_environment: docker
+
+      # Qase.io integration (optional) - default is 'off'
+      QASE_MODE: "off"
+      QASE_PROJECT_CODE: ${QASE_PROJECT_CODE:-}
+      QASE_API_TOKEN: ${QASE_API_TOKEN:-}
+      QASE_RUN_ID: ${QASE_RUN_ID:-}
+
+      # CI/CD flags
+      CI: ${CI:-false}
+
+    volumes:
+      # Mount source code for development
+      - ./test/cypress:/app/cypress
+      - ./test/cypress.config.ts:/app/cypress.config.ts
+      - ./test/tsconfig.json:/app/tsconfig.json
+
+      # Preserve test artifacts
+      - ./test/cypress/videos:/app/cypress/videos
+      - ./test/cypress/screenshots:/app/cypress/screenshots
+      - ./test/cypress/reports:/app/cypress/reports
+
+    # Don't start automatically - only when explicitly called
+    profiles:
+      - testing
+
+    # Override default command - will be specified by make targets
+    command: echo "Use 'make e2e-test' to run tests"

@@ -10,15 +10,18 @@ export interface ButtonItemProps {
     icon?: ReactNode;
     disabled?: boolean;
     className?: string;
+    testId?: string;
 }
 
 export interface SeparatorItemProps {
     type: 'separator';
+    testId?: string;
 }
 
 export interface CustomItemProps {
     type: 'custom';
     render: ReactNode;
+    testId?: string;
 }
 
 export type MenuItem = ButtonItemProps | SeparatorItemProps | CustomItemProps;
@@ -62,12 +65,16 @@ export default function MenuDropdown({
     // Close dropdown on click outside
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
-            if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+            if (
+                containerRef.current &&
+                !containerRef.current.contains(e.target as Node)
+            ) {
                 setIsOpen(false);
             }
         }
         document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        return () =>
+            document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     // Keyboard support
@@ -97,12 +104,23 @@ export default function MenuDropdown({
 
     const renderMenuItem = (item: MenuItem, index: number) => {
         if (item.type === 'separator') {
-            return <div key={index} className={styles.separator} role="separator" />;
+            return (
+                <div
+                    key={index}
+                    className={styles.separator}
+                    role="separator"
+                    data-testid={item.testId}
+                />
+            );
         }
 
         if (item.type === 'custom') {
             return (
-                <div key={index} className={styles.customItem}>
+                <div
+                    key={index}
+                    className={styles.customItem}
+                    data-testid={item.testId}
+                >
                     {item.render}
                 </div>
             );
@@ -118,8 +136,11 @@ export default function MenuDropdown({
                     onClick={() => handleItemClick(item)}
                     disabled={item.disabled}
                     type="button"
+                    data-testid={item.testId}
                 >
-                    {item.icon && <span className={styles.icon}>{item.icon}</span>}
+                    {item.icon && (
+                        <span className={styles.icon}>{item.icon}</span>
+                    )}
                     <span className={styles.label}>{item.label}</span>
                 </button>
             );

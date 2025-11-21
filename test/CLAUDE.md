@@ -287,7 +287,6 @@ For test management and reporting with Qase.io:
    ```bash
    export QASE_API_TOKEN=your_token
    export QASE_PROJECT_CODE=your_project
-   export QASE_RUN_ID=optional_run_id
    ```
 3. Uncomment Qase configuration in `cypress.config.ts`
 4. Tag tests with Qase test case IDs in test titles or metadata
