@@ -9,6 +9,7 @@ import type {
     LoginRequest,
     RegisterRequest,
 } from '#api/types/auth/request.types';
+import type { AppResponse } from '#api/types/base.types';
 import { useAuthStore } from '#store/authStore';
 
 /**
@@ -20,24 +21,26 @@ export const useRegister = () => {
 
     return useMutation({
         mutationFn: async (data: RegisterRequest) => {
-            const response = await registerApi(data);
+            const response = (await registerApi(data)) as AppResponse<unknown>;
             if (!response.success) {
-                throw new Error(response.message || 'Registration failed');
+                const errorMessage = response.message || response.error?.message || 'Registration failed';
+                throw new Error(errorMessage);
             }
             return response.data;
         },
         onSuccess: (data) => {
-            if (data && data.token && data.user) {
+            if (data && typeof data === 'object' && 'token' in data && 'user' in data) {
+                const typedData = data as { token: string; user: { id: string; email: string; name?: string; surname?: string } };
                 setAuth(
                     {
-                        id: data.user.id,
-                        email: data.user.email,
-                        name: data.user.name || null,
-                        surname: data.user.surname || null,
+                        id: typedData.user.id,
+                        email: typedData.user.email,
+                        name: typedData.user.name || null,
+                        surname: typedData.user.surname || null,
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString(),
                     },
-                    data.token,
+                    typedData.token,
                 );
             }
         },
