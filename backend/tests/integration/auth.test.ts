@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { run } from "#lib/result/index";
 import { login, createUser } from "#core/users/index";
 import { cleanupDatabase } from "../helpers/database";
+import { createTestInvitation } from "../helpers/invitation";
 
 describe("Auth Workflows", () => {
   beforeEach(async () => {
@@ -10,7 +11,9 @@ describe("Auth Workflows", () => {
 
   describe("login workflow", () => {
     it("should login successfully with valid credentials", async () => {
-      // First, register a user
+      // First, create invitation and register a user
+      await createTestInvitation("test@example.com");
+
       const registerInput = {
         email: "test@example.com",
         password: "SecurePass123",
@@ -55,9 +58,11 @@ describe("Auth Workflows", () => {
     });
 
     it("should fail with incorrect password", async () => {
-      // First, register a user
+      // First, create invitation and register a user
+      await createTestInvitation("test2@example.com");
+
       const registerInput = {
-        email: "test@example.com",
+        email: "test2@example.com",
         password: "SecurePass123",
         name: "Test",
         surname: "User",
@@ -67,7 +72,7 @@ describe("Auth Workflows", () => {
 
       // Try to login with wrong password
       const loginInput = {
-        email: "test@example.com",
+        email: "test2@example.com",
         password: "WrongPassword123",
       };
 
@@ -95,7 +100,9 @@ describe("Auth Workflows", () => {
     });
 
     it("should return token with user data", async () => {
-      // Register a user
+      // Create invitation and register a user
+      await createTestInvitation("user@example.com");
+
       const registerInput = {
         email: "user@example.com",
         password: "TestPassword123",

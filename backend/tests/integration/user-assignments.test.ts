@@ -12,8 +12,8 @@ import {
   assignUserToCompany,
   assignUserToProject,
   assignUserRole,
-  createUser,
 } from "#core/users";
+import { createTestUser } from "../helpers/invitation";
 import type {
   AssignToCompanyInput,
   AssignToProjectInput,
@@ -40,7 +40,7 @@ describe("User Assignment Integration Tests", () => {
       password: "password123",
       name: "Test User",
     };
-    const userResult = await run(createUser(userInput));
+    const userResult = await createTestUser(userInput);
     if (userResult.status === "Success") {
       testUserId = userResult.value.user.id;
     }

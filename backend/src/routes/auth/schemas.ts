@@ -94,6 +94,32 @@ export const logoutResponseSchema = z
   .openapi("LogoutResponse");
 
 /**
+ * Schema for sending invitation body
+ */
+export const sendInvitationBodySchema = z
+  .object({
+    email: z
+      .email("Invalid email format")
+      .openapi({ example: "newuser@example.com" }),
+  })
+  .openapi("SendInvitationBody");
+
+/**
+ * Send invitation response schema
+ */
+export const sendInvitationResponseSchema = z
+  .object({
+    email: z.email().openapi({ example: "newuser@example.com" }),
+    status: z.string().openapi({ example: "PENDING" }),
+    dueDate: z.coerce.date().openapi({ example: "2025-11-22T10:30:00.000Z" }),
+    message: z.string().openapi({
+      example:
+        "Invitation sent successfully. The invitation will expire in 48 hours.",
+    }),
+  })
+  .openapi("SendInvitationResponse");
+
+/**
  * Validation schemas for routes
  */
 export const registerSchema = {
@@ -110,3 +136,7 @@ export type RegisterResponse = z.infer<typeof registerResponseSchema>;
 export type LoginResponse = z.infer<typeof loginResponseSchema>;
 export type LogoutResponse = z.infer<typeof logoutResponseSchema>;
 export type UserDataResponse = z.infer<typeof userDataSchema>;
+export type SendInvitationBody = z.infer<typeof sendInvitationBodySchema>;
+export type SendInvitationResponse = z.infer<
+  typeof sendInvitationResponseSchema
+>;

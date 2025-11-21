@@ -21,7 +21,11 @@ export type UserError =
   | UserCompanyNotFoundError
   | UserProjectNotFoundError
   | UserRoleNotFoundError
-  | UserCurrentPasswordInvalidError;
+  | UserCurrentPasswordInvalidError
+  | UserInvitationNotFoundError
+  | UserInvitationExpiredError
+  | UserInvitationCancelledError
+  | UserInvitationAlreadyExistsError;
 
 /**
  * User not found error - requested user doesn't exist.
@@ -181,4 +185,68 @@ export type UserRoleNotFoundError = ErrorBase & {
  */
 export type UserCurrentPasswordInvalidError = ErrorBase & {
   code: "USER_CURRENT_PASSWORD_INVALID";
+};
+
+/**
+ * User invitation not found error - no invitation exists for this email.
+ * Used when attempting to register without an invitation.
+ *
+ * @example
+ * ```typescript
+ * fail({
+ *   code: "USER_INVITATION_NOT_FOUND",
+ *   message: "No invitation found for this email address"
+ * })
+ * ```
+ */
+export type UserInvitationNotFoundError = ErrorBase & {
+  code: "USER_INVITATION_NOT_FOUND";
+};
+
+/**
+ * User invitation expired error - invitation has passed its due date.
+ * Used when attempting to register with an expired invitation.
+ *
+ * @example
+ * ```typescript
+ * fail({
+ *   code: "USER_INVITATION_EXPIRED",
+ *   message: "This invitation has expired"
+ * })
+ * ```
+ */
+export type UserInvitationExpiredError = ErrorBase & {
+  code: "USER_INVITATION_EXPIRED";
+};
+
+/**
+ * User invitation cancelled error - invitation has been cancelled.
+ * Used when attempting to register with a cancelled invitation.
+ *
+ * @example
+ * ```typescript
+ * fail({
+ *   code: "USER_INVITATION_CANCELLED",
+ *   message: "This invitation has been cancelled"
+ * })
+ * ```
+ */
+export type UserInvitationCancelledError = ErrorBase & {
+  code: "USER_INVITATION_CANCELLED";
+};
+
+/**
+ * User invitation already exists error - invitation already exists for this email.
+ * Used when attempting to send an invitation to an email that already has a pending invitation.
+ *
+ * @example
+ * ```typescript
+ * fail({
+ *   code: "USER_INVITATION_ALREADY_EXISTS",
+ *   message: "An invitation already exists for this email address"
+ * })
+ * ```
+ */
+export type UserInvitationAlreadyExistsError = ErrorBase & {
+  code: "USER_INVITATION_ALREADY_EXISTS";
 };
