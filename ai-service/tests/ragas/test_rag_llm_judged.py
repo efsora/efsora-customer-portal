@@ -1,33 +1,9 @@
-"""
-RAG LLM-Judged Evaluation Tests - Semantic Understanding via Claude
-
-This test suite evaluates the RAG system using AWS Bedrock Claude Sonnet 4 as
-an LLM judge for semantic understanding. Automatically extracts the "answer"
-field from JSON responses for evaluation.
-
-Metrics evaluated:
-- Answer Relevancy: On-topic responses to user questions
-- Answer Correctness: Factual accuracy combined with similarity
-
-Prerequisites:
-- Weaviate running and populated with documents
-- AWS credentials for Bedrock (for both RAG and evaluation)
-- Update LLM_JUDGED_TEST_CASES with questions about your actual documents
-
-When to use: Testing your production RAG system with complex questions requiring
-semantic understanding and contextual reasoning. Slower and costs money, but
-provides deeper evaluation than lexical metrics.
-"""
-
 from typing import Any
 
 import pytest
 from ragas.embeddings import LangchainEmbeddingsWrapper
 from ragas.llms import LangchainLLMWrapper
-from ragas.metrics import (
-    answer_correctness,
-    answer_relevancy,
-)
+from ragas.metrics import answer_correctness, answer_relevancy
 
 from ragas import EvaluationDataset, evaluate
 
@@ -36,8 +12,8 @@ from ragas import EvaluationDataset, evaluate
 @pytest.mark.integration
 async def test_answer_relevancy(
     llm_judged_test_responses: list[dict[str, Any]],
-    ragas_llm: LangchainLLMWrapper,
-    ragas_embeddings: LangchainEmbeddingsWrapper,
+    ragas_llm: LangchainLLMWrapper,  # type: ignore[valid-type]
+    ragas_embeddings: LangchainEmbeddingsWrapper,  # type: ignore[valid-type]
     llm_judged_config: dict[str, Any],
 ) -> None:
     """
@@ -58,7 +34,7 @@ async def test_answer_relevancy(
     result = evaluate(dataset, metrics=[metric])
 
     threshold = llm_judged_config["answer_relevancy_threshold"]
-    score = result["answer_relevancy"]
+    score = result["answer_relevancy"]  # type: ignore[index]
 
     print(f"\n{'='*60}")
     print("RAG LLM-JUDGED EVALUATION - ANSWER RELEVANCY")
@@ -78,8 +54,8 @@ async def test_answer_relevancy(
 @pytest.mark.integration
 async def test_answer_correctness(
     llm_judged_test_responses: list[dict[str, Any]],
-    ragas_llm: LangchainLLMWrapper,
-    ragas_embeddings: LangchainEmbeddingsWrapper,
+    ragas_llm: LangchainLLMWrapper,  # type: ignore[valid-type]
+    ragas_embeddings: LangchainEmbeddingsWrapper,  # type: ignore[valid-type]
     llm_judged_config: dict[str, Any],
 ) -> None:
     """
@@ -100,7 +76,7 @@ async def test_answer_correctness(
     result = evaluate(dataset, metrics=[metric])
 
     threshold = llm_judged_config["answer_correctness_threshold"]
-    score = result["answer_correctness"]
+    score = result["answer_correctness"]  # type: ignore[index]
 
     print(f"\n{'='*60}")
     print("RAG LLM-JUDGED EVALUATION - ANSWER CORRECTNESS")
@@ -120,8 +96,8 @@ async def test_answer_correctness(
 @pytest.mark.integration
 async def test_comprehensive_evaluation(
     llm_judged_test_responses: list[dict[str, Any]],
-    ragas_llm: LangchainLLMWrapper,
-    ragas_embeddings: LangchainEmbeddingsWrapper,
+    ragas_llm: LangchainLLMWrapper,  # type: ignore[valid-type]
+    ragas_embeddings: LangchainEmbeddingsWrapper,  # type: ignore[valid-type]
     llm_judged_config: dict[str, Any],
 ) -> None:
     """
@@ -156,7 +132,7 @@ async def test_comprehensive_evaluation(
     print(f"{'='*60}")
 
     all_passed = True
-    for metric_name, score in result.items():
+    for metric_name, score in result.items():  # type: ignore[union-attr]
         threshold_key = f"{metric_name}_threshold"
         if threshold_key in llm_judged_config:
             threshold = llm_judged_config[threshold_key]

@@ -71,5 +71,7 @@ ai-service/src/data
 
 # output data
 ai-service/src/output
+ai-service/images
+ai-service/src/images
 
 *IMPLEMENTATION_PLAN*

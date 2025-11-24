@@ -7,7 +7,7 @@ repos:
         language_version: python3.11
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.8
+    rev: v0.13.1
     hooks:
       - id: ruff
 
@@ -38,6 +38,9 @@ repos:
           - langchain-aws>=1.0.0
           - langchain-community>=0.4.1
           - langchain-core>=1.0.4
+          - ragas>=0.2.0
+          - PyMuPDF>=1.24.13
+          - pdfplumber>=0.11.4
           - langchain-weaviate>=0.0.6
           - langchain-openai>=1.0.2
           - advanced-chunker>=0.1.4

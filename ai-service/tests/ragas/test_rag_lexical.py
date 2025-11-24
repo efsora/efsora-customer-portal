@@ -1,22 +1,3 @@
-"""
-RAG Lexical Evaluation Tests - Fast, Free, Non-LLM Metrics
-
-This test suite evaluates the RAG system using fast, free lexical/statistical
-NLP metrics that don't require LLM API calls. Automatically extracts the "answer"
-field from JSON responses for evaluation.
-
-Metrics evaluated:
-- BLEU Score: N-gram overlap precision
-- ROUGE Score: Recall-oriented n-gram overlap
-
-Prerequisites:
-- Weaviate running and populated with documents
-- Update LEXICAL_TEST_CASES with factual questions about your documents
-- No AWS credentials needed (these are free, non-LLM metrics)
-
-When to use: Fast testing of your production RAG system for factual questions.
-"""
-
 from typing import Any
 
 import pytest
@@ -130,7 +111,7 @@ async def test_comprehensive_evaluation(
 
     Note: Uses lexical_test_responses to avoid redundant API calls.
     """
-    results = {
+    results: dict[str, list[float]] = {
         "bleu": [],
         "rouge": [],
     }

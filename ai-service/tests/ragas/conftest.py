@@ -1,13 +1,3 @@
-"""
-Pytest fixtures for Ragas-based RAG evaluation tests.
-
-This module provides fixtures for:
-- AWS Bedrock Claude LLM and embedding models for LLM-judged evaluation
-- Ragas lexical (non-LLM) metric calculators
-- RAG system integration via FastAPI test client
-- JSON extraction and structured validation helpers
-"""
-
 from collections.abc import AsyncGenerator
 import json
 import os
@@ -15,16 +5,22 @@ import re
 from typing import Any
 
 from httpx import AsyncClient
+from langchain_aws import ChatBedrockConverse
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from pydantic import SecretStr
 import pytest
 import pytest_asyncio
 from ragas.embeddings import LangchainEmbeddingsWrapper
 from ragas.llms import LangchainLLMWrapper
+from ragas.metrics import BleuScore, RougeScore
+
+from tests.ragas.fixtures.lexical_data import LEXICAL_TEST_CASES
+from tests.ragas.fixtures.llm_judged_data import LLM_JUDGED_TEST_CASES
+
 
 # ============================================================================
-# STRUCTURED JSON HELPERS (for extracting and validating structured responses)
+# JSON EXTRACTION AND SCORING UTILITIES
 # ============================================================================
-
-
 def extract_json(response_text: str) -> dict[str, Any] | None:
     """
     Extract JSON object from LLM response text.
@@ -215,37 +211,35 @@ def aws_credentials() -> tuple[str, str, str]:
 
 
 @pytest.fixture(scope="session")
-def ragas_llm(aws_credentials: tuple[str, str, str]) -> LangchainLLMWrapper:
+def ragas_llm(aws_credentials: tuple[str, str, str]) -> LangchainLLMWrapper:  # type: ignore[valid-type]
     """
     Create AWS Bedrock Claude LLM wrapper for Ragas evaluation.
 
     Uses Claude Sonnet 4 via AWS Bedrock for accurate semantic evaluation.
     Temperature set to 0 for deterministic evaluation.
     """
-    from langchain_aws import ChatBedrockConverse
 
     access_key_id, secret_access_key, region = aws_credentials
 
     llm = ChatBedrockConverse(
-        model="anthropic.claude-sonnet-4-20250514-v1:0",
+        model="anthropic.claude-sonnet-4-20250514-v1:0",  # type: ignore[valid-type]
         temperature=0,
         max_tokens=4096,
         region_name=region,
-        aws_access_key_id=access_key_id,
-        aws_secret_access_key=secret_access_key,
+        aws_access_key_id=SecretStr(access_key_id),
+        aws_secret_access_key=SecretStr(secret_access_key),
     )
     return LangchainLLMWrapper(llm)
 
 
 @pytest.fixture(scope="session")
-def ragas_embeddings() -> LangchainEmbeddingsWrapper:
+def ragas_embeddings() -> LangchainEmbeddingsWrapper:  # type: ignore[valid-type]
     """
     Create embeddings wrapper for Ragas evaluation.
 
     Uses sentence-transformers (local, free) for semantic similarity.
     No AWS credentials required for this fixture.
     """
-    from langchain_community.embeddings import HuggingFaceEmbeddings
 
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     return LangchainEmbeddingsWrapper(embeddings)
@@ -264,7 +258,6 @@ def bleu_scorer() -> Any:
     Measures n-gram precision between response and reference.
     Range: 0.0 to 1.0 (higher is better)
     """
-    from ragas.metrics import BleuScore
 
     return BleuScore()
 
@@ -278,7 +271,6 @@ def rouge_scorer() -> Any:
     Default: ROUGE-L with F-measure
     Range: 0.0 to 1.0 (higher is better)
     """
-    from ragas.metrics import RougeScore
 
     # Using ROUGE-L with F-measure (balanced precision and recall)
     return RougeScore(rouge_type="rougeL", mode="fmeasure")
@@ -450,7 +442,6 @@ async def lexical_test_responses(rag_system: Any) -> list[dict[str, Any]]:
     Returns:
         List of dicts with 'user_input', 'response', 'reference' for each question
     """
-    from tests.ragas.fixtures.lexical_data import LEXICAL_TEST_CASES
 
     cached_responses = []
 
@@ -498,7 +489,6 @@ async def llm_judged_test_responses(rag_system: Any) -> list[dict[str, Any]]:
     Returns:
         List of dicts with 'user_input', 'response', 'reference', 'retrieved_contexts'
     """
-    from tests.ragas.fixtures.llm_judged_data import LLM_JUDGED_TEST_CASES
 
     cached_responses = []
 
