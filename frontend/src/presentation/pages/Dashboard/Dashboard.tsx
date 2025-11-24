@@ -8,10 +8,14 @@ import styles from './Dashboard.module.css';
 export default function Home() {
     return (
         <>
-            <PageTitle
-                title="Dashboard"
-                description="Welcome back! Here's an overview of your projects."
-            />
+            <div className={styles.pageTitle}>
+                <PageTitle
+                    title="Dashboard"
+                    description="Welcome back! Here's an overview of your projects."
+                />
+                <QuickAccess />
+            </div>
+            
 
             <div className={styles.pageLayout}>
                 <div className={styles.cardContainer}>
@@ -36,9 +40,7 @@ export default function Home() {
                         />
                     </div>
 
-                    <div className={styles.quickAccess}>
-                        <QuickAccess />
-                    </div>
+                    
                 </div>
 
                 <CurrentMilestone />

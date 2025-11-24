@@ -24,11 +24,21 @@
     flex: 1;
 }
 
-.quickAccess {
-    padding: 24px 36px;
-}
-
 .validComponent {
     background-color: white;
     border: 1px solid;
+}
+
+.pageTitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+/* Move QuickAccess to bottom at smaller screen widths */
+@media (max-width: 1024px) {
+    .pageTitle {
+        flex-direction: column;
+        padding-bottom: 24px;
+    }
 }

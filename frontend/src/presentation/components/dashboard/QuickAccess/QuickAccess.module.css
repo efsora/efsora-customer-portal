@@ -5,7 +5,7 @@
 
 .quickAccessButtons {
     display: grid;
-    grid-template-columns: repeat(3, 2fr);
+    grid-template-columns: repeat(6, 1fr);
     grid-column-gap: 20px;
     grid-row-gap: 12px;
 }
