@@ -39,6 +39,11 @@ export async function setup() {
   process.env.ENABLE_TRACING = "false";
   process.env.METRICS_ENABLED = "false";
   process.env.PORT = "3000";
+  // AWS S3 Configuration (mock values for testing)
+  process.env.AWS_ACCESS_KEY_ID = "test-access-key-id";
+  process.env.AWS_SECRET_ACCESS_KEY = "test-secret-access-key";
+  process.env.AWS_S3_BUCKET = "test-bucket";
+  process.env.AWS_S3_REGION = "us-east-1";
 
   // Apply migrations using Drizzle migrate
   console.log("🔄 Running database migrations...");
