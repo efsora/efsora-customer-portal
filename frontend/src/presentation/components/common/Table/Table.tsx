@@ -37,7 +37,7 @@ export function Table({ files }: TableProps) {
     };
 
     return (
-        <div className={`container ${styles.container}`}>
+        <div className={styles.container}>
             <table className={styles.table}>
                 <thead>
                     <tr>

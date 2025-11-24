@@ -136,7 +136,7 @@ export function Documents() {
             />
 
             <div className={styles.pageContainer}>
-                <div className={`container ${styles.searchContainer}`}>
+                <div className={styles.searchContainer}>
                     <img src="/documents/search.svg" alt="search" />
                     <input
                         type="text"

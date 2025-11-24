@@ -17,28 +17,40 @@ import './commands';
 
 // Global before hook - runs once before all tests
 before(() => {
+  console.log('\n🧪 [TEST_SUITE] Starting test suite...');
   cy.log('Starting test suite');
 });
 
 // Global after hook - runs once after all tests
 after(() => {
+  console.log('🧪 [TEST_SUITE] Test suite completed');
   cy.log('Test suite completed');
 });
 
-// Before each test
-beforeEach(() => {
-  // Clear cookies and local storage before each test for isolation
-  // cy.clearCookies();
-  // cy.clearLocalStorage();
-
-  // Preserve session if using cy.session()
-  // Cypress.session.clearAllSavedSessions();
+// Before each test - tracks test execution
+beforeEach(function () {
+  const testTitle = this.currentTest?.title || 'Unknown test';
+  const parent = this.currentTest?.parent?.title || 'Unknown suite';
+  console.log(`\n▶️  [TEST_START] ${parent} > ${testTitle}`);
 });
 
-// After each test
-afterEach(() => {
-  // Take screenshot on failure
-  // This is handled automatically by Cypress when screenshotOnRunFailure is true
+// After each test - tracks test completion
+afterEach(function () {
+  const testTitle = this.currentTest?.title || 'Unknown test';
+  const state = this.currentTest?.state || 'unknown';
+  const duration = this.currentTest?.duration || 0;
+
+  // Determine if test passed or failed
+  const statusIcon = state === 'passed' ? '✅' : '❌';
+  console.log(`${statusIcon} [TEST_END] ${testTitle} (${state}) - ${duration}ms`);
+
+  // Log any failures
+  if (this.currentTest?.err) {
+    console.error(`   Error: ${this.currentTest.err.message}`);
+    if (this.currentTest.err.stack) {
+      console.error(`   Stack: ${this.currentTest.err.stack.split('\n')[0]}`);
+    }
+  }
 });
 
 // Handle uncaught exceptions

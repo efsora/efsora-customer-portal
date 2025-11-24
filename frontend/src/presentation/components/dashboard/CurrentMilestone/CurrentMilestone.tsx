@@ -17,42 +17,40 @@ export function CurrentMilestone() {
     const nextMilestone = activeIndex > 0 ? MILESTONES[activeIndex - 1] : null;
 
     return (
-        <div className={styles.container}>
-            <div className={`container ${styles.currentMilestoneContainer}`}>
-                <p className={styles.currentMilestoneText}>Current Milestone</p>
-                <div className={styles.milestones}>
-                    {previousMilestone && (
-                        <div className={styles.milestoneItem}>
-                            <div className="flex items-center gap-2 text-gray-500 text-sm">
-                                <img src="/dashboard/check.svg" alt="previous" />
-                                <div>Previous</div>
-                            </div>
-                            <p className={styles.milestoneItemDescription}>
-                                {previousMilestone.title}
-                            </p>
-                            <p className={styles.milestoneItemDate}>
-                                {previousMilestone.dueDate}
-                            </p>
+        <div className={styles.currentMilestoneContainer}>
+            <p className={styles.currentMilestoneText}>Current Milestone</p>
+            <div className={styles.milestones}>
+                {previousMilestone && (
+                    <div className={styles.milestoneItem}>
+                        <div className="flex items-center gap-2 text-gray-500 text-sm">
+                            <img src="/dashboard/check.svg" alt="previous" />
+                            <div>Previous</div>
                         </div>
-                    )}
+                        <p className={styles.milestoneItemDescription}>
+                            {previousMilestone.title}
+                        </p>
+                        <p className={styles.milestoneItemDate}>
+                            {previousMilestone.dueDate}
+                        </p>
+                    </div>
+                )}
 
-                    <ActiveMilestone />
+                <ActiveMilestone />
 
-                    {nextMilestone && (
-                        <div className={styles.milestoneItem}>
-                            <div className="flex items-center gap-2 text-gray-500 text-sm">
-                                <img src="/dashboard/circle.svg" alt="next" />
-                                <div>Next</div>
-                            </div>
-                            <p className={styles.milestoneItemDescription}>
-                                {nextMilestone.title}
-                            </p>
-                            <p className={styles.milestoneItemDate}>
-                                {nextMilestone.dueDate}
-                            </p>
+                {nextMilestone && (
+                    <div className={styles.milestoneItem}>
+                        <div className="flex items-center gap-2 text-gray-500 text-sm">
+                            <img src="/dashboard/circle.svg" alt="next" />
+                            <div>Next</div>
                         </div>
-                    )}
-                </div>
+                        <p className={styles.milestoneItemDescription}>
+                            {nextMilestone.title}
+                        </p>
+                        <p className={styles.milestoneItemDate}>
+                            {nextMilestone.dueDate}
+                        </p>
+                    </div>
+                )}
             </div>
         </div>
     );

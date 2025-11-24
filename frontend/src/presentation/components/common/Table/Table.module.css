@@ -2,6 +2,9 @@
     padding: 24px;
     width: 100%;
     overflow-x: auto;
+    background-color: white;
+    border: 1px solid var(--color-neutral-grey-200);
+    border-radius: 16px;
 }
 
 .table {

@@ -45,6 +45,7 @@ export default function UserProfile() {
                     style={{ width: '16px', height: '16px' }}
                 />
             ),
+            testId: 'help-support-button',
         },
         { type: 'separator' as const },
         {
@@ -53,6 +54,10 @@ export default function UserProfile() {
             onClick: () => {
                 logout(undefined, {
                     onSuccess: () => {
+                        navigate('/login');
+                    },
+                    onError: () => {
+                        // Hook already clears auth on error, just need to navigate
                         navigate('/login');
                     },
                 });
@@ -66,21 +71,25 @@ export default function UserProfile() {
             ),
             disabled: isPending,
             className: styles.logoutItem,
+            testId: 'logout-button',
         },
     ];
 
     if (isLoading) return <p>Loading...</p>;
     if (isError) return <p>Error</p>;
 
-    const userName = [user?.data?.name, user?.data?.surname]
-        .filter(Boolean)
-        .join(' ') || 'Unknown User';
+    const userName =
+        [user?.data?.name, user?.data?.surname].filter(Boolean).join(' ') ||
+        'Unknown User';
 
     return (
         <div>
             <MenuDropdown
                 trigger={(isOpen) => (
-                    <div className={styles.triggerButton}>
+                    <div
+                        className={styles.triggerButton}
+                        data-testid="user-dropdown-trigger"
+                    >
                         <div className={styles.profilePhoto}>
                             {getInitials(user?.data?.name, user?.data?.surname)}
                         </div>

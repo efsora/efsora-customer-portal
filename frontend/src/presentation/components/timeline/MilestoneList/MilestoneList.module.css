@@ -1,4 +1,8 @@
 .container {
+    background-color: white;
+    border: 1px solid var(--color-neutral-grey-200);
+    border-radius: 16px;
+
     padding: 24px;
     display: flex;
     flex-direction: column;
