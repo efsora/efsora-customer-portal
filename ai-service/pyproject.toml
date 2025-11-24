@@ -102,6 +102,10 @@ ignore = [
 # Print'leri otomatik düzeltme (sinyal kalsın)
 unfixable = ["T20"]
 
+[tool.ruff.lint.per-file-ignores]
+# Allow print statements in test files
+"tests/**/*.py" = ["T201"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["app"]
 force-sort-within-sections = true
