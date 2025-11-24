@@ -1,6 +1,6 @@
 {
   "baseUrl": "https://staging.example.com",
-  "apiUrl": "https://staging.example.com/api",
+  "apiUrl": "https://staging.example.com/api/v1",
   "environment": "staging",
   "testUser": {
     "username": "staging_testuser",

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__*",
+      "npm run sync:qase-metadata"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

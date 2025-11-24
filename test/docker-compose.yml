@@ -4,14 +4,17 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: cypress-template-tests
+    container_name: cypress-e2e-tests
     ipc: host
+    network_mode: host  # Use host network to access localhost directly (avoids Vite 403)
     environment:
       - CI=true
-      - CYPRESS_baseUrl=${CYPRESS_baseUrl:-http://localhost:5173}
-      - CYPRESS_apiUrl=${CYPRESS_apiUrl:-http://localhost:3000/api}
-      - QASE_API_TOKEN=${QASE_API_TOKEN}
-      - QASE_PROJECT_CODE=${QASE_PROJECT_CODE}
+      - CYPRESS_environment=docker
+      - CYPRESS_BASE_URL=http://localhost:5174
+      - CYPRESS_API_URL=http://localhost:3000/api/v1
+      - QASE_MODE=off
+      - QASE_TOKEN=${QASE_TOKEN:-}
+      - QASE_PROJECT=${QASE_PROJECT:-}
     volumes:
       # Mount source code for live updates during development
       - ./cypress:/app/cypress
@@ -23,12 +26,10 @@ services:
       - ./cypress/screenshots:/app/cypress/screenshots
       - ./cypress/reports:/app/cypress/reports
 
-      # Cache node_modules to improve performance
-      - node_modules:/app/node_modules
+      # Note: node_modules volume removed - using node_modules from Docker build
+      # This ensures cypress-qase-reporter and other dependencies are available
     working_dir: /app
-    command: npm test
-    networks:
-      - cypress-network
+    command: npm run cypress:run
 
   # Example: Application under test (optional)
   # Uncomment and configure if you want to test a local application
@@ -49,9 +50,7 @@ services:
   #     timeout: 5s
   #     retries: 5
 
-volumes:
-  node_modules:
-
 networks:
-  cypress-network:
-    driver: bridge
+  app-network:
+    external: true
+    name: efsora-customer-portal_app-network

@@ -12,8 +12,9 @@ export abstract class BasePage {
   /**
    * Navigate to the page
    */
-  visit(): void {
+  visit(): this {
     cy.visit(this.url);
+    return this;
   }
 
   /**
@@ -44,16 +45,18 @@ export abstract class BasePage {
    * Click on an element
    * @param selector - CSS selector
    */
-  protected click(selector: string): void {
+  protected click(selector: string): this {
     this.getElement(selector).click();
+    return this;
   }
 
   /**
    * Click on an element by test id
    * @param testId - data-testid value
    */
-  protected clickByTestId(testId: string): void {
+  protected clickByTestId(testId: string): this {
     this.getByTestId(testId).click();
+    return this;
   }
 
   /**
@@ -66,8 +69,9 @@ export abstract class BasePage {
     selector: string,
     text: string,
     options?: Partial<Cypress.TypeOptions>
-  ): void {
+  ): this {
     this.getElement(selector).clear().type(text, options);
+    return this;
   }
 
   /**
@@ -80,8 +84,9 @@ export abstract class BasePage {
     testId: string,
     text: string,
     options?: Partial<Cypress.TypeOptions>
-  ): void {
+  ): this {
     this.getByTestId(testId).clear().type(text, options);
+    return this;
   }
 
   /**
@@ -89,8 +94,9 @@ export abstract class BasePage {
    * @param selector - CSS selector
    * @param timeout - Timeout in milliseconds
    */
-  protected waitForElement(selector: string, timeout: number = 10000): void {
+  protected waitForElement(selector: string, timeout: number = 10000): this {
     this.getElement(selector).should('be.visible', { timeout });
+    return this;
   }
 
   /**
@@ -98,8 +104,9 @@ export abstract class BasePage {
    * @param selector - CSS selector
    * @param timeout - Timeout in milliseconds
    */
-  protected waitForElementToDisappear(selector: string, timeout: number = 10000): void {
+  protected waitForElementToDisappear(selector: string, timeout: number = 10000): this {
     this.getElement(selector).should('not.exist', { timeout });
+    return this;
   }
 
   /**
@@ -115,8 +122,9 @@ export abstract class BasePage {
    * @param selector - CSS selector
    * @param text - Expected text
    */
-  protected shouldContainText(selector: string, text: string): void {
+  protected shouldContainText(selector: string, text: string): this {
     this.getElement(selector).should('contain.text', text);
+    return this;
   }
 
   /**
@@ -130,12 +138,13 @@ export abstract class BasePage {
    * Verify the current URL
    * @param expectedUrl - Expected URL or URL pattern
    */
-  protected verifyUrl(expectedUrl: string | RegExp): void {
+  protected verifyUrl(expectedUrl: string | RegExp): this {
     if (typeof expectedUrl === 'string') {
       cy.url().should('include', expectedUrl);
     } else {
       cy.url().should('match', expectedUrl);
     }
+    return this;
   }
 
   /**
@@ -149,16 +158,18 @@ export abstract class BasePage {
    * Verify page title
    * @param expectedTitle - Expected title
    */
-  protected verifyTitle(expectedTitle: string): void {
+  protected verifyTitle(expectedTitle: string): this {
     cy.title().should('equal', expectedTitle);
+    return this;
   }
 
   /**
    * Scroll to an element
    * @param selector - CSS selector
    */
-  protected scrollToElement(selector: string): void {
+  protected scrollToElement(selector: string): this {
     this.getElement(selector).scrollIntoView();
+    return this;
   }
 
   /**
@@ -166,59 +177,67 @@ export abstract class BasePage {
    * @param selector - CSS selector for the select element
    * @param value - Value to select
    */
-  protected selectDropdown(selector: string, value: string): void {
+  protected selectDropdown(selector: string, value: string): this {
     this.getElement(selector).select(value);
+    return this;
   }
 
   /**
    * Check a checkbox
    * @param selector - CSS selector
    */
-  protected check(selector: string): void {
+  protected check(selector: string): this {
     this.getElement(selector).check();
+    return this;
   }
 
   /**
    * Uncheck a checkbox
    * @param selector - CSS selector
    */
-  protected uncheck(selector: string): void {
+  protected uncheck(selector: string): this {
     this.getElement(selector).uncheck();
+    return this;
   }
 
   /**
    * Wait for page to load
    */
-  protected waitForPageLoad(): void {
+  protected waitForPageLoad(): this {
     cy.document().should('have.property', 'readyState', 'complete');
+    return this;
   }
 
   /**
    * Take a screenshot
    * @param name - Screenshot name
    */
-  protected takeScreenshot(name: string): void {
+  protected takeScreenshot(name: string): this {
     cy.screenshot(name);
+    return this;
   }
 
   /**
    * Reload the page
    */
-  protected reload(): void {
+  protected reload(): this {
     cy.reload();
+    return this;
   }
 
   /**
    * Go back in browser history
    */
-  protected goBack(): void {
+  protected goBack(): this {
     cy.go('back');
+    return this;
   }
 
   /**
    * Go forward in browser history
    */
-  protected goForward(): void {
+  protected goForward(): this {
     cy.go('forward');
+    return this;
   }
 }

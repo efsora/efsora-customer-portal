@@ -6,8 +6,10 @@
 .PHONY: help full-stack-up full-stack-up-prod full-stack-down full-stack-logs full-stack-clean full-stack-restart full-stack-rebuild
 .PHONY: install-backend install-frontend install-ai install-all
 .PHONY: backend-test ai-test frontend-test backend-test-coverage ai-test-coverage test-all
+.PHONY: e2e-test e2e-test-api e2e-test-spec e2e-test-local e2e-test-open e2e-test-rebuild
+.PHONY: full-stack-up-with-tests full-stack-down-with-tests
 .PHONY: generate-backend-types generate-ai-types generate-all-types
-.PHONY: backend-shell ai-shell frontend-shell postgres-shell
+.PHONY: backend-shell ai-shell frontend-shell cypress-shell postgres-shell
 .PHONY: db-migrate-backend db-migrate-ai db-migrate-all db-shell-backend db-shell-main
 .PHONY: status health clean-node-modules clean-build clean-all
 
@@ -117,6 +119,31 @@ full-stack-rebuild: ## 🔨 Rebuild and restart all services (dev mode)
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build --force-recreate
 	@echo "✅ All services rebuilt and restarted!"
 
+full-stack-up-with-tests: ## 🚀 Start all services + test container (dev mode)
+	@echo "🚀 Starting full-stack application with test container..."
+	@echo "   - PostgreSQL (port 5432)"
+	@echo "   - Weaviate (port 8080)"
+	@echo "   - Backend (port 3000, debug: 9229)"
+	@echo "   - Frontend (port 5174, hot reload enabled)"
+	@echo "   - AI Service (port 8000, debug: 5678)"
+	@echo "   - Cypress Test Container (ready for tests)"
+	@echo ""
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.test.yml --profile testing up -d --build
+	@echo ""
+	@echo "✅ All services + test container started!"
+	@echo ""
+	@echo "🧪 Run tests with:"
+	@echo "   make e2e-test           # Run all E2E tests"
+	@echo "   make e2e-test-api       # Run API tests only"
+	@echo "   make e2e-test-open      # Open Cypress UI"
+	@echo ""
+	@echo "🛑 Stop services with: make full-stack-down-with-tests"
+
+full-stack-down-with-tests: ## 🛑 Stop all services including test container
+	@echo "🛑 Stopping all services including test container..."
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.test.yml --profile testing down
+	@echo "✅ All services stopped!"
+
 # ==============================================================================
 # Installation Commands (Dockerized Services)
 # ==============================================================================
@@ -185,6 +212,59 @@ ai-test-coverage: ## 📊 Run AI service tests with coverage
 	@echo "✅ AI service tests with coverage completed!"
 
 test-all: backend-test ai-test ## 🧪 Run all tests (backend + AI service)
+
+# ==============================================================================
+# E2E Testing Commands (Cypress in Docker)
+# ==============================================================================
+
+e2e-test: ## 🧪 Run all E2E tests in Docker (headless)
+	@echo "🧪 Running E2E tests in Docker..."
+	@echo "   Ensuring services are running..."
+	@docker compose -f docker-compose.yml -f docker-compose.dev.yml ps postgres backend frontend ai-service > /dev/null 2>&1 || \
+		(echo "⚠️  Services not running. Starting them now..." && make full-stack-up)
+	@echo "   Building test container..."
+	@docker compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.test.yml build cypress-tests
+	@echo "   Running Cypress tests..."
+	@docker compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.test.yml run --rm cypress-tests npm run cypress:run
+	@echo "✅ E2E tests completed!"
+	@echo "   Videos: test/cypress/videos/"
+	@echo "   Screenshots: test/cypress/screenshots/"
+
+e2e-test-api: ## 🧪 Run API tests only in Docker
+	@echo "🧪 Running API tests in Docker..."
+	@docker compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.test.yml run --rm cypress-tests npm run test:api
+	@echo "✅ API tests completed!"
+
+e2e-test-spec: ## 🧪 Run a specific test spec (usage: make e2e-test-spec SPEC="cypress/e2e/example.cy.ts")
+	@if [ -z "$(SPEC)" ]; then \
+		echo "❌ Please specify a spec file: make e2e-test-spec SPEC='cypress/e2e/example.cy.ts'"; \
+		exit 1; \
+	fi
+	@echo "🧪 Running specific test: $(SPEC)"
+	@docker compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.test.yml run --rm cypress-tests npm run test:spec -- "$(SPEC)"
+	@echo "✅ Test spec completed!"
+
+e2e-test-local: ## 🧪 Run tests locally (not in Docker) - services must be running
+	@echo "🧪 Running E2E tests locally..."
+	@echo "   Ensuring services are running..."
+	@docker compose -f docker-compose.yml -f docker-compose.dev.yml ps postgres backend frontend ai-service > /dev/null 2>&1 || \
+		(echo "⚠️  Services not running. Starting them now..." && make full-stack-up)
+	@echo "   Running Cypress tests locally..."
+	cd test && npm run cypress:run
+	@echo "✅ E2E tests completed!"
+
+e2e-test-open: ## 🧪 Open Cypress UI locally (not in Docker)
+	@echo "🧪 Opening Cypress UI locally..."
+	@echo "   Ensuring services are running..."
+	@docker compose -f docker-compose.yml -f docker-compose.dev.yml ps postgres backend frontend ai-service > /dev/null 2>&1 || \
+		(echo "⚠️  Services not running. Starting them now..." && make full-stack-up)
+	@echo "   Opening Cypress UI..."
+	cd test && npm run cypress:open
+
+e2e-test-rebuild: ## 🔨 Rebuild test container (after dependency changes)
+	@echo "🔨 Rebuilding test container..."
+	@docker compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.test.yml build --no-cache cypress-tests
+	@echo "✅ Test container rebuilt!"
 
 # ==============================================================================
 # Type Generation Commands
@@ -268,6 +348,9 @@ frontend-shell: ## 🐚 Open shell in frontend container
 
 postgres-shell: ## 🐚 Open PostgreSQL shell
 	docker compose exec postgres psql -U postgres -d app_db
+
+cypress-shell: ## 🐚 Open shell in Cypress test container
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.test.yml run --rm cypress-tests sh
 
 # ==============================================================================
 # Status Commands

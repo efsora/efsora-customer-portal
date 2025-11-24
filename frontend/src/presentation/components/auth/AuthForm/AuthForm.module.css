@@ -103,7 +103,7 @@
 .needHelp {
     text-align: center;
     font-size: 14px;
-    color: var(--color-neutral-grey-600)
+    color: var(--color-neutral-grey-600);
 }
 
 .passwordInputWrapper {
