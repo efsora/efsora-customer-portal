@@ -2,27 +2,194 @@
 Pytest fixtures for Ragas-based RAG evaluation tests.
 
 This module provides fixtures for:
-- AWS Bedrock Claude LLM and embedding models for semantic evaluation
-- Ragas traditional (non-LLM) metric calculators
-- Real RAG system integration via FastAPI test client
+- AWS Bedrock Claude LLM and embedding models for LLM-judged evaluation
+- Ragas lexical (non-LLM) metric calculators
+- RAG system integration via FastAPI test client
+- JSON extraction and structured validation helpers
 """
 
-import os
-from typing import Any
 from collections.abc import AsyncGenerator
+import json
+import os
+import re
+from typing import Any
 
+from httpx import AsyncClient
 import pytest
 import pytest_asyncio
-from httpx import ASGITransport, AsyncClient
-from fastapi import FastAPI
-from ragas import EvaluationDataset
-from ragas.llms import LangchainLLMWrapper
 from ragas.embeddings import LangchainEmbeddingsWrapper
+from ragas.llms import LangchainLLMWrapper
+
+# ============================================================================
+# STRUCTURED JSON HELPERS (for extracting and validating structured responses)
+# ============================================================================
+
+
+def extract_json(response_text: str) -> dict[str, Any] | None:
+    """
+    Extract JSON object from LLM response text.
+
+    The LLM may return JSON in various formats:
+    1. Plain JSON: {"answer": "...", ...}
+    2. Markdown code block: ```json\n{...}\n```
+    3. With extra text: "Here's the answer: {...}"
+
+    Args:
+        response_text: Raw response text from LLM
+
+    Returns:
+        Parsed JSON dict or None if parsing fails
+
+    Example:
+        >>> extract_json('```json\\n{"answer": "test"}\\n```')
+        {'answer': 'test'}
+    """
+    if not response_text or not isinstance(response_text, str):
+        return None
+
+    # Remove leading/trailing whitespace
+    text = response_text.strip()
+
+    # Try 1: Extract from markdown code block
+    if "```json" in text:
+        match = re.search(r"```json\s*\n(.*?)\n```", text, re.DOTALL)
+        if match:
+            try:
+                return json.loads(match.group(1))
+            except json.JSONDecodeError:
+                pass
+
+    # Try 2: Extract from code block without language specifier
+    if "```" in text:
+        match = re.search(r"```\s*\n(.*?)\n```", text, re.DOTALL)
+        if match:
+            try:
+                return json.loads(match.group(1))
+            except json.JSONDecodeError:
+                pass
+
+    # Try 3: Find JSON object with curly braces
+    match = re.search(r"\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}", text, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group(0))
+        except json.JSONDecodeError:
+            pass
+
+    # Try 4: Parse entire text as JSON
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+
+    return None
+
+
+def validate_json_schema(response_json: dict[str, Any]) -> bool:
+    """
+    Validate that response JSON has the expected structure.
+
+    Expected structure:
+    {
+        "answer": str,
+        "entities": list[str],
+        "boolean_answer": "yes" | "no" | "",
+        "confidence": "high" | "medium" | "low"
+    }
+
+    Args:
+        response_json: Parsed JSON from response
+
+    Returns:
+        True if structure is valid, False otherwise
+    """
+    if not isinstance(response_json, dict):
+        return False
+
+    # Check required fields exist
+    required_fields = {"answer", "entities", "boolean_answer", "confidence"}
+    if not required_fields.issubset(response_json.keys()):
+        return False
+
+    # Validate field types and values
+    if not isinstance(response_json["answer"], str):
+        return False
+
+    if not isinstance(response_json["entities"], list):
+        return False
+
+    if response_json["boolean_answer"] not in ["yes", "no", ""]:
+        return False
+
+    if response_json["confidence"] not in ["high", "medium", "low"]:
+        return False
+
+    return True
+
+
+def score_json_response(
+    response: dict[str, Any],
+    reference: dict[str, Any],
+) -> dict[str, float]:
+    """
+    Compare structured response against reference and return detailed scores.
+
+    Args:
+        response: Parsed JSON response from LLM
+        reference: Expected structured reference
+
+    Returns:
+        Dictionary with comparison scores:
+        - answer_match: 1.0 if substring match, 0.0 otherwise
+        - entities_overlap: Jaccard similarity of entity sets
+        - boolean_match: 1.0 if boolean answers match, 0.0 otherwise
+        - confidence_match: 1.0 if confidence levels match, 0.0 otherwise
+        - overall_score: Weighted average of all scores
+    """
+    scores = {}
+
+    # 1. Answer match (substring or semantic similarity)
+    ref_answer = reference.get("answer", "").lower()
+    resp_answer = response.get("answer", "").lower()
+    scores["answer_match"] = 1.0 if ref_answer in resp_answer or resp_answer in ref_answer else 0.0
+
+    # 2. Entities overlap (Jaccard similarity)
+    ref_entities = {e.lower() for e in reference.get("entities", [])}
+    resp_entities = {e.lower() for e in response.get("entities", [])}
+
+    if ref_entities or resp_entities:
+        intersection = len(ref_entities & resp_entities)
+        union = len(ref_entities | resp_entities)
+        scores["entities_overlap"] = intersection / union if union > 0 else 0.0
+    else:
+        scores["entities_overlap"] = 1.0  # Both empty is a match
+
+    # 3. Boolean answer match
+    ref_bool = reference.get("boolean_answer", "")
+    resp_bool = response.get("boolean_answer", "")
+    scores["boolean_match"] = 1.0 if ref_bool == resp_bool else 0.0
+
+    # 4. Confidence match (optional, less critical)
+    ref_conf = reference.get("confidence", "")
+    resp_conf = response.get("confidence", "")
+    scores["confidence_match"] = 1.0 if ref_conf == resp_conf else 0.0
+
+    # 5. Overall score (weighted average)
+    # Weight: answer (40%), entities (30%), boolean (20%), confidence (10%)
+    scores["overall_score"] = (
+        0.4 * scores["answer_match"]
+        + 0.3 * scores["entities_overlap"]
+        + 0.2 * scores["boolean_match"]
+        + 0.1 * scores["confidence_match"]
+    )
+
+    return scores
 
 
 # ============================================================================
 # AWS BEDROCK FIXTURES (for semantic/LLM-based evaluation)
 # ============================================================================
+
 
 @pytest.fixture(scope="session")
 def aws_credentials() -> tuple[str, str, str]:
@@ -42,8 +209,7 @@ def aws_credentials() -> tuple[str, str, str]:
 
     if not access_key_id or not secret_access_key:
         pytest.skip(
-            "AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY not set, "
-            "skipping semantic Ragas tests"
+            "AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY not set, " "skipping semantic Ragas tests"
         )
     return access_key_id, secret_access_key, region
 
@@ -81,27 +247,13 @@ def ragas_embeddings() -> LangchainEmbeddingsWrapper:
     """
     from langchain_community.embeddings import HuggingFaceEmbeddings
 
-    embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2"
-    )
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     return LangchainEmbeddingsWrapper(embeddings)
 
 
 # ============================================================================
-# TRADITIONAL METRICS FIXTURES (Ragas non-LLM metrics - fast and free)
+# LEXICAL METRICS FIXTURES (Ragas non-LLM metrics - fast and free)
 # ============================================================================
-
-@pytest.fixture
-def exact_match_scorer() -> Any:
-    """
-    Ragas Exact Match metric (non-LLM).
-
-    Checks if response exactly matches reference text.
-    Returns: 1.0 (match) or 0.0 (no match)
-    """
-    from ragas.metrics import ExactMatch
-
-    return ExactMatch()
 
 
 @pytest.fixture
@@ -132,72 +284,32 @@ def rouge_scorer() -> Any:
     return RougeScore(rouge_type="rougeL", mode="fmeasure")
 
 
-@pytest.fixture
-def string_similarity_scorer() -> Any:
-    """
-    Ragas Non-LLM String Similarity metric.
-
-    Measures similarity using Levenshtein distance algorithm.
-    Range: 0.0 to 1.0 (higher is better, 1.0 = identical strings)
-    """
-    from ragas.metrics import NonLLMStringSimilarity, DistanceMeasure
-
-    return NonLLMStringSimilarity(distance_measure=DistanceMeasure.LEVENSHTEIN)
-
-
-@pytest.fixture
-def string_presence_scorer() -> Any:
-    """
-    Ragas String Presence metric (non-LLM).
-
-    Checks if response contains the reference text.
-    Returns: 1.0 (contains) or 0.0 (doesn't contain)
-    """
-    from ragas.metrics import StringPresence
-
-    return StringPresence()
-
-
 # ============================================================================
 # EVALUATION CONFIGURATION FIXTURES
 # ============================================================================
 
+
 @pytest.fixture
-def semantic_evaluation_config() -> dict[str, Any]:
+def llm_judged_config() -> dict[str, Any]:
     """
-    Configuration for semantic (LLM-based) evaluation thresholds.
+    Configuration for LLM-judged evaluation thresholds.
     """
     return {
-        # Core RAG metrics
-        "faithfulness_threshold": 0.7,           # No hallucination
-        "answer_relevancy_threshold": 0.7,       # On-topic response
-        "context_precision_threshold": 0.6,      # Quality of retrieval
-        "context_recall_threshold": 0.6,         # Completeness of retrieval
-
         # Answer quality metrics
-        "answer_similarity_threshold": 0.7,      # Semantic similarity
-        "answer_correctness_threshold": 0.7,     # Factual correctness
+        "answer_relevancy_threshold": 0.7,  # On-topic response
+        "answer_correctness_threshold": 0.7,  # Factual correctness
     }
 
 
 @pytest.fixture
-def traditional_evaluation_config() -> dict[str, Any]:
+def lexical_config() -> dict[str, Any]:
     """
-    Configuration for traditional (non-LLM) evaluation thresholds.
+    Configuration for lexical (non-LLM) evaluation thresholds.
     """
     return {
-        # Exact matching (binary)
-        "exact_match_threshold": 1.0,            # Exact string match
-
         # N-gram overlap metrics
-        "bleu_threshold": 0.4,                   # BLEU score
-        "rouge_threshold": 0.5,                  # ROUGE-L F-measure
-
-        # String similarity
-        "string_similarity_threshold": 0.7,      # Levenshtein similarity
-
-        # Substring matching
-        "string_presence_threshold": 1.0,        # Contains reference
+        "bleu_threshold": 0.4,  # BLEU score
+        "rouge_threshold": 0.5,  # ROUGE-L F-measure
     }
 
 
@@ -205,7 +317,8 @@ def traditional_evaluation_config() -> dict[str, Any]:
 # REAL RAG SYSTEM FIXTURES (for integration testing with actual RAG pipeline)
 # ============================================================================
 
-def collect_sse_response(response_text: str) -> str:
+
+def parse_sse_stream(response_text: str) -> str:
     """
     Parse SSE (Server-Sent Events) response and extract clean text.
 
@@ -235,7 +348,7 @@ def collect_sse_response(response_text: str) -> str:
 
 
 @pytest_asyncio.fixture(scope="module")
-async def real_rag_client() -> AsyncGenerator[AsyncClient, None]:
+async def rag_client() -> AsyncGenerator[AsyncClient, None]:
     """
     Create AsyncClient for making requests to the real RAG system.
 
@@ -251,7 +364,7 @@ async def real_rag_client() -> AsyncGenerator[AsyncClient, None]:
 
 
 @pytest_asyncio.fixture(scope="module")
-async def real_rag_system(real_rag_client: AsyncClient) -> Any:
+async def rag_system(rag_client: AsyncClient) -> Any:
     """
     Real RAG system fixture that provides a consistent interface for testing.
 
@@ -263,6 +376,7 @@ async def real_rag_system(real_rag_client: AsyncClient) -> Any:
     Returns:
         Object with retrieve_and_generate() method that calls the real RAG API
     """
+
     class RealRAGSystem:
         """Wrapper around the real RAG system for testing."""
 
@@ -270,9 +384,7 @@ async def real_rag_system(real_rag_client: AsyncClient) -> Any:
             self.client = client
 
         async def retrieve_and_generate(
-            self,
-            query: str,
-            top_k: int = 5  # Default matches RAG chain's retriever k=5
+            self, query: str, top_k: int = 5  # Default matches RAG chain's retriever k=5
         ) -> dict[str, Any]:
             """
             Call the real RAG system via /api/v1/chat/stream endpoint (SSE streaming).
@@ -288,10 +400,7 @@ async def real_rag_system(real_rag_client: AsyncClient) -> Any:
                 Dict with query, retrieved_contexts, and response
             """
             # Call the streaming chat endpoint (production code path)
-            response = await self.client.post(
-                "/api/v1/chat/stream",
-                json={"message": query}
-            )
+            response = await self.client.post("/api/v1/chat/stream", json={"message": query})
 
             # Check if request was successful
             if response.status_code != 200:
@@ -300,7 +409,7 @@ async def real_rag_system(real_rag_client: AsyncClient) -> Any:
                 )
 
             # Parse SSE response to extract clean text
-            response_text = collect_sse_response(response.text)
+            response_text = parse_sse_stream(response.text)
 
             # Note: Retrieved contexts are not currently returned by the API.
             # This causes 3 ragas metrics to auto-skip:
@@ -316,74 +425,105 @@ async def real_rag_system(real_rag_client: AsyncClient) -> Any:
                 "response": response_text,
             }
 
-    return RealRAGSystem(real_rag_client)
+    return RealRAGSystem(rag_client)
 
 
 # ============================================================================
 # CACHED RESPONSES FIXTURES (to avoid redundant API calls in tests)
 # ============================================================================
 
+
 @pytest_asyncio.fixture(scope="module")
-async def cached_traditional_responses(real_rag_system: Any) -> list[dict[str, Any]]:
+async def lexical_test_responses(rag_system: Any) -> list[dict[str, Any]]:
     """
     Cache RAG responses for traditional tests to avoid redundant API calls.
 
-    Makes API requests ONCE for all questions in REAL_TRADITIONAL_TEST_DATA,
+    Makes API requests ONCE for all questions in LEXICAL_TEST_CASES,
     then all 6 traditional test functions reuse these cached responses.
 
     Without caching: 6 tests × 5 questions = 30 API requests
     With caching: 5 questions = 5 API requests (6x faster!)
 
+    If RAG returns JSON responses, extracts the "answer" field for lexical matching.
+    If RAG returns plain text, uses it directly.
+
     Returns:
         List of dicts with 'user_input', 'response', 'reference' for each question
     """
-    from tests.ragas.fixtures.real_traditional_data import REAL_TRADITIONAL_TEST_DATA
+    from tests.ragas.fixtures.lexical_data import LEXICAL_TEST_CASES
 
     cached_responses = []
 
-    for item in REAL_TRADITIONAL_TEST_DATA:
+    for item in LEXICAL_TEST_CASES:
         # Make API call once
-        rag_output = await real_rag_system.retrieve_and_generate(item["user_input"])
+        rag_output = await rag_system.retrieve_and_generate(item["user_input"])
+
+        # Extract answer from JSON if present, otherwise use raw response
+        response_text = rag_output["response"]
+        response_json = extract_json(response_text)
+        if response_json and "answer" in response_json:
+            # RAG returned JSON - extract just the answer field for lexical matching
+            final_response = response_json["answer"]
+        else:
+            # RAG returned plain text - use as is
+            final_response = response_text
 
         # Cache the result
-        cached_responses.append({
-            "user_input": rag_output["query"],
-            "response": rag_output["response"],
-            "reference": item["reference"],
-            "retrieved_contexts": rag_output["retrieved_contexts"],
-        })
+        cached_responses.append(
+            {
+                "user_input": rag_output["query"],
+                "response": final_response,
+                "reference": item["reference"],
+                "retrieved_contexts": rag_output["retrieved_contexts"],
+            }
+        )
 
     return cached_responses
 
 
 @pytest_asyncio.fixture(scope="module")
-async def cached_semantic_responses(real_rag_system: Any) -> list[dict[str, Any]]:
+async def llm_judged_test_responses(rag_system: Any) -> list[dict[str, Any]]:
     """
     Cache RAG responses for semantic tests to avoid redundant API calls.
 
-    Makes API requests ONCE for all questions in REAL_SEMANTIC_TEST_DATA,
+    Makes API requests ONCE for all questions in LLM_JUDGED_TEST_CASES,
     then all 7 semantic test functions reuse these cached responses.
 
     Without caching: 7 tests × 5 questions = 35 API requests
     With caching: 5 questions = 5 API requests (7x faster!)
 
+    If RAG returns JSON responses, extracts the "answer" field for LLM evaluation.
+    If RAG returns plain text, uses it directly.
+
     Returns:
         List of dicts with 'user_input', 'response', 'reference', 'retrieved_contexts'
     """
-    from tests.ragas.fixtures.real_semantic_data import REAL_SEMANTIC_TEST_DATA
+    from tests.ragas.fixtures.llm_judged_data import LLM_JUDGED_TEST_CASES
 
     cached_responses = []
 
-    for item in REAL_SEMANTIC_TEST_DATA:
+    for item in LLM_JUDGED_TEST_CASES:
         # Make API call once
-        rag_output = await real_rag_system.retrieve_and_generate(item["user_input"])
+        rag_output = await rag_system.retrieve_and_generate(item["user_input"])
+
+        # Extract answer from JSON if present, otherwise use raw response
+        response_text = rag_output["response"]
+        response_json = extract_json(response_text)
+        if response_json and "answer" in response_json:
+            # RAG returned JSON - extract just the answer field for LLM evaluation
+            final_response = response_json["answer"]
+        else:
+            # RAG returned plain text - use as is
+            final_response = response_text
 
         # Cache the result
-        cached_responses.append({
-            "user_input": rag_output["query"],
-            "response": rag_output["response"],
-            "reference": item["reference"],
-            "retrieved_contexts": rag_output["retrieved_contexts"],
-        })
+        cached_responses.append(
+            {
+                "user_input": rag_output["query"],
+                "response": final_response,
+                "reference": item["reference"],
+                "retrieved_contexts": rag_output["retrieved_contexts"],
+            }
+        )
 
     return cached_responses

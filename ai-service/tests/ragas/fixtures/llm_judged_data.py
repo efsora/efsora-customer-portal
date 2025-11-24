@@ -1,17 +1,17 @@
 """
-Real semantic test data for LLM-based Ragas evaluation on actual RAG system.
+LLM-judged test data for semantic Ragas evaluation of RAG system.
 
-This module contains questions about YOUR ACTUAL DOCUMENTS in the vectorstore.
-These will be sent to the real /api/v1/chat/stream endpoint for evaluation.
+This module contains complex questions about YOUR ACTUAL DOCUMENTS that require
+semantic understanding and contextual reasoning. These will be sent to the
+production /api/v1/chat/stream endpoint and evaluated by Claude as an LLM judge.
 
 IMPORTANT: Update these questions based on the documents you've loaded into Weaviate!
 """
 
 from typing import Any
 
-
-# Questions for testing the real RAG system with semantic metrics
-REAL_SEMANTIC_TEST_DATA: list[dict[str, Any]] = [
+# Questions for testing the real RAG system with LLM-judged metrics
+LLM_JUDGED_TEST_CASES: list[dict[str, Any]] = [
     {
         "user_input": "Interpret the options available to the Client  if it rejects a 'Deliverable' for the third time, and the advantages these options provide to the Client.",
         "reference": "After a third rejection, the Client has two options: (a) accept the Deliverable as a nonconforming item, in which case the Fees shall be equitably reduced to reflect the value of the Deliverable as received relative to the value it would have had if it conformed, or (b) terminate the Agreement without further liability to the Contractor.Advantage: This grants the Client maximum flexibility. If the product, despite its flaws, still holds some value, option (a) allows them to use the product and gain a financial advantage (cost reduction). If the product is entirely unusable or if trust in the Contractor's competence is lost, option (b) provides a clear exit strategy, ensuring the Client does not waste further time or money.",

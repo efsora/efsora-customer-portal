@@ -1,17 +1,17 @@
 """
-Real traditional test data for non-LLM Ragas evaluation on actual RAG system.
+Lexical test data for non-LLM Ragas evaluation of RAG system.
 
 This module contains simple factual questions about YOUR ACTUAL DOCUMENTS.
-These will be sent to the real /api/v1/chat/stream endpoint for evaluation.
+These will be sent to the production /api/v1/chat/stream endpoint for evaluation
+using lexical/statistical metrics (BLEU, ROUGE, exact match, etc.).
 
 IMPORTANT: Update these questions based on the documents you've loaded into Weaviate!
 """
 
 from typing import Any
 
-
-# Factual questions for testing the real RAG system with traditional metrics
-REAL_TRADITIONAL_TEST_DATA: list[dict[str, Any]] = [
+# Factual questions for testing the real RAG system with lexical metrics
+LEXICAL_TEST_CASES: list[dict[str, Any]] = [
     {
         "user_input": "Who are the parties to the agreement, and who is defined as the 'Contractor'?",
         "reference": "[Client Legal Name] ('Client') and Efsora Teknoloji A.S. ('Contractor').",

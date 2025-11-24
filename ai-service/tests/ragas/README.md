@@ -4,12 +4,13 @@ Comprehensive test suites for evaluating RAG (Retrieval-Augmented Generation) sy
 
 ### Overview
 
-This testing framework provides **two types of test suites** for evaluating your real RAG system:
+This testing framework provides **three types of test suites** for evaluating your real RAG system:
 
 | Test Suite      | Metrics                        | Speed      | Cost | Use Case                                                                         |
 | --------------- | ------------------------------ | ---------- | ---- | -------------------------------------------------------------------------------- |
 | **Semantic**    | LLM-based (AWS Bedrock Claude) | Slow (min) | $$$  | Test actual RAG pipeline with complex questions requiring semantic understanding |
 | **Traditional** | Non-LLM (BLEU, ROUGE, etc.)    | Fast (sec) | Free | Test actual RAG pipeline with factual questions using lexical matching           |
+| **Structured**  | JSON parsing & validation      | Fast (sec) | Free | Test JSON responses for factual extraction (dates, entities, booleans)          |
 
 ### Directory Structure
 
@@ -18,13 +19,15 @@ tests/ragas/
 ├── README.md                           # This file
 ├── AWS_SETUP.md                        # AWS Bedrock configuration guide
 ├── __init__.py
-├── conftest.py                         # Pytest fixtures (AWS Bedrock LLM, traditional metrics, real RAG)
+├── conftest.py                         # Pytest fixtures (AWS Bedrock LLM, metrics, JSON helpers)
 ├── fixtures/
 │   ├── __init__.py
-│   ├── real_semantic_data.py          # Questions about YOUR actual documents (semantic)
-│   └── real_traditional_data.py       # Questions about YOUR actual documents (factual)
-├── test_rag_real_semantic.py          # Semantic tests (LLM-based evaluation)
-└── test_rag_real_traditional.py       # Traditional tests (lexical evaluation)
+│   ├── llm_judged_data.py          # Questions about YOUR actual documents (semantic)
+│   ├── lexical_data.py       # Questions about YOUR actual documents (factual)
+│   └── json_validation_data.py        # Questions with JSON structured references
+├── test_rag_llm_judged.py          # Semantic tests (LLM-based evaluation)
+├── test_rag_lexical.py       # Traditional tests (lexical evaluation)
+└── test_rag_json_validation.py        # Structured JSON tests (factual extraction)
 ```
 
 ## Setup
@@ -69,12 +72,12 @@ cd ai-service
 docker-compose up -d weaviate
 
 # 2. Update test data with questions about YOUR documents
-# Edit: tests/ragas/fixtures/real_semantic_data.py
-# Edit: tests/ragas/fixtures/real_traditional_data.py
+# Edit: tests/ragas/fixtures/llm_judged_data.py
+# Edit: tests/ragas/fixtures/lexical_data.py
 
 # 3. Run tests
-uv run pytest tests/ragas/test_rag_real_traditional.py -v
-ENV=test AWS_ACCESS_KEY_ID=xxx AWS_SECRET_ACCESS_KEY=yyy pytest tests/ragas/test_rag_real_semantic.py -v  # Slow, costs money
+uv run pytest tests/ragas/test_rag_lexical.py -v
+ENV=test AWS_ACCESS_KEY_ID=xxx AWS_SECRET_ACCESS_KEY=yyy pytest tests/ragas/test_rag_llm_judged.py -v  # Slow, costs money
 ```
 
 ### All Test Commands
@@ -84,29 +87,29 @@ ENV=test AWS_ACCESS_KEY_ID=xxx AWS_SECRET_ACCESS_KEY=yyy pytest tests/ragas/test
 ENV=test AWS_ACCESS_KEY_ID=xxx AWS_SECRET_ACCESS_KEY=yyy pytest tests/ragas/ -v
 
 # Run specific test file
-pytest tests/ragas/test_rag_real_traditional.py -v      # Traditional (fast, free)
-pytest tests/ragas/test_rag_real_semantic.py -v         # Semantic (slow, costs money)
+pytest tests/ragas/test_rag_lexical.py -v      # Traditional (fast, free)
+pytest tests/ragas/test_rag_llm_judged.py -v         # Semantic (slow, costs money)
 
 # Run specific test function
-pytest tests/ragas/test_rag_real_traditional.py::test_real_traditional_exact_match -v
-pytest tests/ragas/test_rag_real_semantic.py::test_real_semantic_answer_relevancy -v
+pytest tests/ragas/test_rag_lexical.py::test_exact_match -v
+pytest tests/ragas/test_rag_llm_judged.py::test_answer_relevancy -v
 
 # Run with detailed output (shows responses)
-pytest tests/ragas/test_rag_real_semantic.py -v -s
+pytest tests/ragas/test_rag_llm_judged.py -v -s
 
 # Run traditional tests in parallel (fast!)
-pytest tests/ragas/test_rag_real_traditional.py -n auto
+pytest tests/ragas/test_rag_lexical.py -n auto
 
 # Run only traditional tests (free, no AWS needed)
-pytest tests/ragas/test_rag_real_traditional.py -v
+pytest tests/ragas/test_rag_lexical.py -v
 
 # Run only semantic tests (requires AWS credentials)
-ENV=test AWS_ACCESS_KEY_ID=xxx AWS_SECRET_ACCESS_KEY=yyy pytest tests/ragas/test_rag_real_semantic.py -v
+ENV=test AWS_ACCESS_KEY_ID=xxx AWS_SECRET_ACCESS_KEY=yyy pytest tests/ragas/test_rag_llm_judged.py -v
 ```
 
 ## Test Suites Explained
 
-### 1. Semantic Test Suite (test_rag_real_semantic.py)
+### 1. Semantic Test Suite (test_rag_llm_judged.py)
 
 **Uses**: Anthropic Claude Sonnet 4 for evaluation
 **Speed**: Slow (2-5 minutes per test)
@@ -117,13 +120,13 @@ ENV=test AWS_ACCESS_KEY_ID=xxx AWS_SECRET_ACCESS_KEY=yyy pytest tests/ragas/test
 
 | Test Function                                 | Metric             | What It Measures                                |
 | --------------------------------------------- | ------------------ | ----------------------------------------------- |
-| `test_real_semantic_faithfulness`             | Faithfulness       | No hallucination - response grounded in context |
-| `test_real_semantic_answer_relevancy`         | Answer Relevancy   | Response directly addresses the question        |
-| `test_real_semantic_context_precision`        | Context Precision  | Quality of retrieved contexts (low noise)       |
-| `test_real_semantic_context_recall`           | Context Recall     | Completeness of retrieved information           |
-| `test_real_semantic_answer_similarity`        | Answer Similarity  | Semantic similarity to reference answer         |
-| `test_real_semantic_answer_correctness`       | Answer Correctness | Factual accuracy + semantic similarity          |
-| `test_real_semantic_comprehensive_evaluation` | All metrics        | Complete evaluation (most thorough)             |
+| `test_faithfulness`             | Faithfulness       | No hallucination - response grounded in context |
+| `test_answer_relevancy`         | Answer Relevancy   | Response directly addresses the question        |
+| `test_context_precision`        | Context Precision  | Quality of retrieved contexts (low noise)       |
+| `test_context_recall`           | Context Recall     | Completeness of retrieved information           |
+| `test_answer_similarity`        | Answer Similarity  | Semantic similarity to reference answer         |
+| `test_answer_correctness`       | Answer Correctness | Factual accuracy + semantic similarity          |
+| `test_comprehensive_evaluation` | All metrics        | Complete evaluation (most thorough)             |
 
 #### Thresholds (configurable in conftest.py:77)
 
@@ -142,13 +145,13 @@ ENV=test AWS_ACCESS_KEY_ID=xxx AWS_SECRET_ACCESS_KEY=yyy pytest tests/ragas/test
 
 ```bash
 # Test faithfulness (no hallucination)
-pytest tests/ragas/test_rag_real_semantic.py::test_real_semantic_faithfulness -v
+pytest tests/ragas/test_rag_llm_judged.py::test_faithfulness -v
 
 # Full semantic evaluation (all metrics)
-pytest tests/ragas/test_rag_real_semantic.py::test_real_semantic_comprehensive_evaluation -v
+pytest tests/ragas/test_rag_llm_judged.py::test_comprehensive_evaluation -v
 ```
 
-### 2. Traditional Test Suite (test_rag_real_traditional.py)
+### 2. Traditional Test Suite (test_rag_lexical.py)
 
 **Uses**: Ragas built-in non-LLM metrics (no API calls)
 **Speed**: Fast (<10 seconds for all tests)
@@ -159,12 +162,12 @@ pytest tests/ragas/test_rag_real_semantic.py::test_real_semantic_comprehensive_e
 
 | Test Function                                    | Metric                  | What It Measures                   | Best For                               |
 | ------------------------------------------------ | ----------------------- | ---------------------------------- | -------------------------------------- |
-| `test_real_traditional_exact_match`              | Exact Match             | Exact string equality              | Ports, codes, single-word answers      |
-| `test_real_traditional_bleu_score`               | BLEU                    | N-gram precision overlap           | Similar answers with slight variations |
-| `test_real_traditional_rouge_score`              | ROUGE-L                 | Longest common subsequence         | Key information presence               |
-| `test_real_traditional_string_similarity`        | Levenshtein             | Edit distance similarity           | Typos, format differences              |
-| `test_real_traditional_string_presence`          | String Presence         | Reference is substring of response | Critical info inclusion                |
-| `test_real_traditional_comprehensive_evaluation` | All traditional metrics | Complete fast evaluation           |
+| `test_exact_match`              | Exact Match             | Exact string equality              | Ports, codes, single-word answers      |
+| `test_bleu_score`               | BLEU                    | N-gram precision overlap           | Similar answers with slight variations |
+| `test_rouge_score`              | ROUGE-L                 | Longest common subsequence         | Key information presence               |
+| `test_string_similarity`        | Levenshtein             | Edit distance similarity           | Typos, format differences              |
+| `test_string_presence`          | String Presence         | Reference is substring of response | Critical info inclusion                |
+| `test_comprehensive_evaluation` | All traditional metrics | Complete fast evaluation           |
 
 #### Thresholds (configurable in conftest.py:101)
 
@@ -181,13 +184,13 @@ pytest tests/ragas/test_rag_real_semantic.py::test_real_semantic_comprehensive_e
 
 ```bash
 # Test exact matching (fastest)
-pytest tests/ragas/test_rag_real_traditional.py::test_real_traditional_exact_match -v
+pytest tests/ragas/test_rag_lexical.py::test_exact_match -v
 
 # Full traditional evaluation (all non-LLM metrics)
-pytest tests/ragas/test_rag_real_traditional.py::test_real_traditional_comprehensive_evaluation -v
+pytest tests/ragas/test_rag_lexical.py::test_comprehensive_evaluation -v
 
 # Run with detailed output
-pytest tests/ragas/test_rag_real_traditional.py -v -s
+pytest tests/ragas/test_rag_lexical.py -v -s
 ```
 
 ## Decision Tree: Which Test Suite to Use?
@@ -288,9 +291,9 @@ COMMAND_TEST_DATA = [
 
 ## How It Works
 
-### The `real_rag_system` Fixture
+### The `rag_system` Fixture
 
-All tests use the `real_rag_system` fixture which:
+All tests use the `rag_system` fixture which:
 
 -   Initializes the full FastAPI application with lifespan
 -   Builds the actual vectorstore and RAG chain
@@ -301,7 +304,7 @@ All tests use the `real_rag_system` fixture which:
 
 1. **Weaviate running** with documents loaded into vectorstore
 2. **AWS credentials** for Bedrock (semantic tests only, traditional tests don't need it)
-3. **Test data updated** in `fixtures/real_semantic_data.py` and `fixtures/real_traditional_data.py`
+3. **Test data updated** in `fixtures/llm_judged_data.py` and `fixtures/lexical_data.py`
 
 ### Setup Steps
 
@@ -310,19 +313,58 @@ All tests use the `real_rag_system` fixture which:
 docker-compose up -d weaviate
 
 # 2. Update test data with questions about YOUR documents
-# Edit: tests/ragas/fixtures/real_semantic_data.py
-# Edit: tests/ragas/fixtures/real_traditional_data.py
+# Edit: tests/ragas/fixtures/llm_judged_data.py
+# Edit: tests/ragas/fixtures/lexical_data.py
 
 # 3. Run tests
-pytest tests/ragas/test_rag_real_traditional.py -v        # Fast, free
-pytest tests/ragas/test_rag_real_semantic.py -v           # Slow, costs money
+pytest tests/ragas/test_rag_lexical.py -v   # Fast, free (lexical matching)
+pytest tests/ragas/test_rag_json_validation.py -v    # Fast, free (JSON validation)
+pytest tests/ragas/test_rag_llm_judged.py -v      # Slow, costs money (LLM-based)
+```
+
+### Structured JSON Tests (NEW!)
+
+The structured tests validate that RAG responses return properly formatted JSON with accurate factual extraction.
+
+**Why use structured tests?**
+- ✅ LLM responses are non-deterministic (different wording each time)
+- ✅ Traditional lexical matching (BLEU/ROUGE) fails on paraphrased answers
+- ✅ Structured JSON allows testing **facts** (dates, entities, numbers) instead of exact text
+- ✅ Better for factual Q&A, entity extraction, yes/no questions
+
+**Example structured reference:**
+```python
+{
+    "user_input": "How many days does the Client have to evaluate a Deliverable?",
+    "reference": {
+        "answer": "The Client has 15 days to evaluate a Deliverable.",
+        "entities": ["15 days", "Deliverable"],
+        "boolean_answer": "",  # Not a yes/no question
+        "confidence": "high"
+    }
+}
+```
+
+**Tests validate:**
+1. **JSON Parsing** - Response is valid JSON
+2. **Schema Validation** - Has required fields (answer, entities, boolean_answer, confidence)
+3. **Answer Accuracy** - Key facts present (substring matching)
+4. **Entity Extraction** - Correct entities identified (Jaccard similarity)
+5. **Boolean Handling** - Yes/no questions answered correctly
+6. **Overall Score** - Weighted combination of all metrics
+
+**Run structured tests:**
+```bash
+pytest tests/ragas/test_rag_json_validation.py -v        # All structured tests
+pytest tests/ragas/test_rag_json_validation.py::test_entity_extraction -v  # Single test
 ```
 
 ### Important Notes
 
+-   **Structured Tests Require JSON Prompt**: RAG prompt must be configured to return JSON responses (see `json_validation_data.py` for expected schema)
 -   **Retrieved Contexts Missing**: The `/api/v1/chat/stream` endpoint doesn't return `retrieved_contexts`, causing faithfulness/precision/recall tests to skip. See `RAG_API_REQUIREMENTS.md` for implementation details needed to enable these critical metrics.
 -   Tests are marked with `@pytest.mark.integration` for easy filtering
--   Traditional tests are free and fast, semantic tests cost money but are more accurate
+-   Traditional tests use lexical matching, structured tests use JSON validation
 -   Update the test data fixtures with questions relevant to YOUR actual documents
 
 ### Writing Custom Tests
@@ -430,7 +472,7 @@ Adjust in `conftest.py` based on your requirements:
 
 ```python
 @pytest.fixture
-def traditional_evaluation_config() -> dict[str, Any]:
+def lexical_config() -> dict[str, Any]:
     return {
         "exact_match_threshold": 0.95,  # Stricter: 95% instead of 100%
         "bleu_threshold": 0.5,           # More lenient
