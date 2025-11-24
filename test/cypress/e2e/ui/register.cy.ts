@@ -31,6 +31,25 @@ describe('UI > Register Functionality', () => {
       .verifyPasswordErrorVisible();
   });
 
+  it('should display error for password less than 12 characters', () => {
+    const shortPassword = 'Short123!'; // 9 characters
+
+    registerPage
+      .verifyPageLoaded()
+      .enterName('Test')
+      .enterSurname('User')
+      .enterEmail(testUserEmail)
+      .enterPassword(shortPassword)
+      .enterConfirmPassword(shortPassword)
+      .clickCreateAccount();
+
+    // Verify password error is displayed
+    registerPage.verifyPasswordErrorVisible();
+
+    // Verify error message contains minimum length requirement
+    registerPage.getPasswordErrorMessage().should('contain', 'at least 12 characters');
+  });
+
   it('should display error when email already exists', () => {
     const duplicateEmail = generateUniqueEmail('duplicate-ui');
     const duplicatePassword = 'SomePassword123!';

@@ -166,6 +166,13 @@ export class RegisterPage extends BasePage {
   }
 
   /**
+   * Get password error message text
+   */
+  getPasswordErrorMessage(): Cypress.Chainable<string> {
+    return this.getElement(this.selectors.passwordError).invoke('text');
+  }
+
+  /**
    * Verify confirm password error is displayed
    */
   verifyConfirmPasswordErrorVisible(): this {
