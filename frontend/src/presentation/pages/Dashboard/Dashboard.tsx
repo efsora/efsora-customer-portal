@@ -38,9 +38,13 @@ export default function Home() {
                             value="35%"
                             subValue="on track"
                         />
+                        <DashboardCard
+                            cardType="payment"
+                            title="Remaining Payment"
+                            value="$200k"
+                            subValue="on track"
+                        />
                     </div>
-
-                    
                 </div>
 
                 <CurrentMilestone />

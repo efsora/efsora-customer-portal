@@ -34,8 +34,13 @@
 
 /* Signature Card - Info */
 .signature .cardSubValue {
-    color: var(--color-info-600);
+    color: var(--color-info-800);
 }
+
+.signature .cardValue {
+    color: var(--color-info-800);
+}
+
 
 .icon_signature {
     background-color: var(--color-info-100);
@@ -43,7 +48,11 @@
 
 /* Invoices Card - Primary */
 .invoices .cardSubValue {
-    color: var(--color-primary-500);
+    color: var(--color-primary-800);
+}
+
+.invoices .cardValue {
+    color: var(--color-primary-800);
 }
 
 .icon_invoices {
@@ -52,9 +61,25 @@
 
 /* Progress Card - Green/Success */
 .progress .cardSubValue {
-    color: var(--color-success-600);
+    color: var(--color-success-800);
+}
+
+.progress .cardValue {
+    color: var(--color-success-800);
 }
 
 .icon_progress {
     background-color: var(--color-success-100);
+}
+
+.payment .cardSubValue {
+    color: var(--color-error-800);
+}
+
+.payment .cardValue {
+    color: var(--color-error-800);
+}
+
+.icon_payment {
+    background-color: var(--color-error-100);
 }

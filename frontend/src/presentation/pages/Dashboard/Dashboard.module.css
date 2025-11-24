@@ -19,7 +19,8 @@
 }
 
 .cards {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 24px;
     flex: 1;
 }
@@ -40,5 +41,9 @@
     .pageTitle {
         flex-direction: column;
         padding-bottom: 24px;
+    }
+
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
     }
 }

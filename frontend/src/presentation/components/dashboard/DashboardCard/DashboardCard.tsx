@@ -1,6 +1,6 @@
 import styles from './DashboardCard.module.css';
 
-export type CardType = 'signature' | 'invoices' | 'progress';
+export type CardType = 'signature' | 'invoices' | 'progress' | 'payment';
 
 interface DashboardCardProps {
     cardType: CardType;
@@ -22,6 +22,10 @@ const CARD_CONFIG: Record<CardType, { icon: string; label: string }> = {
         icon: '/dashboard/progress.svg',
         label: 'progress',
     },
+    payment: {
+        icon: '/dashboard/payment.svg',
+        label: 'payment',
+    }
 };
 
 export function DashboardCard({
