@@ -70,3 +70,9 @@
     color: var(--color-primary-900);
     margin-top: 2px;
 }
+
+.userProfile {
+    justify-self: flex-end;
+    width: 100%;
+    padding: 12px;
+}

@@ -1,5 +1,6 @@
 import MenuDropdown from '#components/common/MenuDropdown/MenuDropdown';
 
+import UserProfile from '#presentation/components/user/UserProfile/UserProfile';
 import NavigationMenu from '../NavigationMenu/NavigationMenu';
 import styles from './LeftBar.module.css';
 
@@ -72,6 +73,11 @@ export default function LeftBar() {
             </div>
 
             <NavigationMenu />
+
+            <div className={styles.userProfile}>
+                <UserProfile />
+            </div>
+
         </div>
     );
 }
