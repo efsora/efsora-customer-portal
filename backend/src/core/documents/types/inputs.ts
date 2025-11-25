@@ -13,3 +13,13 @@ export type GenerateUploadUrlInput = {
   projectId: number;
   userId: string;
 };
+
+/**
+ * Input for embedding a document
+ */
+export type EmbedDocumentInput = {
+  s3Key: string;
+  projectId: number;
+  userId: string;
+  collectionName?: string;
+};

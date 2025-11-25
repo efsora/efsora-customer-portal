@@ -19,6 +19,8 @@ tags:
     description: AI processing endpoints
   - name: Chat
     description: Chat endpoints for RAG assistant
+  - name: Weaviate
+    description: Vector database operations
 
 paths:
   /health:
@@ -87,6 +89,45 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /weaviate/embed-document:
+    post:
+      tags:
+        - Weaviate
+      summary: Embed document from S3
+      description: |
+        Download a document from S3, chunk it, generate embeddings, and store in Weaviate.
+        Returns progress updates via Server-Sent Events (SSE).
+      operationId: embedDocument
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmbedDocumentRequest"
+      responses:
+        "200":
+          description: SSE stream of embedding progress events
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: |
+                  Server-Sent Event data containing EmbedDocumentProgressEvent JSON.
+                  Each event is formatted as: data: {json}\n\n
+                example: 'data: {"stage":"embedding","progress_percent":45,"message":"Generating embeddings...","chunks_processed":5,"total_chunks":12}\n\n'
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 components:
   schemas:
     Error:
@@ -104,6 +145,80 @@ components:
         details:
           type: object
           description: Additional error details
+
+    EmbedDocumentRequest:
+      type: object
+      required:
+        - s3_key
+        - project_id
+      properties:
+        s3_key:
+          type: string
+          description: S3 object key of the document to embed
+          example: "documents/1/5/quarterly_report.pdf"
+          minLength: 1
+          maxLength: 1024
+        project_id:
+          type: integer
+          description: Project ID for metadata tracking
+          example: 5
+          minimum: 1
+        collection_name:
+          type: string
+          description: Weaviate collection name (optional, uses default if not provided)
+          example: "EfsoraDocs"
+          maxLength: 100
+
+    EmbedDocumentProgressEvent:
+      type: object
+      required:
+        - stage
+        - progress_percent
+        - message
+      properties:
+        stage:
+          type: string
+          enum:
+            - downloading
+            - loading
+            - chunking
+            - embedding
+            - storing
+            - completed
+            - error
+          description: |
+            Current stage of the embedding process:
+            - downloading (0-10%): Downloading file from S3
+            - loading (10-20%): Loading and parsing document
+            - chunking (20-30%): Semantic chunking
+            - embedding (30-90%): Generating embeddings
+            - storing (90-100%): Storing in Weaviate
+            - completed (100%): Done
+            - error: Failed with error message
+        progress_percent:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Overall progress percentage
+        message:
+          type: string
+          description: Human-readable status message
+        chunks_processed:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Number of chunks processed so far
+        total_chunks:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Total number of chunks to process
+        document_id:
+          type: string
+          description: Document identifier (set on completion)
+        error_code:
+          type: string
+          description: Error code (set on error)
 
   securitySchemes:
     apiKey:

@@ -129,7 +129,7 @@ export function generateS3UploadUrl(
 export function handleGenerateS3UploadUrlResult(
   result: unknown,
 ): Result<GenerateUploadUrlResult> {
-  const s3Result = result as { url: string; expiresIn: number };
+  const s3Result = result as { url: string; key: string; expiresIn: number };
 
   if (!s3Result.url) {
     return fail({
@@ -140,6 +140,7 @@ export function handleGenerateS3UploadUrlResult(
 
   return success({
     uploadUrl: s3Result.url,
+    s3Key: s3Result.key,
     expiresIn: s3Result.expiresIn,
   });
 }

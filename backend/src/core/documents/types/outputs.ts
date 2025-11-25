@@ -8,5 +8,6 @@
  */
 export type GenerateUploadUrlResult = {
   uploadUrl: string;
+  s3Key: string;
   expiresIn: number;
 };

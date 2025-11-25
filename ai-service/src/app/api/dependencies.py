@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 import weaviate
 
 from app.core.context import Context
+from app.core.settings import Settings
 from app.dependency_injection.container import Container
 
 
@@ -41,3 +42,10 @@ async def get_embeddings(
     embeddings: Annotated[BedrockEmbeddings, Depends(Provide[Container.embeddings])],
 ) -> BedrockEmbeddings:
     return embeddings
+
+
+@inject
+async def get_settings(
+    settings: Annotated[Settings, Depends(Provide[Container.settings])],
+) -> Settings:
+    return settings
