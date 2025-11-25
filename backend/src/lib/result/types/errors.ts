@@ -16,6 +16,7 @@ import type { UserError } from "#core/users/types/errors";
 import type { CompanyError } from "#core/companies/types/errors";
 import type { ProjectError } from "#core/projects/types/errors";
 import type { MilestoneError } from "#core/milestones/types/errors";
+import type { DocumentError } from "#core/documents/types/errors";
 
 /**
  * Global application error union.
@@ -35,6 +36,7 @@ import type { MilestoneError } from "#core/milestones/types/errors";
  * - CompanyError: Company-related errors
  * - ProjectError: Project-related errors
  * - MilestoneError: Milestone-related errors
+ * - DocumentError: Document-related errors
  *
  * To add new domains, import the domain error type and add to this union:
  * @example
@@ -53,7 +55,8 @@ export type AppError =
   | UserError
   | CompanyError
   | ProjectError
-  | MilestoneError;
+  | MilestoneError
+  | DocumentError;
 
 /**
  * Command execution error - effect execution failure.

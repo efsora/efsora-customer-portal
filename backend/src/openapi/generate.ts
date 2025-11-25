@@ -12,6 +12,7 @@ import "./paths/companies.js";
 import "./paths/projects.js";
 import "./paths/milestones.js";
 import "./paths/events.js";
+import "./paths/documents.js";
 import { registry } from "./registry.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -69,6 +70,10 @@ function generateOpenApiSpec() {
       {
         description: "Event tracking endpoints",
         name: "Events",
+      },
+      {
+        description: "Document management and S3 upload endpoints",
+        name: "Documents",
       },
     ],
   });
