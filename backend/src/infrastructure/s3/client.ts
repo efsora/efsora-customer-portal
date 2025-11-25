@@ -104,7 +104,7 @@ export async function generatePresignedUploadUrl(
 /**
  * Build S3 key for document storage
  *
- * Format: efsora-customer-portal/documents/{companyId}/{projectId}/{filename}
+ * Format: documents/{companyId}/{projectId}/{filename}
  *
  * @param companyId - Company ID
  * @param projectId - Project ID
@@ -119,5 +119,5 @@ export function buildDocumentKey(
   // Sanitize filename to prevent path traversal
   const sanitizedFilename = filename.replace(/[^a-zA-Z0-9._-]/g, "_");
 
-  return `efsora-customer-portal/documents/${String(companyId)}/${String(projectId)}/${sanitizedFilename}`;
+  return `documents/${String(companyId)}/${String(projectId)}/${sanitizedFilename}`;
 }

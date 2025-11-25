@@ -10,6 +10,8 @@ services:
       - "9229:9229"  # Node.js debug port
     volumes:
       - ./backend/src:/app/src
+      - ./backend/scripts:/app/scripts
+      - ./backend/package.json:/app/package.json
       - ./backend/drizzle.config.ts:/app/drizzle.config.ts
     environment:
       NODE_ENV: development
