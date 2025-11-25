@@ -43,19 +43,33 @@ export function Documents() {
                 fileName: file.name,
                 fileSize: file.size,
                 fileType: file.type,
-                projectId: 'default-project-id', // TODO: Get actual projectId from context/params
+                projectId: 1, // TODO: Get actual projectId from context/params
             },
             {
                 onSuccess: async (response) => {
                     try {
+                        // Check if we got a valid response with upload URL
+                        if (!response.success || !response.data?.uploadUrl) {
+                            throw new Error(
+                                response.message || 'Failed to get upload URL',
+                            );
+                        }
+
+                        console.log(response.data.uploadUrl);
+
                         // Upload file to the pre-signed URL
-                        const uploadResponse = await fetch(response.uploadUrl, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': file.type,
+                        const uploadResponse = await fetch(
+                            response.data.uploadUrl,
+                            {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': file.type,
+                                },
+                                body: file,
                             },
-                            body: file,
-                        });
+                        );
+
+                        console.log(uploadResponse);
 
                         if (!uploadResponse.ok) {
                             throw new Error(
@@ -98,6 +112,7 @@ export function Documents() {
                     }
                 },
                 onError: (error) => {
+                    console.log("god help us");
                     setUploadError(
                         error instanceof Error
                             ? error.message

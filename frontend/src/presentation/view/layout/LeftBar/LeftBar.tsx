@@ -41,7 +41,7 @@ export default function LeftBar() {
                             <button className={styles.customerButton}>
                                 <div className="flex gap-2">
                                     <img
-                                        src="allsober-logo.svg"
+                                        src="allsober.svg"
                                         alt={currentCustomer.name}
                                     />
                                     <div>

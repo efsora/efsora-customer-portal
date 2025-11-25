@@ -2,16 +2,16 @@ import * as api from '#api/api';
 import { ENDPOINTS } from '#api/endpoints';
 
 import type { GetUploadUrlRequest } from '../types/uploads/request.types';
-import type { GetUploadUrlResponse } from '../types/uploads/response.types';
+import type { AppResponse_GetUploadUrlResponse_ } from '../types/uploads/response.types';
 
 /**
  * Get a pre-signed upload URL for file uploads
  */
 export const getUploadUrl = async (
     request: GetUploadUrlRequest,
-): Promise<GetUploadUrlResponse> => {
+): Promise<AppResponse_GetUploadUrlResponse_> => {
     const response = await api.post<
-        GetUploadUrlResponse,
+        AppResponse_GetUploadUrlResponse_,
         GetUploadUrlRequest
     >(ENDPOINTS.UPLOADS.GET_UPLOAD_URL, request);
 
@@ -31,11 +31,11 @@ export const getUploadUrl = async (
         throw new Error('Invalid request parameters');
     }
 
-    if (response?.status !== 200) {
+    if (response?.status > 300) {
         throw new Error(
             `HTTP ${response?.status}: Failed to get upload URL`,
         );
     }
 
-    return response?.data as GetUploadUrlResponse;
+    return response?.data as AppResponse_GetUploadUrlResponse_;
 };
