@@ -20,4 +20,7 @@ export const ENDPOINTS = {
     UPLOADS: {
         GET_UPLOAD_URL: '/api/v1/documents/get-upload-url',
     },
+    DOCUMENTS: {
+        LIST: '/api/v1/documents',
+    },
 };

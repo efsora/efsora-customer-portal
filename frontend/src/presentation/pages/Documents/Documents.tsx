@@ -1,20 +1,33 @@
 import { useState } from 'react';
 
+import { useListDocuments } from '#api/hooks/useDocuments';
 import { useGetUploadUrl } from '#api/hooks/useUploads';
 import {
     FILTER_CATEGORIES,
     FILTER_TAGS,
     getFilterOptions,
-    MOCK_FILES,
     type FileRow,
     type FilterType,
 } from '#api/mockData';
+import type { DocumentRow } from '#api/types/documents/response.types';
 import MenuDropdown from '#components/common/MenuDropdown/MenuDropdown';
 import { UploadDocumentModal } from '#components/common/UploadDocumentModal/UploadDocumentModal';
 import PageTitle from '#presentation/components/common/PageTitle/PageTitle';
 import { Table } from '#presentation/components/common/Table/Table';
 
 import styles from './Documents.module.css';
+
+// Convert DocumentRow from API to FileRow for the Table component
+const toFileRow = (doc: DocumentRow): FileRow => ({
+    id: doc.id,
+    fileName: doc.fileName,
+    version: '', // Backend doesn't return version, set empty string
+    uploader: doc.uploader,
+    lastUpdated: doc.lastUpdated,
+    dateCreated: doc.dateCreated,
+    status: doc.status,
+    category: doc.category,
+});
 
 export function Documents() {
     const [activeTag, setActiveTag] = useState<string | null>(null);
@@ -30,6 +43,13 @@ export function Documents() {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadError, setUploadError] = useState<string | null>(null);
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+
+    // Fetch documents from API
+    // TODO: Get actual companyId and projectId from context/params
+    const { data: documentsResponse, isLoading: isLoadingDocuments } = useListDocuments({
+        companyId: 1,
+        projectId: 1,
+    });
 
     const { mutate: getUploadUrl } = useGetUploadUrl();
 
@@ -147,8 +167,13 @@ export function Documents() {
         setSelectedFilters(newFilters);
     };
 
-    // Combine mock files with uploaded files
-    const allFiles = [...uploadedFiles, ...MOCK_FILES];
+    // Get documents from API response and convert to FileRow format
+    const apiDocuments: FileRow[] = documentsResponse?.success && documentsResponse.data?.documents
+        ? documentsResponse.data.documents.map(toFileRow)
+        : [];
+
+    // Combine API documents with locally uploaded files (uploaded files appear first)
+    const allFiles = [...uploadedFiles, ...apiDocuments];
 
     // Filter logic: apply all filters
     const filteredFiles = allFiles.filter((file) => {
@@ -425,7 +450,13 @@ export function Documents() {
                 </div>
 
                 <div className={styles.documentTable}>
-                    <Table files={filteredFiles} />
+                    {isLoadingDocuments ? (
+                        <div className={styles.loadingContainer}>
+                            Loading documents...
+                        </div>
+                    ) : (
+                        <Table files={filteredFiles} />
+                    )}
                 </div>
             </div>
 

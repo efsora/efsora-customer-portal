@@ -1,8 +1,6 @@
-import { useState } from 'react';
 
-import styles from './Table.module.css';
 import Tag from '../Tag/Tag';
-import VersionDropdown from '../VersionDropdown/VersionDropdown';
+import styles from './Table.module.css';
 
 interface FileRow {
     id: string;
@@ -24,17 +22,17 @@ interface TableProps {
 }
 
 export function Table({ files }: TableProps) {
-    const [selectedVersions, setSelectedVersions] = useState<
+    {/*const [selectedVersions, setSelectedVersions] = useState<
         Record<string, string>
-    >(Object.fromEntries(files.map((file) => [file.id, file.version])));
+    >(Object.fromEntries(files.map((file) => [file.id, file.version])));*/}
 
-    const handleVersionChange = (fileId: string, newVersion: string) => {
+    {/*const handleVersionChange = (fileId: string, newVersion: string) => {
         setSelectedVersions((prev) => ({
             ...prev,
             [fileId]: newVersion,
         }));
         console.log('Selected version:', newVersion);
-    };
+    };*/}
 
     return (
         <div className={styles.container}>
@@ -42,7 +40,7 @@ export function Table({ files }: TableProps) {
                 <thead>
                     <tr>
                         <th className={styles.header}>File Name</th>
-                        <th className={styles.header}>Version</th>
+                        {/*<th className={styles.header}>Version</th>*/}
                         <th className={styles.header}>Uploader</th>
                         <th className={styles.header}>Last Updated</th>
                         <th className={styles.header}>Status</th>
@@ -62,7 +60,7 @@ export function Table({ files }: TableProps) {
                                     {file.fileName.name}
                                 </div>
                             </td>
-                            <td>
+                            {/*<td>
                                 <VersionDropdown
                                     options={
                                         ['v1.0.3', 'v1.0.4', 'v1.1.0'].includes(
@@ -83,7 +81,7 @@ export function Table({ files }: TableProps) {
                                         handleVersionChange(file.id, val)
                                     }
                                 />
-                            </td>
+                            </td>*/}
                             <td>
                                 <div className={styles.cell}>
                                     <img
@@ -110,13 +108,13 @@ export function Table({ files }: TableProps) {
                                 </div>
                             </td>
                             {/*
-              <td>
-                <button className={styles.downloadButton}>
-                    <img src="/documents/table-download.svg" alt="download" />
-                    Download
-                </button>
-              </td>
-              */}
+                            <td>
+                                <button className={styles.downloadButton}>
+                                    <img src="/documents/table-download.svg" alt="download" />
+                                    Download
+                                </button>
+                            </td>
+                            */}
                         </tr>
                     ))}
                 </tbody>

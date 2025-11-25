@@ -41,6 +41,13 @@ export type DocumentS3UploadUrlGenerationError = ErrorBase & {
 };
 
 /**
+ * Error when S3 list operation fails
+ */
+export type DocumentS3ListFailedError = ErrorBase & {
+  code: "DOCUMENT_S3_LIST_FAILED";
+};
+
+/**
  * Union type for all document-specific errors
  */
 export type DocumentError =
@@ -48,4 +55,5 @@ export type DocumentError =
   | DocumentUserNotFoundError
   | DocumentUnauthorizedProjectAccessError
   | DocumentProjectNoCompanyError
-  | DocumentS3UploadUrlGenerationError;
+  | DocumentS3UploadUrlGenerationError
+  | DocumentS3ListFailedError;

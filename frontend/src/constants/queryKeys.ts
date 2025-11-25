@@ -11,4 +11,7 @@ export const QUERY_KEYS = {
     UPLOADS: {
         GET_UPLOAD_URL: 'get-upload-url',
     },
+    DOCUMENTS: {
+        LIST: 'list-documents',
+    },
 };

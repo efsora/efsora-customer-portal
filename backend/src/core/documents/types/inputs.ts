@@ -13,3 +13,11 @@ export type GenerateUploadUrlInput = {
   projectId: number;
   userId: string;
 };
+
+/**
+ * Input for listing documents in a project
+ */
+export type ListDocumentsInput = {
+  companyId: number;
+  projectId: number;
+};

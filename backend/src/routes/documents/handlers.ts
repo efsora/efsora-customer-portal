@@ -6,10 +6,12 @@ import {
 import { run, matchResponse } from "#lib/result";
 import type { ValidatedRequest } from "#middlewares/validate";
 import type { AuthenticatedRequest } from "#middlewares/auth";
-import type { GenerateUploadUrlBody } from "./schemas";
+import type { GenerateUploadUrlBody, ListDocumentsQuery } from "./schemas";
 import {
   generateUploadUrl,
+  listDocuments,
   type GenerateUploadUrlResult,
+  type ListDocumentsResult,
 } from "#core/documents";
 
 /**
@@ -38,6 +40,28 @@ export async function handleGenerateUploadUrl(
         uploadUrl: data.uploadUrl,
         expiresIn: data.expiresIn,
       }),
+    onFailure: (error) => createFailureResponse(error),
+  });
+}
+
+/**
+ * Handler for GET /api/v1/documents
+ * List documents from S3 for a given company and project
+ */
+export async function handleListDocuments(
+  req: ValidatedRequest<{ query: ListDocumentsQuery }>,
+): Promise<AppResponse<ListDocumentsResult>> {
+  const query = req.validated.query;
+
+  const result = await run(
+    listDocuments({
+      companyId: query.companyId,
+      projectId: query.projectId,
+    }),
+  );
+
+  return matchResponse(result, {
+    onSuccess: (data) => createSuccessResponse(data),
     onFailure: (error) => createFailureResponse(error),
   });
 }

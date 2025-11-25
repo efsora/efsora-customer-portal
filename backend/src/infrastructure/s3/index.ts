@@ -7,6 +7,12 @@
 export {
   generatePresignedUploadUrl,
   buildDocumentKey,
+  buildDocumentPrefix,
+  listObjects,
+  getObjectMetadata,
   type GenerateUploadUrlParams,
   type GenerateUploadUrlResult,
+  type ListObjectsParams,
+  type ListObjectsResult,
+  type S3ObjectInfo,
 } from "./client.js";
