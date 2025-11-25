@@ -55,21 +55,17 @@ export function Documents() {
                             );
                         }
 
-                        console.log(response.data.uploadUrl);
-
-                        // Upload file to the pre-signed URL
+                        // Upload file directly to S3 using the pre-signed URL
                         const uploadResponse = await fetch(
                             response.data.uploadUrl,
                             {
                                 method: 'PUT',
-                                headers: {
-                                    'Content-Type': file.type,
-                                },
                                 body: file,
+                                headers: {
+                                    'Content-Type': file.type || 'application/octet-stream',
+                                },
                             },
                         );
-
-                        console.log(uploadResponse);
 
                         if (!uploadResponse.ok) {
                             throw new Error(
@@ -112,7 +108,6 @@ export function Documents() {
                     }
                 },
                 onError: (error) => {
-                    console.log("god help us");
                     setUploadError(
                         error instanceof Error
                             ? error.message
