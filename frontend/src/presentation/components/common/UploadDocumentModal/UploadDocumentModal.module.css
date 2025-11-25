@@ -1,0 +1,228 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background-color: white;
+    border-radius: 12px;
+    padding: 16px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    position: relative;
+}
+
+.popupTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-neutral-grey-600);
+}
+
+.closeButton {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    align-self: flex-start;
+}
+
+.closeButton:hover {
+    background-color: var(--color-neutral-grey-100);
+    color: var(--color-neutral-grey-700);
+}
+
+.section {
+    margin-bottom: 28px;
+}
+
+.section:last-child {
+    margin-bottom: 32px;
+}
+
+.sectionTitle {
+    display: block;
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--color-neutral-grey-600);
+    margin-bottom: 12px;
+}
+
+.dropZone {
+    border: 2px dashed var(--color-neutral-grey-300);
+    border-radius: 8px;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-neutral-grey-50);
+    transition: all 0.2s ease;
+    min-height: 150px;
+}
+
+.dropZone.active {
+    border-color: var(--color-primary-500);
+    background-color: var(--color-primary-50);
+}
+
+.browseButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 0;
+}
+
+.browseButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.dropText {
+    font-size: 16px;
+    color: var(--color-primary-900);
+    text-align: center;
+}
+
+.dropSubtext {
+    font-weight: 500;
+    font-size: 11px;
+    color: var(--color-neutral-grey-500);
+    text-align: center;
+    line-height: 1.4;
+}
+
+.clickLink {
+    color: var(--color-primary-500);
+    font-weight: 600;
+}
+
+.selectedFileName {
+    margin-top: 12px;
+    padding: 8px 12px;
+    background-color: var(--color-primary-50);
+    border: 1px solid var(--color-primary-200);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    color: var(--color-primary-700);
+    word-break: break-word;
+    text-align: center;
+}
+
+.categoryDropdown {
+    width: 100%;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: var(--color-neutral-grey-500);
+    background-color: var(--color-neutral-grey-50);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 20px;
+    padding-right: 36px;
+}
+
+.categoryDropdown:hover:not(:disabled) {
+    border-color: var(--color-neutral-grey-400);
+    background-color: var(--color-neutral-grey-50);
+}
+
+.categoryDropdown:focus {
+    outline: none;
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.categoryDropdown:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: var(--color-neutral-grey-100);
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.cancelButton {
+    padding: 8px 24px;
+    background-color: white;
+    border: 1px solid var(--color-neutral-grey-200);
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--color-neutral-grey-600);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cancelButton:hover:not(:disabled) {
+    background-color: var(--color-neutral-grey-50);
+    border-color: var(--color-neutral-grey-400);
+}
+
+.cancelButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.uploadButton {
+    padding: 8px 24px 8px 16px;
+    background-color: var(--color-primary-500);
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.uploadButton:hover:not(:disabled) {
+    background-color: var(--color-primary-600);
+}
+
+.uploadButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+    .modal {
+        width: 95%;
+        padding: 24px;
+    }
+
+    .dropZone {
+        padding: 30px 16px;
+        min-height: 130px;
+    }
+
+    .dropText {
+        font-size: 0.875rem;
+    }
+
+    .buttonGroup {
+        flex-direction: column-reverse;
+    }
+
+    .cancelButton,
+    .uploadButton {
+        width: 100%;
+    }
+}

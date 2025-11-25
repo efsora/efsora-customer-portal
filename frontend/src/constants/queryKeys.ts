@@ -8,4 +8,7 @@ export const QUERY_KEYS = {
         LOGIN: 'login',
         REGISTER: 'register',
     },
+    UPLOADS: {
+        GET_UPLOAD_URL: 'get-upload-url',
+    },
 };

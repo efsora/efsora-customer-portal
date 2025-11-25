@@ -19,6 +19,8 @@ tags:
     description: User management endpoints
   - name: Chat
     description: Chat endpoints
+  - name: Uploads
+    description: File upload endpoints
 
 paths:
   /health:
@@ -156,6 +158,92 @@ paths:
                 $ref: "#/components/schemas/Error"
         "404":
           description: Session not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /uploads/get-upload-url:
+    post:
+      tags:
+        - Uploads
+      summary: Get upload URL
+      description: Generate a pre-signed upload URL for file uploads
+      operationId: getUploadUrl
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fileName
+                - fileSize
+                - fileType
+                - projectId
+              properties:
+                fileName:
+                  type: string
+                  description: Name of the file to be uploaded
+                  example: "document.pdf"
+                fileSize:
+                  type: integer
+                  description: Size of the file in bytes
+                  example: 1024000
+                fileType:
+                  type: string
+                  description: MIME type of the file
+                  example: "application/pdf"
+                projectId:
+                  type: string
+                  format: uuid
+                  description: Project ID associated with the upload
+                  example: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        "200":
+          description: Upload URL generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uploadUrl:
+                    type: string
+                    format: uri
+                    description: Pre-signed URL for uploading the file
+                    example: "https://s3.amazonaws.com/bucket/path?signature=..."
+                  expiresIn:
+                    type: integer
+                    description: URL expiration time in seconds
+                    example: 3600
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden - User does not have access to project
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Project not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
           content:
             application/json:
               schema:

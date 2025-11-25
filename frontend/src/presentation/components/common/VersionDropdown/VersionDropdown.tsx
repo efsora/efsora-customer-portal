@@ -1,5 +1,5 @@
-import MenuDropdown from '../MenuDropdown/MenuDropdown';
 import styles from './VersionDropdown.module.css';
+import MenuDropdown from '../MenuDropdown/MenuDropdown';
 
 interface VersionDropdownProps {
     options: string[];

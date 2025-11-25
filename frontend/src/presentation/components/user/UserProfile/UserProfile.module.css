@@ -43,9 +43,8 @@
 }
 
 .desktopUserName {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--color-primary-900);
+    font-size: 13px;
+    color: var(--color-neutral-grey-600);
     margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;

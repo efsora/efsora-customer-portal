@@ -29,12 +29,12 @@
 }
 
 .navLink:hover {
-    background-color: #f5f5f5;
+    background-color: var(--color-neutral-grey-50);
     border-radius: 10px;
 }
 
 .navLink.active {
-    background-color: #f0f4ff;
-    color: #0066cc;
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-600);
     border-radius: 10px;
 }

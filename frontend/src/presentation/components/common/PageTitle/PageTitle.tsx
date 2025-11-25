@@ -10,9 +10,9 @@ export default function PageTitle({ title, description }: PageTitleProps) {
         <div className={styles.container}>
             <div className={styles.title}>{title}</div>
             {description && (
-                <p className={styles.subtitle} data-testid="welcome-message">
+                <div className={styles.subtitle} data-testid="welcome-message">
                     {description}
-                </p>
+                </div>
             )}
         </div>
     );

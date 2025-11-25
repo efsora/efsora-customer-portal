@@ -17,4 +17,7 @@ export const ENDPOINTS = {
         HISTORY: (sessionId: string) =>
             `/api/v1/chat/sessions/${sessionId}/messages`,
     },
+    UPLOADS: {
+        GET_UPLOAD_URL: '/api/v1/uploads/get-upload-url',
+    },
 };

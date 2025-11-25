@@ -24,14 +24,18 @@
     grid-template-columns: repeat(4, 1fr);
     width: fit-content;
     gap: 12px;
+    background-color: white;
+    border-radius: 24px;
+    padding: 4px;
+    border: 1px solid var(--color-neutral-grey-200);
 }
 
 .filterButton {
-    padding: 8px 16px;
+    padding: 4px 16px;
     border-radius: 24px;
     color: var(--color-neutral-grey-500);
     font-weight: 500;
-    font-size: 0.875rem;
+    font-size: 14px;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -161,4 +165,37 @@
 
 .documentTable {
     width: 100%;
+}
+
+.uploadSection {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.uploadButton {
+    padding: 8px;
+    background-color: var(--color-primary-500);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    align-self: flex-start;
+}
+
+.uploadButton:hover:not(:disabled) {
+    background-color: var(--color-primary-600);
+}
+
+.uploadButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.uploadError {
+    color: var(--color-error-500, #ef4444);
+    font-size: 0.875rem;
+    padding: 8px 12px;
+    background-color: var(--color-error-50, #fee2e2);
+    border-radius: 4px;
+    border-left: 4px solid var(--color-error-500, #ef4444);
 }

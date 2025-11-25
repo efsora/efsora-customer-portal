@@ -1,13 +1,16 @@
 import { useState } from 'react';
 
+import { useGetUploadUrl } from '#api/hooks/useUploads';
 import {
     FILTER_CATEGORIES,
     FILTER_TAGS,
     getFilterOptions,
     MOCK_FILES,
+    type FileRow,
     type FilterType,
 } from '#api/mockData';
 import MenuDropdown from '#components/common/MenuDropdown/MenuDropdown';
+import { UploadDocumentModal } from '#components/common/UploadDocumentModal/UploadDocumentModal';
 import PageTitle from '#presentation/components/common/PageTitle/PageTitle';
 import { Table } from '#presentation/components/common/Table/Table';
 
@@ -23,6 +26,88 @@ export function Documents() {
     const [expandedCategories, setExpandedCategories] = useState<
         Set<FilterType>
     >(new Set());
+    const [uploadedFiles, setUploadedFiles] = useState<FileRow[]>([]);
+    const [isUploading, setIsUploading] = useState(false);
+    const [uploadError, setUploadError] = useState<string | null>(null);
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+
+    const { mutate: getUploadUrl } = useGetUploadUrl();
+
+    const handleUploadDocument = (file: File, category: string) => {
+        setUploadError(null);
+        setIsUploading(true);
+
+        // Get upload URL from backend
+        getUploadUrl(
+            {
+                fileName: file.name,
+                fileSize: file.size,
+                fileType: file.type,
+                projectId: 'default-project-id', // TODO: Get actual projectId from context/params
+            },
+            {
+                onSuccess: async (response) => {
+                    try {
+                        // Upload file to the pre-signed URL
+                        const uploadResponse = await fetch(response.uploadUrl, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': file.type,
+                            },
+                            body: file,
+                        });
+
+                        if (!uploadResponse.ok) {
+                            throw new Error(
+                                `Upload failed: ${uploadResponse.statusText}`,
+                            );
+                        }
+
+                        // Add uploaded file to the list
+                        const newFile: FileRow = {
+                            id: Date.now().toString(),
+                            fileName: {
+                                name: file.name,
+                                icon: '/documents/table-doc.svg',
+                            },
+                            version: 'v1.0.0',
+                            uploader: {
+                                name: 'You',
+                                icon: '/documents/table-person.svg',
+                            },
+                            lastUpdated: new Date().toISOString(),
+                            dateCreated: new Date().toISOString(),
+                            status: 'inProgress',
+                            category: category as
+                                | 'SoW'
+                                | 'Legal'
+                                | 'Billing'
+                                | 'Assets',
+                        };
+
+                        setUploadedFiles((prev) => [newFile, ...prev]);
+                        setIsUploading(false);
+                        setIsUploadModalOpen(false);
+                    } catch (error) {
+                        setUploadError(
+                            error instanceof Error
+                                ? error.message
+                                : 'Failed to upload file',
+                        );
+                        setIsUploading(false);
+                    }
+                },
+                onError: (error) => {
+                    setUploadError(
+                        error instanceof Error
+                            ? error.message
+                            : 'Failed to get upload URL',
+                    );
+                    setIsUploading(false);
+                },
+            },
+        );
+    };
 
     const toggleCategoryExpand = (filterType: FilterType) => {
         const newExpanded = new Set(expandedCategories);
@@ -52,8 +137,11 @@ export function Documents() {
         setSelectedFilters(newFilters);
     };
 
+    // Combine mock files with uploaded files
+    const allFiles = [...uploadedFiles, ...MOCK_FILES];
+
     // Filter logic: apply all filters
-    const filteredFiles = MOCK_FILES.filter((file) => {
+    const filteredFiles = allFiles.filter((file) => {
         // Filter by category (tag)
         if (activeTag && file.category !== activeTag) {
             return false;
@@ -130,10 +218,30 @@ export function Documents() {
 
     return (
         <div>
-            <PageTitle
-                title="Documents"
-                description="Access and manage project documents."
-            />
+            <div className='flex justify-between'>
+                <PageTitle
+                    title="Documents"
+                    description="Access and manage project documents."
+                />
+
+                {/* Upload button */}
+                <div className={styles.uploadSection}>
+                    <button
+                        className={styles.uploadButton}
+                        onClick={() => setIsUploadModalOpen(true)}
+                        disabled={isUploading}
+                    >
+                        <img src="/documents/upload.svg" alt="upload" />
+                    </button>
+                    {uploadError && (
+                        <div className={styles.uploadError}>
+                            {uploadError}
+                        </div>
+                    )}
+                </div>
+
+            </div>
+            
 
             <div className={styles.pageContainer}>
                 <div className={styles.searchContainer}>
@@ -310,6 +418,14 @@ export function Documents() {
                     <Table files={filteredFiles} />
                 </div>
             </div>
+
+            {/* Upload Document Modal */}
+            <UploadDocumentModal
+                isOpen={isUploadModalOpen}
+                onClose={() => setIsUploadModalOpen(false)}
+                onUpload={handleUploadDocument}
+                isLoading={isUploading}
+            />
         </div>
     );
 }
