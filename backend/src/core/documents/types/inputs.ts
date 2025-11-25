@@ -3,6 +3,8 @@
  * Define input structures for document operations
  */
 
+import type { DocumentCategory } from "./outputs";
+
 /**
  * Input for generating a pre-signed upload URL
  */
@@ -12,6 +14,7 @@ export type GenerateUploadUrlInput = {
   fileType: string;
   projectId: number;
   userId: string;
+  category: DocumentCategory;
 };
 
 /**

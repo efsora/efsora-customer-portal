@@ -31,6 +31,7 @@ export async function handleGenerateUploadUrl(
       fileType: body.fileType,
       projectId: body.projectId,
       userId,
+      category: body.category,
     }),
   );
 

@@ -174,6 +174,7 @@ describe("Generate Upload URL Integration Tests", () => {
         fileType: "application/pdf",
         projectId: testProjectId,
         userId: testUserId,
+        category: "SoW",
       };
 
       const result = await run(generateUploadUrl(input));
@@ -198,6 +199,7 @@ describe("Generate Upload URL Integration Tests", () => {
         fileType: "application/pdf",
         projectId: testProjectId,
         userId: testUserId,
+        category: "SoW",
       };
 
       const result = await run(generateUploadUrl(input));
@@ -231,6 +233,7 @@ describe("Generate Upload URL Integration Tests", () => {
           fileType: testCase.fileType,
           projectId: testProjectId,
           userId: testUserId,
+          category: "SoW",
         };
 
         const result = await run(generateUploadUrl(input));
@@ -250,6 +253,7 @@ describe("Generate Upload URL Integration Tests", () => {
         fileType: "video/mp4",
         projectId: testProjectId,
         userId: testUserId,
+        category: "SoW",
       };
 
       const result = await run(generateUploadUrl(input));
@@ -270,6 +274,7 @@ describe("Generate Upload URL Integration Tests", () => {
         fileType: "application/pdf",
         projectId: 99999, // Non-existent project
         userId: testUserId,
+        category: "SoW",
       };
 
       const result = await run(generateUploadUrl(input));
@@ -312,6 +317,7 @@ describe("Generate Upload URL Integration Tests", () => {
         fileType: "application/pdf",
         projectId: projectNoCompanyResult.value.id,
         userId: testUserId,
+        category: "SoW",
       };
 
       const result = await run(generateUploadUrl(input));
@@ -332,6 +338,7 @@ describe("Generate Upload URL Integration Tests", () => {
         fileType: "application/pdf",
         projectId: testProjectId,
         userId: "00000000-0000-0000-0000-000000000000", // Non-existent user
+        category: "SoW",
       };
 
       const result = await run(generateUploadUrl(input));
@@ -353,6 +360,7 @@ describe("Generate Upload URL Integration Tests", () => {
         fileType: "application/pdf",
         projectId: anotherProjectId, // Project belongs to anotherCompanyId
         userId: testUserId, // User belongs to testCompanyId (and testProjectId)
+        category: "SoW",
       };
 
       const result = await run(generateUploadUrl(input));
@@ -375,6 +383,7 @@ describe("Generate Upload URL Integration Tests", () => {
         fileType: "application/pdf",
         projectId: testProjectId, // Project belongs to testCompanyId
         userId: testUserId, // User is assigned to testProjectId
+        category: "SoW",
       };
 
       const result = await run(generateUploadUrl(input));
@@ -392,6 +401,7 @@ describe("Generate Upload URL Integration Tests", () => {
         fileType: "application/pdf",
         projectId: anotherProjectId, // Project belongs to anotherCompanyId
         userId: anotherUserId, // User belongs to anotherCompanyId
+        category: "SoW",
       };
 
       const result = await run(generateUploadUrl(input));
@@ -413,6 +423,7 @@ describe("Generate Upload URL Integration Tests", () => {
         fileType: "application/pdf",
         projectId: testProjectId,
         userId: testUserId,
+        category: "SoW",
       };
 
       const result = await run(generateUploadUrl(input));
@@ -431,6 +442,7 @@ describe("Generate Upload URL Integration Tests", () => {
         fileType: "image/png",
         projectId: testProjectId,
         userId: testUserId,
+        category: "SoW",
       };
 
       const result = await run(generateUploadUrl(input));
@@ -462,6 +474,7 @@ describe("Generate Upload URL Integration Tests", () => {
         fileType: "application/pdf",
         projectId: testProjectId,
         userId: testUserId,
+        category: "SoW",
       };
 
       const result = await run(generateUploadUrl(input));
@@ -481,6 +494,7 @@ describe("Generate Upload URL Integration Tests", () => {
         fileType: "application/pdf",
         projectId: testProjectId,
         userId: testUserId,
+        category: "SoW",
       };
 
       const result = await run(generateUploadUrl(input));
@@ -498,6 +512,7 @@ describe("Generate Upload URL Integration Tests", () => {
         fileType: "application/pdf",
         projectId: testProjectId,
         userId: testUserId,
+        category: "SoW",
       };
 
       const result = await run(generateUploadUrl(input));
@@ -517,6 +532,7 @@ describe("Generate Upload URL Integration Tests", () => {
         fileType: "text/plain",
         projectId: testProjectId,
         userId: testUserId,
+        category: "SoW",
       };
 
       const result = await run(generateUploadUrl(input));
@@ -537,6 +553,7 @@ describe("Generate Upload URL Integration Tests", () => {
         fileType: "application/pdf",
         projectId: testProjectId,
         userId: testUserId,
+        category: "SoW",
       };
 
       const result = await run(generateUploadUrl(input));

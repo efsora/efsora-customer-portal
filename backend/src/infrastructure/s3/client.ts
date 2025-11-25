@@ -39,6 +39,7 @@ export type GenerateUploadUrlParams = {
   key: string;
   contentType: string;
   expiresIn?: number; // seconds, default 900 (15 minutes)
+  metadata?: Record<string, string>; // Custom metadata (e.g., category)
 };
 
 /**
@@ -59,7 +60,7 @@ export type GenerateUploadUrlResult = {
 export async function generatePresignedUploadUrl(
   params: GenerateUploadUrlParams,
 ): Promise<GenerateUploadUrlResult> {
-  const { key, contentType, expiresIn = 900 } = params;
+  const { key, contentType, expiresIn = 900, metadata } = params;
 
   try {
     logger.debug(
@@ -68,6 +69,7 @@ export async function generatePresignedUploadUrl(
         key,
         contentType,
         expiresIn,
+        metadata,
       },
       "Generating S3 pre-signed upload URL",
     );
@@ -76,9 +78,23 @@ export async function generatePresignedUploadUrl(
       Bucket: env.AWS_S3_BUCKET,
       Key: key,
       ContentType: contentType,
+      Metadata: metadata,
     });
 
-    const url = await getSignedUrl(s3Client, command, { expiresIn });
+    // For x-amz-* headers (including x-amz-meta-*), we need to use unhoistableHeaders
+    // This prevents the SDK from hoisting them to query parameters and forces them
+    // to be signed as headers that the client must include in the upload request
+    const unhoistableHeaders = new Set<string>();
+    if (metadata) {
+      for (const metadataKey of Object.keys(metadata)) {
+        unhoistableHeaders.add(`x-amz-meta-${metadataKey.toLowerCase()}`);
+      }
+    }
+
+    const url = await getSignedUrl(s3Client, command, {
+      expiresIn,
+      unhoistableHeaders,
+    });
 
     logger.info(
       {

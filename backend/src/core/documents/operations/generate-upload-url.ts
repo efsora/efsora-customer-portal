@@ -120,6 +120,9 @@ export function generateS3UploadUrl(
       key,
       contentType: input.fileType,
       expiresIn: 900, // 15 minutes
+      metadata: {
+        category: input.category,
+      },
     });
 
     return result;

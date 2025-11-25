@@ -65,6 +65,7 @@ export function Documents() {
                 fileSize: file.size,
                 fileType: file.type,
                 projectId: 1, // TODO: Get actual projectId from context/params
+                category: category as 'SoW' | 'Legal' | 'Billing' | 'Assets',
             },
             {
                 onSuccess: async (response) => {
@@ -77,6 +78,7 @@ export function Documents() {
                         }
 
                         // Upload file directly to S3 using the pre-signed URL
+                        // Include x-amz-meta-category header to store category in S3 metadata
                         const uploadResponse = await fetch(
                             response.data.uploadUrl,
                             {
@@ -85,6 +87,7 @@ export function Documents() {
                                 headers: {
                                     'Content-Type':
                                         file.type || 'application/octet-stream',
+                                    'x-amz-meta-category': category,
                                 },
                             },
                         );

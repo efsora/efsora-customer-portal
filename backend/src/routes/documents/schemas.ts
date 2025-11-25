@@ -31,6 +31,10 @@ export const generateUploadUrlBodySchema = z
       .int()
       .positive("Project ID must be positive")
       .openapi({ example: 1, description: "ID of the project" }),
+    category: z.enum(["SoW", "Legal", "Billing", "Assets"]).openapi({
+      example: "SoW",
+      description: "Document category",
+    }),
   })
   .openapi("GenerateUploadUrlBody");
 
