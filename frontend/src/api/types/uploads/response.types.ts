@@ -5,4 +5,5 @@ export interface GetUploadUrlResponse {
     expiresIn: number;
 }
 
-export type AppResponse_GetUploadUrlResponse_ = AppResponse<GetUploadUrlResponse>;
+export type AppResponse_GetUploadUrlResponse_ =
+    AppResponse<GetUploadUrlResponse>;

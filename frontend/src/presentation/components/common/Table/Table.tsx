@@ -1,6 +1,5 @@
-
-import Tag from '../Tag/Tag';
 import styles from './Table.module.css';
+import Tag from '../Tag/Tag';
 
 interface FileRow {
     id: string;
@@ -22,17 +21,21 @@ interface TableProps {
 }
 
 export function Table({ files }: TableProps) {
-    {/*const [selectedVersions, setSelectedVersions] = useState<
+    {
+        /*const [selectedVersions, setSelectedVersions] = useState<
         Record<string, string>
-    >(Object.fromEntries(files.map((file) => [file.id, file.version])));*/}
+    >(Object.fromEntries(files.map((file) => [file.id, file.version])));*/
+    }
 
-    {/*const handleVersionChange = (fileId: string, newVersion: string) => {
+    {
+        /*const handleVersionChange = (fileId: string, newVersion: string) => {
         setSelectedVersions((prev) => ({
             ...prev,
             [fileId]: newVersion,
         }));
         console.log('Selected version:', newVersion);
-    };*/}
+    };*/
+    }
 
     return (
         <div className={styles.container}>

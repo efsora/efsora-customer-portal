@@ -77,7 +77,10 @@ export function QuickAccess() {
                 >
                     <Tooltip content="Google Drive" position="left">
                         <button className={styles.quickAccessButton}>
-                            <img src="/dashboard/google-drive.svg" alt="google-drive" />
+                            <img
+                                src="/dashboard/google-drive.svg"
+                                alt="google-drive"
+                            />
                         </button>
                     </Tooltip>
                 </a>

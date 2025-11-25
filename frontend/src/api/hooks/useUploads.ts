@@ -10,7 +10,9 @@ import { QUERY_KEYS } from '#constants/queryKeys';
  */
 export const useGetUploadUrl = () => {
     return useMutation({
-        mutationFn: async (data: GetUploadUrlRequest): Promise<AppResponse_GetUploadUrlResponse_> => {
+        mutationFn: async (
+            data: GetUploadUrlRequest,
+        ): Promise<AppResponse_GetUploadUrlResponse_> => {
             return getUploadUrl(data);
         },
         mutationKey: [QUERY_KEYS.UPLOADS.GET_UPLOAD_URL],

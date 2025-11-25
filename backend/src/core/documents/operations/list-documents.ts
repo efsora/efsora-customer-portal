@@ -12,7 +12,6 @@ import type {
  * Default icon paths for documents
  */
 const DEFAULT_DOC_ICON = "/documents/table-doc.svg";
-const DEFAULT_PERSON_ICON = "/documents/table-person.svg";
 const EFSORA_PEOPLE_ICON = "/documents/table-people.svg";
 
 /**
@@ -20,7 +19,7 @@ const EFSORA_PEOPLE_ICON = "/documents/table-people.svg";
  */
 function getFileExtension(fileName: string): string {
   const parts = fileName.split(".");
-  return parts.length > 1 ? parts[parts.length - 1]?.toLowerCase() ?? "" : "";
+  return parts.length > 1 ? (parts[parts.length - 1]?.toLowerCase() ?? "") : "";
 }
 
 /**

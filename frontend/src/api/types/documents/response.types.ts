@@ -27,4 +27,5 @@ export interface ListDocumentsResponse {
     documents: DocumentRow[];
 }
 
-export type AppResponse_ListDocumentsResponse_ = AppResponse<ListDocumentsResponse>;
+export type AppResponse_ListDocumentsResponse_ =
+    AppResponse<ListDocumentsResponse>;

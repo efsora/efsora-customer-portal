@@ -15,7 +15,6 @@ export default function Home() {
                 />
                 <QuickAccess />
             </div>
-            
 
             <div className={styles.pageLayout}>
                 <div className={styles.cardContainer}>
@@ -48,7 +47,6 @@ export default function Home() {
                 </div>
 
                 <CurrentMilestone />
-            
             </div>
         </>
     );

@@ -32,9 +32,7 @@ export const getUploadUrl = async (
     }
 
     if (response?.status > 300) {
-        throw new Error(
-            `HTTP ${response?.status}: Failed to get upload URL`,
-        );
+        throw new Error(`HTTP ${response?.status}: Failed to get upload URL`);
     }
 
     return response?.data as AppResponse_GetUploadUrlResponse_;

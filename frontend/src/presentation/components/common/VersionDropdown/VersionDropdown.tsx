@@ -27,7 +27,11 @@ export default function VersionDropdown({
             trigger={
                 <div className={styles.selected}>
                     {value}
-                    <img src="/dropdown.svg" alt="dropdown arrow" className={styles.arrow} />
+                    <img
+                        src="/dropdown.svg"
+                        alt="dropdown arrow"
+                        className={styles.arrow}
+                    />
                 </div>
             }
             items={menuItems}

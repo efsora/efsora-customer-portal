@@ -7,8 +7,13 @@ import { NextFunction, Request, Response } from "express";
  * Catches any unhandled errors and returns a standard error response
  * Note: Express error handlers MUST have exactly 4 parameters (err, req, res, next)
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function errorHandler(error: Error, req: Request, res: Response, _next: NextFunction): void {
+export function errorHandler(
+  error: Error,
+  req: Request,
+  res: Response,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _next: NextFunction,
+): void {
   // Log error with observability context
   logger.error(
     {

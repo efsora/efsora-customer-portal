@@ -37,9 +37,8 @@
 
 /* Hide next and previous milestones at 1024px and below */
 @media (max-width: 1024px) {
-
-    .milestones>.milestoneItem:first-child,
-    .milestones>.milestoneItem:last-child {
+    .milestones > .milestoneItem:first-child,
+    .milestones > .milestoneItem:last-child {
         display: none;
     }
 

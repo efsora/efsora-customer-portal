@@ -10,7 +10,11 @@ import { QUERY_KEYS } from '#constants/queryKeys';
  */
 export const useListDocuments = (params: ListDocumentsRequest) => {
     return useQuery({
-        queryKey: [QUERY_KEYS.DOCUMENTS.LIST, params.companyId, params.projectId],
+        queryKey: [
+            QUERY_KEYS.DOCUMENTS.LIST,
+            params.companyId,
+            params.projectId,
+        ],
         queryFn: async (): Promise<AppResponse_ListDocumentsResponse_> => {
             return listDocuments(params);
         },

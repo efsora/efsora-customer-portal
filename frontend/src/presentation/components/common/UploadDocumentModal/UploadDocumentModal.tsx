@@ -27,9 +27,8 @@ export function UploadDocumentModal({
     const fileInputRef = useRef<HTMLInputElement>(null);
     const dropZoneRef = useRef<HTMLDivElement>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [selectedCategory, setSelectedCategory] = useState<DocumentCategory>(
-        'SoW',
-    );
+    const [selectedCategory, setSelectedCategory] =
+        useState<DocumentCategory>('SoW');
     const [dragActive, setDragActive] = useState(false);
 
     const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
@@ -82,7 +81,7 @@ export function UploadDocumentModal({
     return (
         <div className={styles.modalOverlay} onClick={onClose}>
             <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-                <div className='flex justify-between pb-6'>
+                <div className="flex justify-between pb-6">
                     <div className={styles.popupTitle}>Upload a Document</div>
                     {/* Close button */}
                     <button
@@ -124,9 +123,14 @@ export function UploadDocumentModal({
                             />
                             <span className={styles.dropText}>
                                 Drop files here or{' '}
-                                <span className={styles.clickLink}>click to browse</span>
+                                <span className={styles.clickLink}>
+                                    click to browse
+                                </span>
                             </span>
-                            <p className={styles.dropSubtext}>Supports PDF, DOC, DOCX, XLS, XLSX, ZIP (Max 50MB)</p>
+                            <p className={styles.dropSubtext}>
+                                Supports PDF, DOC, DOCX, XLS, XLSX, ZIP (Max
+                                50MB)
+                            </p>
                         </button>
                         {selectedFile && (
                             <div className={styles.selectedFileName}>
@@ -146,7 +150,9 @@ export function UploadDocumentModal({
                         className={styles.categoryDropdown}
                         value={selectedCategory}
                         onChange={(e) =>
-                            setSelectedCategory(e.target.value as DocumentCategory)
+                            setSelectedCategory(
+                                e.target.value as DocumentCategory,
+                            )
                         }
                         disabled={isLoading}
                     >
@@ -172,16 +178,16 @@ export function UploadDocumentModal({
                         onClick={handleUploadClick}
                         disabled={!selectedFile || isLoading}
                     >
-                        {isLoading ?
+                        {isLoading ? (
                             <div>
                                 <p>Uploading...</p>
                             </div>
-                            : 
-                            <div className='flex gap-2'>
+                        ) : (
+                            <div className="flex gap-2">
                                 <img src="/documents/upload.svg" alt="upload" />
                                 <p>Upload Document</p>
                             </div>
-                        }
+                        )}
                     </button>
                 </div>
             </div>

@@ -25,7 +25,7 @@ const CARD_CONFIG: Record<CardType, { icon: string; label: string }> = {
     payment: {
         icon: '/dashboard/payment.svg',
         label: 'payment',
-    }
+    },
 };
 
 export function DashboardCard({
