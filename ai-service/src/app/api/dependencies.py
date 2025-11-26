@@ -34,6 +34,7 @@ async def get_weaviate_client(
         weaviate.WeaviateAsyncClient, Depends(Provide[Container.weaviate_async_client])
     ],
 ) -> weaviate.WeaviateAsyncClient:
+    # Client is connected at startup in lifespan, just return the singleton
     return weaviate_client
 
 
