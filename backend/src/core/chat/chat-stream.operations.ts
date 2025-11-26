@@ -2,7 +2,8 @@ import { command, success } from "#lib/result/factories";
 import type { Result } from "#lib/result/types";
 import { chatRepository } from "#infrastructure/repositories/drizzle";
 import { aiServiceClient } from "#infrastructure/ai-service";
-import type { ChatStreamInput } from "./types/inputs";
+import type { ChatStreamInput, GetChatHistoryInput } from "./types/inputs";
+import type { GetChatHistoryResult } from "./types/outputs";
 import { logger } from "#infrastructure/logger";
 
 /**
@@ -114,11 +115,6 @@ export async function* streamAndSaveResponse(
       role: "assistant",
       content: fullResponse,
     });
-
-    logger.info(
-      { sessionId: input.sessionId, chunkCount: chunks.length, latencyMs },
-      "Chat stream completed successfully",
-    );
   } catch (error) {
     const latencyMs = Date.now() - startTime;
     logger.error(
@@ -127,4 +123,24 @@ export async function* streamAndSaveResponse(
     );
     throw error;
   }
+}
+
+/**
+ * Check if session exists
+ * Returns null if session doesn't exist
+ */
+export async function findSessionById(
+  sessionId: string,
+): Promise<{ id: string; userId: string } | null> {
+  return chatRepository.findSessionById(sessionId);
+}
+
+/**
+ * Get all messages for a session
+ * Bridges to chatRepository
+ */
+export async function getSessionMessages(
+  input: GetChatHistoryInput,
+): Promise<GetChatHistoryResult> {
+  return chatRepository.getSessionMessages(input.sessionId);
 }

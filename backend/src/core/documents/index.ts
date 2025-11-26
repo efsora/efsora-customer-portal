@@ -5,12 +5,19 @@
 
 // Workflows
 export { generateUploadUrl } from "./workflows/generate-upload-url";
+export { embedDocument } from "./workflows/embed-document";
 
 // Public types - Inputs
-export type { GenerateUploadUrlInput } from "./types/inputs";
+export type {
+  GenerateUploadUrlInput,
+  EmbedDocumentInput,
+} from "./types/inputs";
 
 // Public types - Outputs
-export type { GenerateUploadUrlResult } from "./types/outputs";
+export type {
+  GenerateUploadUrlResult,
+  EmbedDocumentStreamResult,
+} from "./types/outputs";
 
 // Public types - Errors
 export type {

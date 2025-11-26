@@ -3,3 +3,8 @@ export type ChatStreamInput = {
   sessionId: string;
   userId: string;
 };
+
+export type GetChatHistoryInput = {
+  sessionId: string;
+  userId: string;
+};

@@ -4,5 +4,9 @@
  */
 
 export { chatStream, getChatHistory } from "./chat-stream.workflow.js";
-export type { ChatStreamInput } from "./types/inputs.js";
-export type { ChatStreamResult } from "./types/outputs.js";
+export type { ChatStreamInput, GetChatHistoryInput } from "./types/inputs.js";
+export type {
+  ChatStreamResult,
+  ChatMessage,
+  GetChatHistoryResult,
+} from "./types/outputs.js";

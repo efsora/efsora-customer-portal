@@ -10,10 +10,9 @@ import type { AuthenticatedRequest } from "#middlewares/auth";
 import type { GenerateUploadUrlBody, EmbedDocumentBody } from "./schemas";
 import {
   generateUploadUrl,
+  embedDocument,
   type GenerateUploadUrlResult,
 } from "#core/documents";
-import { env } from "#infrastructure/config/env.js";
-import { logger } from "#infrastructure/logger";
 
 /**
  * Handler for POST /api/v1/documents/get-upload-url
@@ -57,15 +56,7 @@ export async function handleEmbedDocument(
   res: Response,
 ): Promise<void> {
   const body = req.validated.body;
-
-  logger.info(
-    {
-      s3Key: body.s3Key,
-      projectId: body.projectId,
-      userId: req.userId,
-    },
-    "Starting document embedding proxy",
-  );
+  const userId = req.userId ?? "";
 
   // Set SSE headers
   res.setHeader("Content-Type", "text/event-stream");
@@ -75,87 +66,20 @@ export async function handleEmbedDocument(
   res.flushHeaders();
 
   try {
-    // Call AI service embed-document endpoint
-    const aiServiceUrl = `${env.AI_SERVICE_URL}/api/v1/weaviate/embed-document`;
-
-    const response = await fetch(aiServiceUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        s3_key: body.s3Key,
-        project_id: body.projectId,
-        collection_name: body.collectionName ?? null,
-      }),
+    const stream = embedDocument({
+      s3Key: body.s3Key,
+      projectId: body.projectId,
+      userId,
+      collectionName: body.collectionName,
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      logger.error(
-        {
-          status: response.status,
-          error: errorText,
-          s3Key: body.s3Key,
-        },
-        "AI service embed-document request failed",
-      );
-
-      // Send error event
-      res.write(
-        `data: ${JSON.stringify({
-          stage: "error",
-          progress_percent: 0,
-          message: `AI service error: ${String(response.status)}`,
-          error_code: "AI_SERVICE_ERROR",
-        })}\n\n`,
-      );
-      res.end();
-      return;
-    }
-
-    // Proxy the SSE stream from AI service to frontend
-    const reader = response.body?.getReader();
-    if (!reader) {
-      res.write(
-        `data: ${JSON.stringify({
-          stage: "error",
-          progress_percent: 0,
-          message: "No response body from AI service",
-          error_code: "AI_SERVICE_NO_BODY",
-        })}\n\n`,
-      );
-      res.end();
-      return;
-    }
-
-    const decoder = new TextDecoder();
-
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    while (true) {
-      const result = await reader.read();
-
-      if (result.done) {
-        break;
-      }
-
-      // Forward the chunk to the client
-      const chunk = decoder.decode(result.value as Uint8Array, {
-        stream: true,
-      });
+    for await (const chunk of stream) {
       res.write(chunk);
     }
 
     res.end();
   } catch (error) {
-    logger.error(
-      {
-        error: error instanceof Error ? error.message : String(error),
-        s3Key: body.s3Key,
-      },
-      "Error proxying embed-document request",
-    );
-
+    // HTTP-level error handling - send error response to client
     res.write(
       `data: ${JSON.stringify({
         stage: "error",

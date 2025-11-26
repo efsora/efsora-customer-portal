@@ -10,7 +10,7 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
 import type { paths, components } from "#generated/ai-service";
 import { logger } from "#infrastructure/logger";
-import { AI_SERVICE_CONFIG } from "./config.js";
+import { AI_SERVICE_CONFIG, AI_SERVICE_ENDPOINTS } from "./config.js";
 
 /**
  * Type-safe response type from AI service
@@ -91,10 +91,9 @@ export class AIServiceClient {
   async hello(): Promise<
     AIServiceResponse<components["schemas"]["HelloResponse"]>
   > {
-    const response =
-      await this.client.get<
-        paths["/api/v1/hello"]["get"]["responses"][200]["content"]["application/json"]
-      >("/api/v1/hello");
+    const response = await this.client.get<
+      paths["/api/v1/hello"]["get"]["responses"][200]["content"]["application/json"]
+    >(AI_SERVICE_ENDPOINTS.hello);
     return response.data;
   }
 
@@ -106,7 +105,7 @@ export class AIServiceClient {
   ): Promise<AIServiceResponse<components["schemas"]["CreateUserResponse"]>> {
     const response = await this.client.post<
       paths["/api/v1/users"]["post"]["responses"][201]["content"]["application/json"]
-    >("/api/v1/users", data);
+    >(AI_SERVICE_ENDPOINTS.users, data);
     return response.data;
   }
 
@@ -118,7 +117,7 @@ export class AIServiceClient {
   ): Promise<AIServiceResponse<components["schemas"]["EmbedResponse"]>> {
     const response = await this.client.post<
       paths["/api/v1/weaviate/embed"]["post"]["responses"][201]["content"]["application/json"]
-    >("/api/v1/weaviate/embed", data);
+    >(AI_SERVICE_ENDPOINTS.embedText, data);
     return response.data;
   }
 
@@ -130,7 +129,7 @@ export class AIServiceClient {
   ): Promise<AIServiceResponse<components["schemas"]["SearchResponse"]>> {
     const response = await this.client.post<
       paths["/api/v1/weaviate/search"]["post"]["responses"][200]["content"]["application/json"]
-    >("/api/v1/weaviate/search", data);
+    >(AI_SERVICE_ENDPOINTS.search, data);
     return response.data;
   }
 
@@ -145,7 +144,7 @@ export class AIServiceClient {
     retryCount = 0,
   ): AsyncGenerator<string, void, unknown> {
     const baseURL = this.client.defaults.baseURL ?? AI_SERVICE_CONFIG.baseURL;
-    const url = `${baseURL}/api/v1/chat/stream`;
+    const url = `${baseURL}${AI_SERVICE_ENDPOINTS.chatStream}`;
     const MAX_RETRIES = 2;
     const RETRY_DELAY_MS = 1000;
 
@@ -261,6 +260,130 @@ export class AIServiceClient {
           setTimeout(resolve, RETRY_DELAY_MS * (retryCount + 1)),
         );
         yield* this.streamChat(message, sessionId, retryCount + 1);
+        return;
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Stream document embedding progress from AI service via SSE
+   * Note: Uses native fetch instead of Axios for SSE streaming support
+   * Includes basic retry logic for transient failures
+   */
+  async *streamEmbedDocument(
+    s3Key: string,
+    projectId: string,
+    collectionName?: string | null,
+    retryCount = 0,
+  ): AsyncGenerator<string, void, unknown> {
+    const baseURL = this.client.defaults.baseURL ?? AI_SERVICE_CONFIG.baseURL;
+    const url = `${baseURL}${AI_SERVICE_ENDPOINTS.embedDocument}`;
+    const MAX_RETRIES = 2;
+    const RETRY_DELAY_MS = 1000;
+    const TIMEOUT_MS = 120000; // 2 minutes for document processing
+
+    logger.debug(
+      { url, s3Key, projectId, collectionName, retryCount },
+      "Streaming document embedding from AI service",
+    );
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          s3_key: s3Key,
+          project_id: projectId,
+          collection_name: collectionName ?? null,
+        }),
+        signal: AbortSignal.timeout(TIMEOUT_MS),
+      });
+
+      if (!response.ok) {
+        const status = String(response.status);
+        const errorText = await response.text();
+        const error = `AI Service embed-document error: ${status}`;
+        logger.error(
+          { status: response.status, url, retryCount, errorText, s3Key },
+          error,
+        );
+
+        // Retry on 5xx errors
+        if (response.status >= 500 && retryCount < MAX_RETRIES) {
+          logger.info(
+            { retryCount: retryCount + 1 },
+            "Retrying AI service embed-document request",
+          );
+          await new Promise((resolve) =>
+            setTimeout(resolve, RETRY_DELAY_MS * (retryCount + 1)),
+          );
+          yield* this.streamEmbedDocument(
+            s3Key,
+            projectId,
+            collectionName,
+            retryCount + 1,
+          );
+          return;
+        }
+
+        throw new Error(error);
+      }
+
+      if (!response.body) {
+        throw new Error("No response body from AI service");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      try {
+        // Stream reading loop - breaks when stream is complete (done === true)
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        while (true) {
+          const result = await reader.read();
+
+          if (result.done) {
+            break;
+          }
+
+          // Type assertion is safe - value is Uint8Array when done === false
+          const chunk = decoder.decode(result.value as Uint8Array, {
+            stream: true,
+          });
+
+          // Forward raw chunk - SSE formatting is preserved
+          yield chunk;
+        }
+
+        logger.debug(
+          { s3Key },
+          "Document embedding stream completed successfully",
+        );
+      } finally {
+        reader.releaseLock();
+      }
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.name === "TimeoutError" &&
+        retryCount < MAX_RETRIES
+      ) {
+        logger.warn(
+          { retryCount: retryCount + 1, s3Key },
+          "AI service embed-document timeout, retrying",
+        );
+        await new Promise((resolve) =>
+          setTimeout(resolve, RETRY_DELAY_MS * (retryCount + 1)),
+        );
+        yield* this.streamEmbedDocument(
+          s3Key,
+          projectId,
+          collectionName,
+          retryCount + 1,
+        );
         return;
       }
       throw error;
