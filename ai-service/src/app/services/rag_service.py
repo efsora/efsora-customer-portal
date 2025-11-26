@@ -67,7 +67,6 @@ Additional Requirements:
 - If the user greets you, you may respond naturally.
 - Do not invent facts.
 
-
 Conversation history:
 {history}
 
@@ -77,6 +76,30 @@ Retrieved context:
 Current question:
 {question}
 
+
+IMPORTANT: Return your answer as a JSON object with this structure:
+{{
+  "answer": "concise answer",
+  "entities": ["key facts or entities mentioned"],
+  "boolean_answer": "yes/no/''",
+  "confidence": "high/medium/low"
+}}
+
+Rules:
+- "boolean_answer" must be:
+    - "yes" → if the question is a yes/no question and the answer is yes
+    - "no" → if the question is a yes/no question and the answer is no
+    - "" (empty string) → if the question is not yes/no type or context is insufficient
+- If the answer is not in the context, return:
+{{
+  "answer": "I don't know",
+  "entities": [],
+  "boolean_answer": "",
+  "confidence": "low"
+}}
+
+Context: {{context}} 
+Question: {{question}}
 Answer in a clear and concise way with proper word spacing."""
 
     prompt = ChatPromptTemplate.from_template(template)
@@ -106,6 +129,7 @@ async def build_vectorstore(
     weaviate_client: weaviate.WeaviateAsyncClient,
     settings: Settings,
     embeddings: BedrockEmbeddings,
+    bedrock_llm: ChatBedrock | None = None,
     save_chunks_txt: bool = True,
     save_embeddings_json: bool = True,
 ) -> list[Document]:
@@ -125,8 +149,10 @@ async def build_vectorstore(
     ctx.logger.info("Starting document ingestion pipeline...")
 
     # Load documents
-    all_docs = load_documents(ctx, settings.DATA_DIR)
-
+    all_docs = load_documents(
+        ctx=ctx,
+        data_dir=settings.DATA_DIR,
+    )
     # Build semantic chunks
     split_docs = build_semantic_chunks_per_doc(
         ctx,
