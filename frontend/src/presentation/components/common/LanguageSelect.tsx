@@ -1,13 +1,17 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { LANGUAGES } from '#constants/languages';
-
-import MenuDropdown from './MenuDropdown/MenuDropdown';
 
 /**
  * Language selector dropdown
- * Refactored from native select to centralized MenuDropdown component
+ * Refactored from native select to shadcn DropdownMenu component
  */
 export default function LanguageSelect() {
     const { i18n } = useTranslation();
@@ -18,20 +22,24 @@ export default function LanguageSelect() {
         i18n.changeLanguage(languageCode);
     };
 
-    const menuItems = LANGUAGES.map(({ code, label }) => ({
-        type: 'button' as const,
-        label,
-        onClick: () => handleLanguageChange(code),
-    }));
-
     const currentLanguageLabel =
         LANGUAGES.find(({ code }) => code === language)?.label || language;
 
     return (
-        <MenuDropdown
-            trigger={<span>{currentLanguageLabel}</span>}
-            items={menuItems}
-            align="right"
-        />
+        <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+                <span style={{ cursor: 'pointer' }}>{currentLanguageLabel}</span>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                {LANGUAGES.map(({ code, label }) => (
+                    <DropdownMenuItem
+                        key={code}
+                        onSelect={() => handleLanguageChange(code)}
+                    >
+                        {label}
+                    </DropdownMenuItem>
+                ))}
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 }

@@ -1,5 +1,18 @@
-import styles from './Table.module.css';
+import { useMemo, useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
+import { ConfirmationModal } from '../ConfirmationModal/ConfirmationModal';
 import Tag from '../Tag/Tag';
+import styles from './Table.module.css';
 
 interface FileRow {
     id: string;
@@ -18,41 +31,173 @@ interface FileRow {
 
 interface TableProps {
     files: FileRow[];
+    onDownload?: (file: FileRow) => void;
+    onSign?: (file: FileRow) => void;
+    onReupload?: (file: FileRow) => void;
+    onDelete?: (file: FileRow) => void;
 }
 
-export function Table({ files }: TableProps) {
-    {
-        /*const [selectedVersions, setSelectedVersions] = useState<
-        Record<string, string>
-    >(Object.fromEntries(files.map((file) => [file.id, file.version])));*/
-    }
+type SortKey = 'fileName' | 'uploader' | 'lastUpdated' | 'status';
+type SortDirection = 'asc' | 'desc';
 
-    {
-        /*const handleVersionChange = (fileId: string, newVersion: string) => {
-        setSelectedVersions((prev) => ({
-            ...prev,
-            [fileId]: newVersion,
-        }));
-        console.log('Selected version:', newVersion);
-    };*/
-    }
+interface SortConfig {
+    key: SortKey;
+    direction: SortDirection;
+}
+
+const STATUS_ORDER: Record<FileRow['status'], number> = {
+    inProgress: 0,
+    sent: 1,
+    signed: 2,
+    paid: 3,
+};
+
+export function Table({
+    files,
+    onDownload,
+    onSign,
+    onReupload,
+    onDelete,
+}: TableProps) {
+    const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
+    const [fileToDelete, setFileToDelete] = useState<FileRow | null>(null);
+
+    const handleDeleteClick = (file: FileRow) => {
+        setFileToDelete(file);
+    };
+
+    const handleConfirmDelete = () => {
+        if (fileToDelete) {
+            onDelete?.(fileToDelete);
+            setFileToDelete(null);
+        }
+    };
+
+    const handleCancelDelete = () => {
+        setFileToDelete(null);
+    };
+
+    const handleSort = (key: SortKey) => {
+        setSortConfig((prev) => {
+            if (prev?.key === key) {
+                // Toggle direction or clear if already descending
+                if (prev.direction === 'asc') {
+                    return { key, direction: 'desc' };
+                }
+                return null; // Clear sort
+            }
+            return { key, direction: 'asc' };
+        });
+    };
+
+    const sortedFiles = useMemo(() => {
+        if (!sortConfig) return files;
+
+        return [...files].sort((a, b) => {
+            const { key, direction } = sortConfig;
+            const multiplier = direction === 'asc' ? 1 : -1;
+
+            switch (key) {
+                case 'fileName':
+                    return (
+                        multiplier *
+                        a.fileName.name.localeCompare(b.fileName.name)
+                    );
+                case 'uploader':
+                    return (
+                        multiplier *
+                        a.uploader.name.localeCompare(b.uploader.name)
+                    );
+                case 'lastUpdated':
+                    return (
+                        multiplier *
+                        (new Date(a.lastUpdated).getTime() -
+                            new Date(b.lastUpdated).getTime())
+                    );
+                case 'status':
+                    return (
+                        multiplier *
+                        (STATUS_ORDER[a.status] - STATUS_ORDER[b.status])
+                    );
+                default:
+                    return 0;
+            }
+        });
+    }, [files, sortConfig]);
+
+    const getSortIcon = (key: SortKey) => {
+        if (sortConfig?.key !== key) {
+            return '/documents/sort-default.svg';
+        }
+        return sortConfig.direction === 'asc'
+            ? '/documents/sort-asc.svg'
+            : '/documents/sort-desc.svg';
+    };
 
     return (
         <div className={styles.container}>
             <table className={styles.table}>
                 <thead>
                     <tr>
-                        <th className={styles.header}>File Name</th>
-                        {/*<th className={styles.header}>Version</th>*/}
-                        <th className={styles.header}>Uploader</th>
-                        <th className={styles.header}>Last Updated</th>
-                        <th className={styles.header}>Status</th>
-                        {/*<th className={styles.header}>Actions</th>*/}
+                        <th
+                            className={styles.headerSortable}
+                            onClick={() => handleSort('fileName')}
+                        >
+                            <div className="flex items-center gap-2">
+                                <span>File Name</span>
+                                <img
+                                    src={getSortIcon('fileName')}
+                                    alt="sort"
+                                    className={styles.sortIcon}
+                                />
+                            </div>
+                          
+                        </th>
+                        <th
+                            className={`${styles.headerSortable} ${styles.hideOnMobile}`}
+                            onClick={() => handleSort('uploader')}
+                        >
+                            <div className="flex items-center gap-2">
+                                <span>Uploader</span>
+                                <img
+                                    src={getSortIcon('uploader')}
+                                    alt="sort"
+                                    className={styles.sortIcon}
+                                />
+                            </div>
+                        </th>
+                        <th
+                            className={`${styles.headerSortable} ${styles.hideOnMobile}`}
+                            onClick={() => handleSort('lastUpdated')}
+                        >
+                            <div className="flex items-center gap-2">
+                                <span>Last Updated</span>
+                                <img
+                                    src={getSortIcon('lastUpdated')}
+                                    alt="sort"
+                                    className={styles.sortIcon}
+                                />
+                            </div>
+                        </th>
+                        <th
+                            className={`${styles.headerSortable} ${styles.hideOnMobile}`}
+                            onClick={() => handleSort('status')}
+                        >
+                            <div className="flex items-center gap-2">
+                                <span>Status</span>
+                                <img
+                                    src={getSortIcon('status')}
+                                    alt="sort"
+                                    className={styles.sortIcon}
+                                />
+                            </div>
+                        </th>
+                        <th className={styles.header}>Actions</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    {files.map((file) => (
+                    {sortedFiles.map((file) => (
                         <tr key={file.id}>
                             <td>
                                 <div className={styles.cell}>
@@ -85,7 +230,7 @@ export function Table({ files }: TableProps) {
                                     }
                                 />
                             </td>*/}
-                            <td>
+                            <td className={styles.hideOnMobile}>
                                 <div className={styles.cell}>
                                     <img
                                         src={file.uploader.icon}
@@ -94,7 +239,7 @@ export function Table({ files }: TableProps) {
                                     {file.uploader.name}
                                 </div>
                             </td>
-                            <td>
+                            <td className={styles.hideOnMobile}>
                                 <div className={styles.cell}>
                                     <img
                                         src="/documents/table-date.svg"
@@ -105,23 +250,96 @@ export function Table({ files }: TableProps) {
                                     ).toLocaleDateString()}
                                 </div>
                             </td>
-                            <td>
+                            <td className={styles.hideOnMobile}>
                                 <div className={styles.status}>
                                     <Tag status={file.status} />
                                 </div>
                             </td>
-                            {/*
                             <td>
-                                <button className={styles.downloadButton}>
-                                    <img src="/documents/table-download.svg" alt="download" />
-                                    Download
-                                </button>
+                                <DropdownMenu modal={false}>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className={styles.actionsButton}
+                                            aria-label="Open actions menu"
+                                        >
+                                            <img
+                                                src="/documents/three-dots.svg"
+                                                alt="actions"
+                                            />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuGroup>
+                                            <DropdownMenuItem
+                                                onSelect={() =>
+                                                    onDownload?.(file)
+                                                }
+                                                className={styles.action}
+                                            >
+                                                <img
+                                                    src="/documents/action-download.svg"
+                                                    alt=""
+                                                />
+                                                Download Document
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem
+                                                onSelect={() => onSign?.(file)}
+                                                className={styles.action}
+                                            >
+                                                <img
+                                                    src="/documents/action-sign.svg"
+                                                    alt=""
+                                                />
+                                                Sign Document
+                                            </DropdownMenuItem>
+                                        </DropdownMenuGroup>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuGroup>
+                                            <DropdownMenuItem
+                                                onSelect={() =>
+                                                    onReupload?.(file)
+                                                }
+                                                className={styles.action}
+                                            >
+                                                <img
+                                                    src="/documents/action-reupload.svg"
+                                                    alt=""
+                                                />
+                                                Reupload Document
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem
+                                                onSelect={() =>
+                                                    handleDeleteClick(file)
+                                                }
+                                                className={styles.deleteAction}
+                                            >
+                                                <img
+                                                    src="/documents/action-delete.svg"
+                                                    alt=""
+                                                />
+                                                Delete Document
+                                            </DropdownMenuItem>
+                                        </DropdownMenuGroup>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </td>
-                            */}
                         </tr>
                     ))}
                 </tbody>
             </table>
+
+            <ConfirmationModal
+                isOpen={fileToDelete !== null}
+                onClose={handleCancelDelete}
+                onConfirm={handleConfirmDelete}
+                title="Are you sure?"
+                message="This action cannot be undone. Clicking Delete will permanently delete this document."
+                confirmLabel="Delete"
+                cancelLabel="Cancel"
+                variant="danger"
+            />
         </div>
     );
 }

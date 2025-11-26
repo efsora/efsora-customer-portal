@@ -1,7 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useLogout } from '#api/hooks/useAuth';
-import MenuDropdown from '#components/common/MenuDropdown/MenuDropdown';
 import { useGetUserById } from '#hooks/useUser';
 import { useCurrentUser } from '#store/authStore';
 
@@ -32,48 +38,17 @@ export default function UserProfile() {
             .slice(0, 2);
     };
 
-    // Menu items
-    const menuItems = [
-        {
-            type: 'button' as const,
-            label: 'Help & Support',
-            onClick: () => navigate('/help'),
-            icon: (
-                <img
-                    src="help.svg"
-                    alt="help"
-                    style={{ width: '16px', height: '16px' }}
-                />
-            ),
-            testId: 'help-support-button',
-        },
-        { type: 'separator' as const },
-        {
-            type: 'button' as const,
-            label: isPending ? 'Logging out...' : 'Logout',
-            onClick: () => {
-                logout(undefined, {
-                    onSuccess: () => {
-                        navigate('/login');
-                    },
-                    onError: () => {
-                        // Hook already clears auth on error, just need to navigate
-                        navigate('/login');
-                    },
-                });
+    const handleLogout = () => {
+        logout(undefined, {
+            onSuccess: () => {
+                navigate('/login');
             },
-            icon: (
-                <img
-                    src="red-logout.svg"
-                    alt="logout"
-                    style={{ width: '16px', height: '16px' }}
-                />
-            ),
-            disabled: isPending,
-            className: styles.logoutItem,
-            testId: 'logout-button',
-        },
-    ];
+            onError: () => {
+                // Hook already clears auth on error, just need to navigate
+                navigate('/login');
+            },
+        });
+    };
 
     if (isLoading) return <p>Loading...</p>;
     if (isError) return <p>Error</p>;
@@ -84,8 +59,8 @@ export default function UserProfile() {
 
     return (
         <div>
-            <MenuDropdown
-                trigger={(isOpen) => (
+            <DropdownMenu modal={false}>
+                <DropdownMenuTrigger asChild>
                     <div
                         className={styles.triggerButton}
                         data-testid="user-dropdown-trigger"
@@ -96,17 +71,37 @@ export default function UserProfile() {
                         <div className={styles.userInfo}>
                             <p className={styles.desktopUserName}>{userName}</p>
                         </div>
-                        <img
-                            src={isOpen ? '/dropdown.svg' : '/dropdown-up.svg'}
-                            alt="menu"
-                        />
+                        <img src="/dropdown.svg" alt="menu" />
                     </div>
-                )}
-                items={menuItems}
-                align="right"
-                position="top"
-                fullWidth={true}
-            />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" side="top" className="w-full">
+                    <DropdownMenuItem
+                        onSelect={() => navigate('/help')}
+                        data-testid="help-support-button"
+                    >
+                        <img
+                            src="help.svg"
+                            alt="help"
+                            style={{ width: '16px', height: '16px' }}
+                        />
+                        Help & Support
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                        onSelect={handleLogout}
+                        disabled={isPending}
+                        className={styles.logoutItem}
+                        data-testid="logout-button"
+                    >
+                        <img
+                            src="red-logout.svg"
+                            alt="logout"
+                            style={{ width: '16px', height: '16px' }}
+                        />
+                        {isPending ? 'Logging out...' : 'Logout'}
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
         </div>
     );
 }

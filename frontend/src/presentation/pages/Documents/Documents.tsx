@@ -1,17 +1,10 @@
 import { useDocumentFilters } from '#api/hooks/useDocumentFilters';
 import { useListDocuments } from '#api/hooks/useDocuments';
 import { useDocumentUpload } from '#api/hooks/useDocumentUpload';
-import {
-    FILTER_CATEGORIES,
-    FILTER_TAGS,
-    getFilterOptions,
-    type FileRow,
-    type FilterType,
-} from '#api/mockData';
+import { FILTER_TAGS, type FileRow } from '#api/mockData';
 import type { DocumentRow } from '#api/types/documents/response.types';
 import { FilterTagBar } from '#components/common/FilterTagBar/FilterTagBar';
 import { LoadingState } from '#components/common/LoadingState/LoadingState';
-import MenuDropdown from '#components/common/MenuDropdown/MenuDropdown';
 import { SearchInput } from '#components/common/SearchInput/SearchInput';
 import { UploadDocumentModal } from '#components/common/UploadDocumentModal/UploadDocumentModal';
 import PageTitle from '#presentation/components/common/PageTitle/PageTitle';
@@ -40,12 +33,8 @@ export function Documents() {
     const {
         activeTag,
         setActiveTag,
-        selectedFilters,
         searchQuery,
         setSearchQuery,
-        expandedCategories,
-        toggleCategoryExpand,
-        handleFilterToggle,
         filterFiles,
     } = useDocumentFilters();
 
@@ -111,15 +100,6 @@ export function Documents() {
                         activeTag={activeTag}
                         onTagClick={setActiveTag}
                     />
-
-                    <div className={styles.dropdownContainer}>
-                        <FilterDropdown
-                            selectedFilters={selectedFilters}
-                            expandedCategories={expandedCategories}
-                            onCategoryToggle={toggleCategoryExpand}
-                            onFilterToggle={handleFilterToggle}
-                        />
-                    </div>
                 </div>
 
                 <div className={styles.documentTable}>
@@ -138,129 +118,5 @@ export function Documents() {
                 isLoading={isUploading}
             />
         </div>
-    );
-}
-
-// Filter dropdown component extracted inline for now
-interface FilterDropdownProps {
-    selectedFilters: Map<string, Set<string>>;
-    expandedCategories: Set<string>;
-    onCategoryToggle: (category: FilterType) => void;
-    onFilterToggle: (category: FilterType, option: string) => void;
-}
-
-function FilterDropdown({
-    selectedFilters,
-    expandedCategories,
-    onCategoryToggle,
-    onFilterToggle,
-}: FilterDropdownProps) {
-    return (
-        <MenuDropdown
-            trigger={(isOpen) => (
-                <button className={styles.dropdownButton}>
-                    <img src="/documents/filter.svg" alt="" />
-                    <span>Filter By</span>
-                    <img src={isOpen ? 'dropdown-up.svg' : 'dropdown.svg'} />
-                </button>
-            )}
-            items={[
-                {
-                    type: 'custom',
-                    render: (
-                        <div
-                            className={styles.dropdownMenu}
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            {FILTER_CATEGORIES.map((category) => {
-                                const filterOptions = getFilterOptions(
-                                    category.type
-                                );
-                                const selectedOptionsForCategory =
-                                    selectedFilters.get(category.type) ||
-                                    new Set();
-                                const isExpanded = expandedCategories.has(
-                                    category.type
-                                );
-
-                                return (
-                                    <div key={category.type}>
-                                        <div
-                                            className={
-                                                styles.filterCategoryTitle
-                                            }
-                                            onClick={() =>
-                                                onCategoryToggle(category.type)
-                                            }
-                                        >
-                                            <span>{category.label}</span>
-                                            <img
-                                                src={
-                                                    isExpanded
-                                                        ? 'dropdown-up.svg'
-                                                        : 'dropdown.svg'
-                                                }
-                                                alt="toggle"
-                                                className={
-                                                    styles.filterCategoryIcon
-                                                }
-                                            />
-                                        </div>
-                                        {isExpanded && (
-                                            <>
-                                                {filterOptions.map((option) => (
-                                                    <label
-                                                        key={`${category.type}-${option}`}
-                                                        className={
-                                                            styles.dropdownOption
-                                                        }
-                                                    >
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={selectedOptionsForCategory.has(
-                                                                option
-                                                            )}
-                                                            onChange={() =>
-                                                                onFilterToggle(
-                                                                    category.type,
-                                                                    option
-                                                                )
-                                                            }
-                                                            className={
-                                                                styles.checkbox
-                                                            }
-                                                        />
-                                                        <span
-                                                            className={
-                                                                styles.checkmark
-                                                            }
-                                                        >
-                                                            {selectedOptionsForCategory.has(
-                                                                option
-                                                            )
-                                                                ? '✓'
-                                                                : ''}
-                                                        </span>
-                                                        <span>{option}</span>
-                                                    </label>
-                                                ))}
-                                                <div
-                                                    className={
-                                                        styles.filterSeparator
-                                                    }
-                                                />
-                                            </>
-                                        )}
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    ),
-                },
-            ]}
-            align="right"
-            position="bottom"
-            fullWidth={true}
-        />
     );
 }

@@ -1,5 +1,11 @@
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
 import styles from './VersionDropdown.module.css';
-import MenuDropdown from '../MenuDropdown/MenuDropdown';
 
 interface VersionDropdownProps {
     options: string[];
@@ -9,22 +15,16 @@ interface VersionDropdownProps {
 
 /**
  * Version selector dropdown
- * Refactored to use centralized MenuDropdown component
+ * Refactored to use shadcn DropdownMenu component
  */
 export default function VersionDropdown({
     options,
     value,
     onChange,
 }: VersionDropdownProps) {
-    const menuItems = options.map((option) => ({
-        type: 'button' as const,
-        label: option,
-        onClick: () => onChange(option),
-    }));
-
     return (
-        <MenuDropdown
-            trigger={
+        <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
                 <div className={styles.selected}>
                     {value}
                     <img
@@ -33,10 +33,17 @@ export default function VersionDropdown({
                         className={styles.arrow}
                     />
                 </div>
-            }
-            items={menuItems}
-            align="right"
-            fullWidth={true}
-        />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-full">
+                {options.map((option) => (
+                    <DropdownMenuItem
+                        key={option}
+                        onSelect={() => onChange(option)}
+                    >
+                        {option}
+                    </DropdownMenuItem>
+                ))}
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 }

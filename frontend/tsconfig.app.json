@@ -28,6 +28,7 @@
         /* Path Aliases */
         "baseUrl": ".",
         "paths": {
+            "@/*": ["./src/*"],
             "#store": ["src/store/index"],
             "#store/*": ["src/store/*"],
             "#presentation/*": ["src/presentation/*"],

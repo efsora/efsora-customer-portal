@@ -1,4 +1,9 @@
-import MenuDropdown from '#components/common/MenuDropdown/MenuDropdown';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import UserProfile from '#presentation/components/user/UserProfile/UserProfile';
 
 import styles from './LeftBar.module.css';
@@ -13,16 +18,6 @@ export default function LeftBar() {
 
     const currentCustomer = customers[0];
 
-    // Menu items for customer dropdown
-    const customerMenuItems = customers.map((customer) => ({
-        type: 'button' as const,
-        label: customer.name,
-        onClick: () => {
-            // Handle customer change
-            console.log(`Switched to ${customer.name}`);
-        },
-    }));
-
     return (
         <div className={styles.leftBarContainer}>
             <div className={styles.brands}>
@@ -36,8 +31,8 @@ export default function LeftBar() {
 
                 {/* Customer selector dropdown */}
                 <div className={styles.customerContainer}>
-                    <MenuDropdown
-                        trigger={(isOpen) => (
+                    <DropdownMenu modal={false}>
+                        <DropdownMenuTrigger asChild>
                             <button className={styles.customerButton}>
                                 <div className="flex gap-2">
                                     <img
@@ -56,21 +51,27 @@ export default function LeftBar() {
                                     </div>
                                 </div>
                                 <img
-                                    src={
-                                        isOpen
-                                            ? 'dropdown-up.svg'
-                                            : 'dropdown.svg'
-                                    }
+                                    src="dropdown.svg"
                                     alt="dropdown"
                                     className={styles.dropdownIcon}
                                 />
                             </button>
-                        )}
-                        items={customerMenuItems}
-                        align="right"
-                        position="bottom"
-                        fullWidth
-                    />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-full">
+                            {customers.map((customer) => (
+                                <DropdownMenuItem
+                                    key={customer.id}
+                                    onSelect={() => {
+                                        console.log(
+                                            `Switched to ${customer.name}`,
+                                        );
+                                    }}
+                                >
+                                    {customer.name}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             </div>
 

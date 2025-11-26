@@ -1,16 +1,18 @@
 .container {
-    padding: 24px;
     width: 100%;
     overflow-x: auto;
     background-color: white;
     border: 1px solid var(--color-neutral-grey-200);
     border-radius: 16px;
+    padding: 24px;
+    box-sizing: border-box;
+    padding-bottom: 12px;
 }
 
 .table {
     width: 100%;
     color: var(--color-primary-900);
-    font-size: 0.875rem;
+    font-size: 13px;
 }
 
 .table thead tr {
@@ -21,9 +23,20 @@
     border-bottom: 1px solid var(--color-primary-50);
 }
 
+.table tbody tr:last-child {
+    border-bottom: none;
+}
+
 .header {
     color: var(--color-primary-800);
     font-weight: 500;
+}
+
+.headerSortable {
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+    padding-right: 24px;
 }
 
 .table th {
@@ -42,9 +55,15 @@
     padding: 12px 0;
 }
 
+.table td:last-child {
+    display: flex;
+    justify-content: flex-end;
+}
+
 .cell {
     display: flex;
     gap: 4px;
+    align-items: center;
 }
 
 .downloadButton {
@@ -65,4 +84,40 @@
     appearance: none;
     border-radius: 8px;
     padding: 2px 12px;
+}
+
+.actionsButton {
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action {
+    color: var(--color-neutral-grey-600);
+    font-size: 13px;
+}
+
+.actionsButton:hover {
+    background-color: var(--color-neutral-grey-100);
+}
+
+.deleteAction {
+    color: var(--color-error-600, #ef4444);
+    font-size: 13px;
+}
+
+.deleteAction:hover {
+    background-color: var(--color-error-50) !important;
+    color: var(--color-error-700) !important;
+}
+
+
+/* Responsive: hide columns on smaller screens */
+@media (max-width: 1024px) {
+    .hideOnMobile {
+        display: none;
+    }
 }
