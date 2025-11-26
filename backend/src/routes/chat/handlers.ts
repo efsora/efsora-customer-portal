@@ -1,7 +1,12 @@
 import type { Response } from "express";
 import type { AuthenticatedRequest } from "#middlewares/auth";
 import type { ValidatedRequest } from "#middlewares/validate";
-import { chatStream, getChatHistory } from "#core/chat";
+import {
+  createSuccessResponse,
+  createFailureResponse,
+  type AppResponse,
+} from "#lib/types/response";
+import { chatStream, getChatHistory, type ChatMessage } from "#core/chat";
 import type { ChatStreamBody, ChatHistoryParams } from "./schemas";
 
 /**
@@ -55,28 +60,34 @@ export async function handleChatStream(
  */
 export async function handleGetChatHistory(
   req: AuthenticatedRequest & ValidatedRequest<{ params: ChatHistoryParams }>,
-  res: Response,
-): Promise<void> {
+): Promise<AppResponse<{ messages: ChatMessage[] }>> {
   const { sessionId } = req.validated.params;
   const userId = req.user?.userId;
 
   if (!userId) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
+    return createFailureResponse({
+      code: "UNAUTHORIZED",
+      message: "User not authenticated",
+    });
   }
 
   try {
     const messages = await getChatHistory({ sessionId, userId });
-    res.json({ messages });
+    return createSuccessResponse({ messages });
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
 
-    // HTTP-level error response
     if (errorMessage.includes("Forbidden")) {
-      res.status(403).json({ error: "Access denied" });
-    } else {
-      res.status(500).json({ error: errorMessage });
+      return createFailureResponse({
+        code: "USER_FORBIDDEN",
+        message: "Access denied",
+      });
     }
+
+    return createFailureResponse({
+      code: "INTERNAL_ERROR",
+      message: errorMessage,
+    });
   }
 }

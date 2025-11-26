@@ -1,6 +1,8 @@
-import { Router, type RequestHandler } from "express";
+import { Router } from "express";
 import { auth } from "#middlewares/auth";
 import { validate } from "#middlewares/validate";
+import { handleSSE } from "#middlewares/sseHandler";
+import { handleResult } from "#middlewares/resultHandler";
 import { handleChatStream, handleGetChatHistory } from "./handlers";
 import { chatStreamBodySchema, chatHistoryParamsSchema } from "./schemas";
 
@@ -14,7 +16,7 @@ router.post(
   "/stream",
   auth,
   validate({ body: chatStreamBodySchema }),
-  handleChatStream as unknown as RequestHandler,
+  handleSSE(handleChatStream),
 );
 
 /**
@@ -25,7 +27,7 @@ router.get(
   "/sessions/:sessionId/messages",
   auth,
   validate({ params: chatHistoryParamsSchema }),
-  handleGetChatHistory as unknown as RequestHandler,
+  handleResult(handleGetChatHistory),
 );
 
 export default router;

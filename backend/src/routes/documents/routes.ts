@@ -1,7 +1,8 @@
-import { Router, type RequestHandler } from "express";
+import { Router } from "express";
 import { auth } from "#middlewares/auth";
 import { validate } from "#middlewares/validate";
 import { handleResult } from "#middlewares/resultHandler";
+import { handleSSE } from "#middlewares/sseHandler";
 import { handleGenerateUploadUrl, handleEmbedDocument } from "./handlers";
 import { generateUploadUrlSchema, embedDocumentSchema } from "./schemas";
 
@@ -28,7 +29,7 @@ router.post(
   "/embed",
   auth,
   validate(embedDocumentSchema),
-  handleEmbedDocument as unknown as RequestHandler,
+  handleSSE(handleEmbedDocument),
 );
 
 export default router;
