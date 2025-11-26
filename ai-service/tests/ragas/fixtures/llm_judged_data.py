@@ -6,6 +6,11 @@ semantic understanding and contextual reasoning. These will be sent to the
 production /api/v1/chat/stream endpoint and evaluated by Claude as an LLM judge.
 
 IMPORTANT: Update these questions based on the documents you've loaded into Weaviate!
+
+Test Types:
+- "answer": Test the answer field (full text response) - most common for LLM-judged tests
+- "boolean": Test the boolean_answer field (yes/no) with exact match
+- "entities": Test the entities field (list of key facts) with set comparison
 """
 
 from typing import Any
@@ -13,23 +18,28 @@ from typing import Any
 # Questions for testing the real RAG system with LLM-judged metrics
 LLM_JUDGED_TEST_CASES: list[dict[str, Any]] = [
     {
-        "user_input": "Interpret the options available to the Client  if it rejects a 'Deliverable' for the third time, and the advantages these options provide to the Client.",
-        "reference": "After a third rejection, the Client has two options: (a) accept the Deliverable as a nonconforming item, in which case the Fees shall be equitably reduced to reflect the value of the Deliverable as received relative to the value it would have had if it conformed, or (b) terminate the Agreement without further liability to the Contractor.Advantage: This grants the Client maximum flexibility. If the product, despite its flaws, still holds some value, option (a) allows them to use the product and gain a financial advantage (cost reduction). If the product is entirely unusable or if trust in the Contractor's competence is lost, option (b) provides a clear exit strategy, ensuring the Client does not waste further time or money.",
+        "user_input": "Explain the purpose and benefits of having joint ownership for the MVP Scope & Feature List deliverable.",
+        "reference": "Joint ownership of the MVP Scope & Feature List ensures that both the client and Efsora have shared responsibility and input in defining the project's core features and success metrics. This collaborative approach helps align expectations, ensures both parties are invested in the MVP's success, and prevents scope creep by establishing clear boundaries with measurable metrics from the outset. It also facilitates better communication and decision-making throughout the project lifecycle.",
+        "test_type": "answer",
     },
     {
-        "user_input": "Why does the Agreement so strictly restrict the Contractor's use of Open Source Components?",
-        "reference": "The primary purpose of these restrictions is to protect the intellectual property rights of the Client's proprietary 'Work Product'. Some 'copyleft' open-source licenses mandate that any software using that code must also have its source code made public or be licensed for free. This clause is intended to prevent the Client from being forced to (i) disclose its own proprietary source code, (ii) license its software for the purpose of making derivative works, (iii) distribute its software without royalty, or (iv) grant a license under its patent rights.",
+        "user_input": "Analyze the importance of having clear acceptance criteria in user stories for project success.",
+        "reference": "Clear acceptance criteria in user stories are crucial for project success as they define specific, measurable conditions that must be met for a feature to be considered complete. This eliminates ambiguity between stakeholders, provides testable requirements, enables accurate estimation and planning, and ensures that delivered functionality aligns with business needs. Acceptance criteria also serve as a contract between the development team and stakeholders, reducing misunderstandings and rework.",
+        "test_type": "answer",
     },
     {
-        "user_input": "Evaluate the balance between Ownership of Work Product and Contractor Know-How from the perspective of the Contractor (Efsora).",
-        "reference": "The agreement grants the Client complete ownership of everything specifically developed for them (the 'Work Product'). This prevents the Contractor from reusing that specific code elsewhere. However, a crucial balance is provided: 'Generic Tools' (the Contractor's general know-how, skills, and expertise) that do not use any Client Confidential Information or IP rights, remain with the Contractor. This allows the Contractor (Efsora) to retain its core competencies and general experience to continue serving other clients. The Contractor may use these Generic Tools for other projects, as long as they do not reuse proprietary components developed exclusively for the Client.",
+        "user_input": "Interpret the RACI structure shown in Week 2 and Week 3 activities and explain why this model is effective for project governance.",
+        "reference": "The RACI matrix (Responsible, Accountable, Consulted, Informed) provides clear role definition for each activity. Duygu Efsora PM is shown as both Responsible (doing the work) and Accountable (owns the outcome) for Weeks 2-3. This structure is effective because it eliminates confusion about who makes decisions, who performs tasks, and who needs to be kept informed. Having Duygu in both R and A roles indicates direct ownership and accountability, while George and Faran as Consulted stakeholders provide input, and Hennie Habib as Informed stays aware of progress without being involved in execution.",
+        "test_type": "answer",
     },
     {
-        "user_input": "What level of control does the first Statement of Work (Exhibit A) give the Client over the project team, and why is this important?",
-        "reference": "This section gives the Client very strong operational control. The Client has the right to conduct Performance Review Periods at the one, three, and six-month marks. Following these reviews, the Client may, at Client's sole discretion, request that a specific team member be substituted or removed based on performance. The Contractor must then replace that team member within ten (10) business days.This means the Client can audit not just the delivered product, but also the quality of the team producing it. Instead of just waiting for a failed outcome, the Client has the right to intervene early in the human resource element that directly impacts the project's quality.",
+        "user_input": "Evaluate the strategic progression from Week 2 (MVP scope validation) to Week 3 (final review and sign-off preparation). Why is this sequence important?",
+        "reference": "The progression from Week 2 to Week 3 follows a logical validation-then-commitment flow. Week 2 focuses on validating the MVP scope and drafting user stories, which allows the team to explore requirements, identify risks, and refine understanding before making commitments. Week 3 then shifts to final review and sign-off preparation, ensuring all stakeholders are aligned before formal commitment. This sequence is critical because it prevents premature commitment to poorly understood requirements, allows time for iterative refinement based on stakeholder feedback, and ensures that the sign-off in Week 3 is based on validated, well-understood scope rather than initial assumptions.",
+        "test_type": "answer",
     },
     {
-        "user_input": "Why might the 'Limitation of Liability' clause not provide as strong protection for the Contractor (Efsora) as it first appears?",
-        "reference": "At first glance, this clause appears to protect both parties from indirect or consequential damages (like lost profits). However, the exceptions to this limitation are very risky for the Contractor. The limitation does not apply to: (a) gross negligence, (b) breaches of Proprietary Rights or Confidentiality, and (c) the indemnification obligations. In practice, the Contractor's biggest risks are precisely things like intellectual property infringement or leaking client data. Since these areas are excluded from the limitation, the Contractor would be liable for all damages (direct or indirect) that the Client suffers from such a breach.",
+        "user_input": "Why is it important to group MVP features by priority with clear success boundaries, and what risks does this mitigate?",
+        "reference": "Grouping MVP features by priority with clear success boundaries is essential for managing scope and delivering value incrementally. It mitigates several critical risks: scope creep (by defining clear boundaries), resource waste (by focusing on high-priority items first), missed deadlines (by enabling trade-offs based on priority), and unclear success metrics (by establishing measurable validation goals). This approach also enables the team to deliver a functional MVP even if time or resources become constrained, as lower-priority features can be deferred while core functionality remains intact. Clear success boundaries ensure that all stakeholders understand what constitutes a successful MVP delivery.",
+        "test_type": "answer",
     },
 ]
