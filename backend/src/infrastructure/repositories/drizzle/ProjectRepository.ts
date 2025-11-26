@@ -80,7 +80,7 @@ export function createProjectRepository(dbInstance: typeof db) {
     /**
      * Create a new repository instance with a transaction
      */
-    withTransaction: (tx: unknown) => createProjectRepository(tx as typeof db),
+    withTransaction: (tx: typeof db) => createProjectRepository(tx),
   };
 }
 

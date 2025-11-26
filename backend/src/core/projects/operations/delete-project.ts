@@ -16,13 +16,15 @@ export function deleteProjectById(
   }, handleDeleteProjectResult);
 }
 
+type DeleteProjectCommandResult = {
+  projects: { id: number }[];
+  projectId: number;
+};
+
 export function handleDeleteProjectResult(
-  result: unknown,
+  result: DeleteProjectCommandResult,
 ): Result<DeleteProjectResult> {
-  const { projects, projectId } = result as {
-    projects: { id: number }[];
-    projectId: number;
-  };
+  const { projects, projectId } = result;
   const project = first(projects);
 
   if (!project) {

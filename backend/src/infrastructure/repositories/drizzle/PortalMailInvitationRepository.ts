@@ -133,8 +133,8 @@ export function createPortalMailInvitationRepository(dbInstance: typeof db) {
     /**
      * Support for transactions
      */
-    withTransaction: (tx: unknown) =>
-      createPortalMailInvitationRepository(tx as typeof db),
+    withTransaction: (tx: typeof db) =>
+      createPortalMailInvitationRepository(tx),
   };
 }
 

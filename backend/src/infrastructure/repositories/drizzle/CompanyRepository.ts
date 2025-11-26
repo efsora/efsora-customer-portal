@@ -54,7 +54,7 @@ export function createCompanyRepository(dbInstance: typeof db) {
         .returning();
     },
 
-    withTransaction: (tx: unknown) => createCompanyRepository(tx as typeof db),
+    withTransaction: (tx: typeof db) => createCompanyRepository(tx),
   };
 }
 

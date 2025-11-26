@@ -44,9 +44,9 @@ export function saveNewCompany(input: CreateCompanyInput): Result<CompanyData> {
 }
 
 export function handleSaveNewCompanyResult(
-  result: unknown,
+  result: CompanyData[],
 ): Result<CompanyData> {
-  const companies = result as CompanyData[];
+  const companies = result;
   const company = first(companies);
 
   if (!company) {

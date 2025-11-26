@@ -53,7 +53,7 @@ export function createChatRepository(dbInstance: typeof db) {
     /**
      * Transaction support
      */
-    withTransaction: (tx: unknown) => createChatRepository(tx as typeof db),
+    withTransaction: (tx: typeof db) => createChatRepository(tx),
   };
 }
 

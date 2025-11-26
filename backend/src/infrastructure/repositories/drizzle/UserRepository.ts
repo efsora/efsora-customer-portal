@@ -80,6 +80,6 @@ export function createUserRepository(dbInstance: typeof db) {
         );
     },
 
-    withTransaction: (tx: unknown) => createUserRepository(tx as typeof db),
+    withTransaction: (tx: typeof db) => createUserRepository(tx),
   };
 }

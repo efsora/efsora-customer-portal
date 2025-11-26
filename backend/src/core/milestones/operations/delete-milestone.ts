@@ -19,10 +19,10 @@ export function deleteMilestoneById(
 }
 
 export function handleDeleteMilestoneResult(
-  result: unknown,
+  result: { id: number }[],
   milestoneId: number,
 ): Result<DeleteMilestoneResult> {
-  const milestones = result as { id: number }[];
+  const milestones = result;
   const milestone = first(milestones);
 
   if (!milestone) {

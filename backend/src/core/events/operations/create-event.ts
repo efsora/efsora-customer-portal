@@ -20,8 +20,10 @@ export function saveNewEvent(input: CreateEventInput): Result<EventData> {
   }, handleSaveNewEventResult);
 }
 
-export function handleSaveNewEventResult(result: unknown): Result<EventData> {
-  const events = result as EventData[];
+export function handleSaveNewEventResult(
+  result: EventData[],
+): Result<EventData> {
+  const events = result;
   const event = first(events);
 
   if (!event) {

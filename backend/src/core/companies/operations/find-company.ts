@@ -17,10 +17,10 @@ export function findCompanyById(input: CompanyIdInput): Result<CompanyData> {
 }
 
 export function handleFindCompanyByIdResult(
-  result: unknown,
+  result: CompanyData[],
   companyId: number,
 ): Result<CompanyData> {
-  const companies = result as CompanyData[];
+  const companies = result;
   const company = first(companies);
 
   if (!company) {
@@ -45,8 +45,8 @@ export function findAllCompanies(): Result<CompanyData[]> {
 }
 
 export function handleFindAllCompaniesResult(
-  result: unknown,
+  result: CompanyData[],
 ): Result<CompanyData[]> {
-  const companies = result as CompanyData[];
+  const companies = result;
   return success(companies);
 }

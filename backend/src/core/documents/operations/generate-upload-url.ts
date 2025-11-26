@@ -24,13 +24,15 @@ export function validateProject(
   }, handleValidateProjectResult);
 }
 
+type ValidateProjectCommandResult = {
+  project: { id: number; companyId: number | null } | undefined;
+  input: GenerateUploadUrlInput;
+};
+
 export function handleValidateProjectResult(
-  result: unknown,
+  result: ValidateProjectCommandResult,
 ): Result<GenerateUploadUrlInput & { companyId: number }> {
-  const { project, input } = result as {
-    project: { id: number; companyId: number | null } | undefined;
-    input: GenerateUploadUrlInput;
-  };
+  const { project, input } = result;
 
   if (!project) {
     return fail({
@@ -63,19 +65,21 @@ export function validateUserAccess(
   }, handleValidateUserAccessResult);
 }
 
+type ValidateUserAccessCommandResult = {
+  user:
+    | {
+        id: string;
+        companyId: number | null;
+        projectId: number | null;
+      }
+    | undefined;
+  input: GenerateUploadUrlInput & { companyId: number };
+};
+
 export function handleValidateUserAccessResult(
-  result: unknown,
+  result: ValidateUserAccessCommandResult,
 ): Result<GenerateUploadUrlInput & { companyId: number }> {
-  const { user, input } = result as {
-    user:
-      | {
-          id: string;
-          companyId: number | null;
-          projectId: number | null;
-        }
-      | undefined;
-    input: GenerateUploadUrlInput & { companyId: number };
-  };
+  const { user, input } = result;
 
   if (!user) {
     return fail({
@@ -126,10 +130,16 @@ export function generateS3UploadUrl(
   }, handleGenerateS3UploadUrlResult);
 }
 
+type GenerateS3UploadUrlCommandResult = {
+  url: string;
+  key: string;
+  expiresIn: number;
+};
+
 export function handleGenerateS3UploadUrlResult(
-  result: unknown,
+  result: GenerateS3UploadUrlCommandResult,
 ): Result<GenerateUploadUrlResult> {
-  const s3Result = result as { url: string; key: string; expiresIn: number };
+  const s3Result = result;
 
   if (!s3Result.url) {
     return fail({

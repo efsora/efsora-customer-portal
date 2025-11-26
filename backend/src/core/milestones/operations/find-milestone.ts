@@ -19,10 +19,10 @@ export function findMilestoneById(
 }
 
 export function handleFindMilestoneByIdResult(
-  result: unknown,
+  result: MilestoneData[],
   milestoneId: number,
 ): Result<MilestoneData> {
-  const milestones = result as MilestoneData[];
+  const milestones = result;
   const milestone = first(milestones);
 
   if (!milestone) {
@@ -47,8 +47,8 @@ export function findAllMilestones(): Result<MilestoneData[]> {
 }
 
 export function handleFindAllMilestonesResult(
-  result: unknown,
+  result: MilestoneData[],
 ): Result<MilestoneData[]> {
-  const milestones = result as MilestoneData[];
+  const milestones = result;
   return success(milestones);
 }
