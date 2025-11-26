@@ -1,5 +1,15 @@
 import { useRef, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+
 import styles from './UploadDocumentModal.module.css';
 
 export interface UploadDocumentModalProps {
@@ -74,24 +84,17 @@ export function UploadDocumentModal({
         onClose();
     };
 
-    if (!isOpen) {
-        return null;
-    }
-
     return (
-        <div className={styles.modalOverlay} onClick={onClose}>
-            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-                <div className="flex justify-between pb-6">
-                    <div className={styles.popupTitle}>Upload a Document</div>
-                    {/* Close button */}
-                    <button
-                        className={styles.closeButton}
-                        onClick={onClose}
-                        aria-label="Close modal"
-                    >
-                        <img src="close.svg" alt="close" />
-                    </button>
-                </div>
+        <Dialog
+            open={isOpen}
+            onOpenChange={(open) => {
+                if (!open) handleCancel();
+            }}
+        >
+            <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                    <DialogTitle>Upload a Document</DialogTitle>
+                </DialogHeader>
 
                 {/* File Selection Section */}
                 <div className={styles.section}>
@@ -165,32 +168,32 @@ export function UploadDocumentModal({
                 </div>
 
                 {/* Action Buttons */}
-                <div className={styles.buttonGroup}>
-                    <button
-                        className={styles.cancelButton}
-                        onClick={handleCancel}
-                        disabled={isLoading}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        className={styles.uploadButton}
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button
+                            variant="outline"
+                            onClick={handleCancel}
+                            disabled={isLoading}
+                        >
+                            Cancel
+                        </Button>
+                    </DialogClose>
+                    <Button
                         onClick={handleUploadClick}
                         disabled={!selectedFile || isLoading}
+                        className={styles.uploadButton}
                     >
                         {isLoading ? (
-                            <div>
-                                <p>Uploading...</p>
-                            </div>
+                            <span>Uploading...</span>
                         ) : (
                             <div className="flex gap-2">
                                 <img src="/documents/upload.svg" alt="upload" />
-                                <p>Upload Document</p>
+                                <span>Upload Document</span>
                             </div>
                         )}
-                    </button>
-                </div>
-            </div>
-        </div>
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 }

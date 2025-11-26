@@ -1,43 +1,3 @@
-.modalOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal {
-    background-color: white;
-    border-radius: 12px;
-    padding: 16px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-    position: relative;
-}
-
-.popupTitle {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--color-neutral-grey-600);
-}
-
-.closeButton {
-    cursor: pointer;
-    transition: all 0.2s ease;
-    align-self: flex-start;
-}
-
-.closeButton:hover {
-    background-color: var(--color-neutral-grey-100);
-    color: var(--color-neutral-grey-700);
-}
-
 .section {
     margin-bottom: 28px;
 }
@@ -153,34 +113,6 @@
     background-color: var(--color-neutral-grey-100);
 }
 
-.buttonGroup {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-}
-
-.cancelButton {
-    padding: 8px 24px;
-    background-color: white;
-    border: 1px solid var(--color-neutral-grey-200);
-    border-radius: 8px;
-    font-weight: 500;
-    font-size: 0.95rem;
-    color: var(--color-neutral-grey-600);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.cancelButton:hover:not(:disabled) {
-    background-color: var(--color-neutral-grey-50);
-    border-color: var(--color-neutral-grey-400);
-}
-
-.cancelButton:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
 .uploadButton {
     padding: 8px 24px 8px 16px;
     background-color: var(--color-primary-500);
@@ -203,11 +135,6 @@
 }
 
 @media (max-width: 640px) {
-    .modal {
-        width: 95%;
-        padding: 24px;
-    }
-
     .dropZone {
         padding: 30px 16px;
         min-height: 130px;
@@ -215,14 +142,5 @@
 
     .dropText {
         font-size: 0.875rem;
-    }
-
-    .buttonGroup {
-        flex-direction: column-reverse;
-    }
-
-    .cancelButton,
-    .uploadButton {
-        width: 100%;
     }
 }
