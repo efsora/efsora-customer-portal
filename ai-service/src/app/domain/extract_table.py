@@ -5,6 +5,7 @@ import fitz  # type: ignore[import-not-found]
 from langchain_aws import ChatBedrock
 from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage
+import pdfplumber  # type: ignore[import-not-found]
 
 from app.domain.extract_images import build_bedrock_vision_client
 
@@ -145,6 +146,24 @@ def _process_with_llm(
     return _extract_response_text(getattr(response, "content", response)).strip()
 
 
+def _block_outside_any_bbox(
+    block: list[Any],
+    bboxes: list[tuple[float, float, float, float]],
+) -> bool:
+    """Return True if block center is outside all provided bounding boxes."""
+    if not bboxes or len(block) < 5:
+        return True
+
+    x0, y0, x1, y1 = block[:4]
+    x_center = (x0 + x1) / 2
+    y_center = (y0 + y1) / 2
+
+    for bx0, by0, bx1, by1 in bboxes:
+        if bx0 <= x_center <= bx1 and by0 <= y_center <= by1:
+            return False
+    return True
+
+
 def extract_tables_and_text_in_order(
     pdf_path: str,
     batch_size: int = 5,
@@ -164,7 +183,7 @@ def extract_tables_and_text_in_order(
     docs: list[Document] = []
     order_index = 0
 
-    with fitz.open(pdf_path) as pdf_doc:
+    with fitz.open(pdf_path) as pdf_doc, pdfplumber.open(pdf_path) as pdf_pl:
         total_pages = len(pdf_doc)
 
         for batch_start in range(0, total_pages, batch_size):
@@ -172,11 +191,33 @@ def extract_tables_and_text_in_order(
             page_start = batch_start + 1
             page_end = batch_end
 
-            # 1) Text per page (kept in order)
+            # 1) Text per page (kept in order), skip regions detected as tables
             for page_idx in range(batch_start, batch_end):
-                text = pdf_doc[page_idx].get_text("text").strip()
-                if not text:
+                page = pdf_doc[page_idx]
+                pl_page = pdf_pl.pages[page_idx]
+
+                table_bboxes: list[tuple[float, float, float, float]] = []
+                try:
+                    tables = pl_page.find_tables() or []
+                    table_bboxes = [tbl.bbox for tbl in tables]
+                except Exception:
+                    table_bboxes = []
+
+                filtered_blocks: list[str] = []
+                for block in page.get_text("blocks") or []:
+                    if len(block) < 5:
+                        continue
+                    text = block[4]
+                    if not text or not text.strip():
+                        continue
+                    if not _block_outside_any_bbox(block, table_bboxes):
+                        continue
+                    filtered_blocks.append(text.strip())
+
+                if not filtered_blocks:
                     continue
+
+                text = "\n".join(filtered_blocks)
                 docs.append(
                     Document(
                         page_content=text,

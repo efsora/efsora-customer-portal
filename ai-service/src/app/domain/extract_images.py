@@ -162,15 +162,15 @@ def build_image_docs_from_pdf_with_ai(
     image_output_dir: str | Path | None = None,
     llm: ChatBedrock | None = None,
 ) -> list[Document]:
-    """Extract images from PDF, caption with Claude, and build RAG-ready docs."""
+    """Extract unique images from PDF, caption with Claude, and build RAG-ready docs."""
     if llm is None:
         llm = build_bedrock_vision_client()
 
     output_dir = resolve_image_output_dir(image_output_dir)
     rag_docs: list[Document] = []
 
-    # 🔁 hash -> description cache (aynı image için ikinci kez AI çağrısı yok)
-    seen_images: dict[str, str] = {}
+    # 🔁 hash -> cached info (aynı image için ikinci kez AI çağrısı veya disk yazımı yok)
+    seen_images: dict[str, dict[str, Any]] = {}
 
     with fitz.open(pdf_path) as pdf_doc:
         for page_index, page in enumerate(pdf_doc):
@@ -185,23 +185,28 @@ def build_image_docs_from_pdf_with_ai(
                 width = base_image.get("width")
                 height = base_image.get("height")
 
-                # 2️⃣ Aynı resim daha önce görüldüyse cache’den description al
                 img_hash = _image_hash(image_bytes)
-                if img_hash in seen_images:
-                    description = seen_images[img_hash]
-                else:
-                    description = _describe_image_bytes_with_llm(
-                        image_bytes=image_bytes,
-                        image_ext=image_ext,
-                        llm=llm,
-                    )
-                    seen_images[img_hash] = description
 
-                # 3️⃣ Disk’e kaydet
+                # Skip duplicates completely (no extra disk writes or docs)
+                if img_hash in seen_images:
+                    continue
+
+                description = _describe_image_bytes_with_llm(
+                    image_bytes=image_bytes,
+                    image_ext=image_ext,
+                    llm=llm,
+                )
+
                 image_name = _image_name(pdf_path, page_index, image_index, image_ext)
                 image_path = _save_image(image_bytes, output_dir / image_name)
 
-                # 4️⃣ RAG dokümanı oluştur
+                seen_images[img_hash] = {
+                    "description": description,
+                    "image_path": image_path,
+                    "width": width,
+                    "height": height,
+                }
+
                 rag_docs.append(
                     Document(
                         page_content=description,
