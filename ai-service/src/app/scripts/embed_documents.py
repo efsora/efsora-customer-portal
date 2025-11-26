@@ -29,6 +29,7 @@ async def embed_documents() -> None:
     ctx = container.context()
     weaviate_client = container.weaviate_async_client()
     embeddings = container.embeddings()
+    bedrock_llm = container.bedrock_llm()
 
     try:
         # Connect to Weaviate
@@ -41,6 +42,7 @@ async def embed_documents() -> None:
             weaviate_client=weaviate_client,
             settings=settings,
             embeddings=embeddings,
+            bedrock_llm=bedrock_llm,
             save_chunks_txt=True,
             save_embeddings_json=True,
         )

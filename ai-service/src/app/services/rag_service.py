@@ -14,6 +14,7 @@ from app.domain.ingestion_operations import (
     build_semantic_chunks_per_doc,
     load_documents,
     save_chunks_and_embeddings,
+    save_raw_documents,
 )
 from app.infrastructure.weaviate.collection import ensure_weaviate_collection
 
@@ -106,6 +107,8 @@ async def build_vectorstore(
     weaviate_client: weaviate.WeaviateAsyncClient,
     settings: Settings,
     embeddings: BedrockEmbeddings,
+    bedrock_llm: ChatBedrock | None = None,
+    save_raw_docs_txt: bool = True,
     save_chunks_txt: bool = True,
     save_embeddings_json: bool = True,
 ) -> list[Document]:
@@ -125,7 +128,15 @@ async def build_vectorstore(
     ctx.logger.info("Starting document ingestion pipeline...")
 
     # Load documents
-    all_docs = load_documents(ctx, settings.DATA_DIR)
+    all_docs = load_documents(
+        ctx=ctx,
+        data_dir=settings.DATA_DIR,
+        settings=settings,
+        vision_llm=bedrock_llm,
+    )
+
+    if save_raw_docs_txt:
+        save_raw_documents(ctx, all_docs, settings.OUTPUT_DIR)
 
     # Build semantic chunks
     split_docs = build_semantic_chunks_per_doc(

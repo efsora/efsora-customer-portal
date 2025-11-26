@@ -1,28 +1,82 @@
 import glob
 import json
 import os
+from pathlib import Path
 from typing import Any
 
-from langchain_community.document_loaders import PyPDFLoader, TextLoader
+from langchain_aws import ChatBedrock
 from langchain_core.documents import Document
 from semantic_chunker.core import SemanticChunker
 
 from app.core.context import Context
+from app.core.settings import Settings
+from app.domain.extract_images import (
+    build_bedrock_vision_client,
+    build_image_docs_from_pdf_with_ai,
+    resolve_image_output_dir,
+)
+from app.domain.extract_table import extract_tables_and_text_in_order
 
 
-def load_documents(ctx: Context, data_dir: str) -> list[Document]:
-    """Load all .txt and .pdf files from data_dir into LangChain Documents."""
+def _ensure_output_dir(path: str) -> str:
+    """Create output dir if missing; return normalized string path."""
+    output_dir = Path(path)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    return str(output_dir)
+
+
+def ingest_pdf(
+    pdf_path: str,
+    output_dir: str | Path | None = None,
+    llm: ChatBedrock | None = None,
+) -> list[Document]:
+    """Extract tables + AI-image captions for a PDF; returns Documents ready for RAG."""
+    if llm is None:
+        llm = build_bedrock_vision_client()
+
+    base_output = resolve_image_output_dir(output_dir)
+
     docs: list[Document] = []
 
-    # Load .txt files
-    for file_path in glob.glob(os.path.join(data_dir, "*.txt")):
-        txt_loader = TextLoader(file_path, encoding="utf-8")
-        docs.extend(txt_loader.load())
+    ordered_docs = extract_tables_and_text_in_order(
+        pdf_path,
+        llm=llm,
+        reconstruct_with_llm=True,
+    )
+    docs.extend(ordered_docs)
 
-    # Load .pdf files
+    image_docs = build_image_docs_from_pdf_with_ai(
+        pdf_path=pdf_path,
+        image_output_dir=base_output,
+        llm=llm,
+    )
+    docs.extend(image_docs)
+
+    return docs
+
+
+def load_documents(
+    ctx: Context,
+    data_dir: str,
+    settings: Settings | None = None,
+    vision_llm: ChatBedrock | None = None,
+) -> list[Document]:
+    """Load PDFs and enrich them with ordered table/text docs plus AI image captions."""
+    docs: list[Document] = []
+
     for file_path in glob.glob(os.path.join(data_dir, "*.pdf")):
-        pdf_loader = PyPDFLoader(file_path)
-        docs.extend(pdf_loader.load())
+        try:
+            enriched_docs = ingest_pdf(
+                pdf_path=file_path,
+                output_dir=settings.OUTPUT_DIR if settings else None,
+                llm=vision_llm,
+            )
+            docs.extend(enriched_docs)
+            ctx.logger.info(
+                f"Enriched '{file_path}' with {len(enriched_docs)} table/text/image documents"
+            )
+        except Exception as exc:
+            ctx.logger.error(f"Failed to load/enrich '{file_path}': {exc}")
 
     ctx.logger.info(f" Loaded {len(docs)} raw documents from '{data_dir}'")
     return docs
@@ -93,7 +147,7 @@ def save_chunks_and_embeddings(
     Returns:
         Metadata dictionary
     """
-    os.makedirs(output_dir, exist_ok=True)
+    output_dir = _ensure_output_dir(output_dir)
 
     # Save chunks txt
     if save_chunks_txt:
@@ -134,3 +188,23 @@ def save_chunks_and_embeddings(
     ctx.logger.info(f" Metadata saved to {metadata_file}")
 
     return metadata
+
+
+def save_raw_documents(
+    ctx: Context,
+    docs: list[Document],
+    output_dir: str,
+    filename: str = "raw_docs.txt",
+) -> str:
+    """Save documents before chunking for debugging/inspection."""
+    output_dir = _ensure_output_dir(output_dir)
+    path = os.path.join(output_dir, filename)
+
+    with open(path, "w", encoding="utf-8") as f:
+        for i, doc in enumerate(docs):
+            f.write(f"--- Raw Document {i} ---\n")
+            f.write(f"metadata: {json.dumps(doc.metadata, ensure_ascii=False)}\n")
+            f.write(doc.page_content + "\n\n")
+
+    ctx.logger.info(f" Saved {len(docs)} raw documents to {path}")
+    return path
