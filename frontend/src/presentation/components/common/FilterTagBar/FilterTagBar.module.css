@@ -1,0 +1,43 @@
+.container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    width: fit-content;
+    gap: 12px;
+    background-color: white;
+    border-radius: 24px;
+    padding: 4px;
+    border: 1px solid var(--color-neutral-grey-200);
+}
+
+.button {
+    padding: 4px 16px;
+    border-radius: 24px;
+    color: var(--color-neutral-grey-500);
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.button:hover {
+    border-color: var(--color-neutral-grey-400);
+    background-color: var(--color-neutral-grey-100);
+}
+
+.button.active {
+    background-color: var(--color-primary-500);
+    color: white;
+    border-color: var(--color-primary-500);
+}

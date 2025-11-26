@@ -23,11 +23,7 @@ const Chat: React.FC = () => {
         isStreaming,
         isLoadingHistory,
         sendMessage: sendApiMessage,
-    } = useChat({
-        onError: (err) => {
-            console.error('Chat error:', err);
-        },
-    });
+    } = useChat();
 
     // Convert API messages to component format
     const messages = useMemo<MessageType[]>(() => {
@@ -47,11 +43,7 @@ const Chat: React.FC = () => {
         const messageContent = input;
         setInput('');
 
-        try {
-            await sendApiMessage(messageContent);
-        } catch (err) {
-            console.error('Failed to send message:', err);
-        }
+        await sendApiMessage(messageContent);
     };
 
     return (

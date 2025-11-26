@@ -2460,6 +2460,103 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/documents/get-upload-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate pre-signed upload URL
+         * @description Generate a pre-signed S3 URL for uploading a document. The URL expires in 15 minutes. User must have access to the project (same company).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["GenerateUploadUrlBody"];
+                };
+            };
+            responses: {
+                /** @description Pre-signed upload URL generated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: components["schemas"]["GenerateUploadUrlResponse"];
+                            error?: null;
+                            message?: null;
+                            meta?: components["schemas"]["Meta"] & (Record<string, never> | null);
+                            /** @enum {boolean} */
+                            success: true;
+                            /** @example 00-1234567890abcdef-1234567890abcdef-01 */
+                            traceId: string;
+                        };
+                    };
+                };
+                /** @description Validation Error - Invalid request body, params, or query */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Unauthorized - Invalid or missing authentication token */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Forbidden - Insufficient permissions for this resource */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Not Found - Requested resource does not exist */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error - Unexpected server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3074,6 +3171,38 @@ export interface components {
             milestoneId?: number | null;
             /** @example 3 */
             status?: number | null;
+        };
+        GenerateUploadUrlResponse: {
+            /**
+             * Format: uri
+             * @description Pre-signed URL for uploading the file to S3
+             * @example https://bucket.s3.amazonaws.com/path/to/file?X-Amz-Algorithm=...
+             */
+            uploadUrl: string;
+            /**
+             * @description Number of seconds until the URL expires
+             * @example 900
+             */
+            expiresIn: number;
+        };
+        GenerateUploadUrlBody: {
+            /** @example project-proposal.pdf */
+            fileName: string;
+            /**
+             * @description File size in bytes
+             * @example 1048576
+             */
+            fileSize: number;
+            /**
+             * @description MIME type of the file
+             * @example application/pdf
+             */
+            fileType: string;
+            /**
+             * @description ID of the project
+             * @example 1
+             */
+            projectId: number;
         };
     };
     responses: never;

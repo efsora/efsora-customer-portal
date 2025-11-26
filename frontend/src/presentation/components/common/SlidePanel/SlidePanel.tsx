@@ -6,8 +6,6 @@ import styles from './SlidePanel.module.css';
 export default function SlidePanel() {
     const { isSlidePanelOpen, setSlidePanelOpen } = useUIStore();
 
-    console.log('isSlidePanelOpen: ', isSlidePanelOpen);
-
     const handleBackdropClick = () => {
         setSlidePanelOpen(false);
     };

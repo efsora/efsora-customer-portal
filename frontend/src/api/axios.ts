@@ -2,6 +2,7 @@ import axiosPackage from 'axios';
 
 import { API_URL } from '#config/env';
 import { useAuthStore } from '#store/authStore';
+import { getAuthToken } from '#utils/auth';
 
 export const axios = axiosPackage.create({
     withCredentials: true,
@@ -13,9 +14,7 @@ export const axios = axiosPackage.create({
  * Called before every request
  */
 axios.interceptors.request.use((config) => {
-    const token = localStorage.getItem('auth-store')
-        ? JSON.parse(localStorage.getItem('auth-store') || '{}').state?.token
-        : null;
+    const token = getAuthToken();
 
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;

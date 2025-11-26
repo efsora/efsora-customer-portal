@@ -1,0 +1,12 @@
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    color: var(--color-neutral-grey-500);
+    font-size: 0.875rem;
+}
+
+.message {
+    color: inherit;
+}

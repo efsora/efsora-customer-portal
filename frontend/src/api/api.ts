@@ -11,7 +11,10 @@ export const get = async <T>(
         return response;
     } catch (error) {
         const axiosError = error as AxiosError<T>;
-        return axiosError.response as AxiosResponse<T>;
+        if (axiosError.response) {
+            return axiosError.response;
+        }
+        throw error;
     }
 };
 
@@ -25,6 +28,9 @@ export const post = async <T, R>(
         return response;
     } catch (error) {
         const axiosError = error as AxiosError<T>;
-        return axiosError.response as AxiosResponse<T>;
+        if (axiosError.response) {
+            return axiosError.response;
+        }
+        throw error;
     }
 };

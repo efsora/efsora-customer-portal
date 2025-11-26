@@ -6,9 +6,9 @@ import { Milestone } from '../Milestone/Milestone';
 export function MilestoneList() {
     return (
         <div className={styles.container}>
-            {MILESTONES.map((milestone, index) => (
+            {MILESTONES.map((milestone) => (
                 <Milestone
-                    key={index}
+                    key={milestone.title}
                     title={milestone.title}
                     dueDate={milestone.dueDate}
                     assignedPerson={milestone.assignedPerson}

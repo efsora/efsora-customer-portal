@@ -1,17 +1,14 @@
 import * as api from '#api/api';
 import { ENDPOINTS } from '#api/endpoints';
 
-import type { GetUploadUrlRequest } from '../types/uploads/request.types';
-import type { AppResponse_GetUploadUrlResponse_ } from '../types/uploads/response.types';
+import type { GetUploadUrlRequest } from '../types/upload/request.types';
+import type { AppResponse_GenerateUploadUrlResponse_ } from '../types/upload/response.types';
 
-/**
- * Get a pre-signed upload URL for file uploads
- */
 export const getUploadUrl = async (
     request: GetUploadUrlRequest,
-): Promise<AppResponse_GetUploadUrlResponse_> => {
+): Promise<AppResponse_GenerateUploadUrlResponse_> => {
     const response = await api.post<
-        AppResponse_GetUploadUrlResponse_,
+        AppResponse_GenerateUploadUrlResponse_,
         GetUploadUrlRequest
     >(ENDPOINTS.UPLOADS.GET_UPLOAD_URL, request);
 
@@ -35,5 +32,5 @@ export const getUploadUrl = async (
         throw new Error(`HTTP ${response?.status}: Failed to get upload URL`);
     }
 
-    return response?.data as AppResponse_GetUploadUrlResponse_;
+    return response?.data as AppResponse_GenerateUploadUrlResponse_;
 };

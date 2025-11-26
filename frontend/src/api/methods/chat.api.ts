@@ -1,6 +1,7 @@
 import * as api from '#api/api';
 import { ENDPOINTS } from '#api/endpoints';
 import { API_URL } from '#config/env';
+import { getAuthToken } from '#utils/auth';
 
 import type {
     ChatStreamRequest,
@@ -15,10 +16,7 @@ import type { ChatHistoryResponse } from '../types/chat/response.types';
 export async function* streamChat(
     request: ChatStreamRequest,
 ): AsyncGenerator<string, void, unknown> {
-    // Get token from localStorage
-    const token = localStorage.getItem('auth-store')
-        ? JSON.parse(localStorage.getItem('auth-store') || '{}').state?.token
-        : null;
+    const token = getAuthToken();
 
     const response = await fetch(`${API_URL}${ENDPOINTS.CHAT.STREAM}`, {
         method: 'POST',
