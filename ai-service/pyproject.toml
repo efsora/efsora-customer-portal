@@ -16,13 +16,18 @@ dependencies = [
   "langchain-openai>=1.0.2",
   "langchain-weaviate>=0.0.6",
   "pydantic-settings>=2.10.1",
+  "pdfplumber>=0.11.5",
   "pypdf>=6.2.0",
+  "pymupdf>=1.24.10",
   "python-dotenv>=1.1.1",
+  "rapidfuzz>=3.14.3",
   "semantic-chunker>=0.2.0",
   "sqlalchemy[asyncio]>=2.0.43",
   "structlog>=25.4.0",
   "uvicorn[standard]>=0.36.0",
   "weaviate-client>=4.7.0,<5.0.0",
+  "sacrebleu>=2.5.1",
+  "rouge-score>=0.1.2",
 ]
 
 [build-system]
@@ -51,6 +56,11 @@ dev = [
   "pytest-asyncio>=1.2.0",
   "ruff>=0.13.1",
   "types-requests>=2.32.4.20250913",
+  "ragas>=0.2.0",
+  "datasets>=3.0.0",
+  "langchain>=0.3.0",
+  "langchain-anthropic>=0.3.0",
+  "anthropic>=0.39.0",
 ]
 
 
@@ -101,6 +111,11 @@ known-first-party = ["app"]
 force-sort-within-sections = true
 combine-as-imports = true
 
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+    "T201",  # Allow print() in tests for debugging output
+]
+
 ############################
 # Type Checking
 ############################
@@ -111,7 +126,8 @@ plugins = ["pydantic.mypy"]
 mypy_path = ["src", "tests"]
 namespace_packages = false
 files = ["src/app", "tests"]
-exclude = "(^src/app/core/)"
+# Exclude generated/legacy modules and Ragas test suite (uses external services)
+exclude = "(^src/app/core/|^tests/ragas/)"
 follow_imports = "silent"
 
 warn_unused_configs = true
@@ -148,6 +164,7 @@ disallow_untyped_calls = false
 module = [
     "semantic_chunker.*",
     "advanced_chunker.*",
+    "ragas.*",
 ]
 ignore_missing_imports = true
 disallow_untyped_calls = false
@@ -166,9 +183,13 @@ warn_required_dynamic_aliases = true
 minversion = "8.0"
 addopts = "-q"
 testpaths = ["tests"]
+pythonpath = ["src"]
 asyncio_mode = "strict"
 asyncio_default_fixture_loop_scope = "session"
 asyncio_default_test_loop_scope = "session"
+markers = [
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
+]
 
 [tool.coverage.run]
 branch = true
