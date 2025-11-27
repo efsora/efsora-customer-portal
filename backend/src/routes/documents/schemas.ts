@@ -50,6 +50,10 @@ export const generateUploadUrlResponseSchema = z
         "https://bucket.s3.amazonaws.com/path/to/file?X-Amz-Algorithm=...",
       description: "Pre-signed URL for uploading the file to S3",
     }),
+    s3Key: z.string().openapi({
+      example: "documents/1/5/project-proposal.pdf",
+      description: "S3 object key where the file will be stored",
+    }),
     expiresIn: z.number().int().positive().openapi({
       example: 900,
       description: "Number of seconds until the URL expires",
@@ -149,4 +153,43 @@ export const listDocumentsResponseSchema = z
  */
 export const listDocumentsSchema = {
   query: listDocumentsQuerySchema,
+};
+
+/**
+ * Embed Document Request Body Schema
+ */
+export const embedDocumentBodySchema = z
+  .object({
+    s3Key: z
+      .string()
+      .min(1, "S3 key is required")
+      .max(1024, "S3 key is too long")
+      .openapi({
+        example: "documents/1/5/project-proposal.pdf",
+        description: "S3 object key of the document to embed",
+      }),
+    projectId: z
+      .number()
+      .int()
+      .positive("Project ID must be positive")
+      .openapi({ example: 1, description: "ID of the project" }),
+    collectionName: z
+      .string()
+      .max(100, "Collection name is too long")
+      .optional()
+      .openapi({
+        example: "EfsoraDocs",
+        description:
+          "Weaviate collection name (optional, uses default if not provided)",
+      }),
+  })
+  .openapi("EmbedDocumentBody");
+
+export type EmbedDocumentBody = z.infer<typeof embedDocumentBodySchema>;
+
+/**
+ * Validation schema for embedDocument route
+ */
+export const embedDocumentSchema: { body: typeof embedDocumentBodySchema } = {
+  body: embedDocumentBodySchema,
 };

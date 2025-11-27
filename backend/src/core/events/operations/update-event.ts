@@ -19,10 +19,10 @@ export function updateEventById(
 }
 
 export function handleUpdateEventResult(
-  result: unknown,
+  result: EventData[],
   eventId: number,
 ): Result<EventData> {
-  const events = result as EventData[];
+  const events = result;
   const event = first(events);
 
   if (!event) {

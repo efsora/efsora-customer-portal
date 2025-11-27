@@ -19,10 +19,10 @@ export function updateCompanyById(
 }
 
 export function handleUpdateCompanyResult(
-  result: unknown,
+  result: CompanyData[],
   companyId: number,
 ): Result<CompanyData> {
-  const companies = result as CompanyData[];
+  const companies = result;
   const company = first(companies);
 
   if (!company) {

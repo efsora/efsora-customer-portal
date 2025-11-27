@@ -1,10 +1,10 @@
+import UserProfile from '#presentation/components/user/UserProfile/UserProfile';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import UserProfile from '#presentation/components/user/UserProfile/UserProfile';
 
 import styles from './LeftBar.module.css';
 import NavigationMenu from '../NavigationMenu/NavigationMenu';

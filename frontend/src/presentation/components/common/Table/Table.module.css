@@ -114,7 +114,6 @@
     color: var(--color-error-700) !important;
 }
 
-
 /* Responsive: hide columns on smaller screens */
 @media (max-width: 1024px) {
     .hideOnMobile {

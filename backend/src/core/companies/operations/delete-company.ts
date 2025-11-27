@@ -19,10 +19,10 @@ export function deleteCompanyById(
 }
 
 export function handleDeleteCompanyResult(
-  result: unknown,
+  result: { id: number }[],
   companyId: number,
 ): Result<DeleteCompanyResult> {
-  const companies = result as { id: number }[];
+  const companies = result;
   const company = first(companies);
 
   if (!company) {

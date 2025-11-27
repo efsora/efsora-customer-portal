@@ -42,7 +42,7 @@ export function useDocumentFilters(): UseDocumentFiltersReturn {
                 return true;
             });
         },
-        [activeTag, searchQuery]
+        [activeTag, searchQuery],
     );
 
     return useMemo(
@@ -53,6 +53,6 @@ export function useDocumentFilters(): UseDocumentFiltersReturn {
             setSearchQuery,
             filterFiles,
         }),
-        [activeTag, searchQuery, filterFiles]
+        [activeTag, searchQuery, filterFiles],
     );
 }

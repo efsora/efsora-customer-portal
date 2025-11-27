@@ -1,5 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 
+import { useLogout } from '#api/hooks/useAuth';
+import { useGetUserById } from '#hooks/useUser';
+import { useCurrentUser } from '#store/authStore';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -7,9 +10,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useLogout } from '#api/hooks/useAuth';
-import { useGetUserById } from '#hooks/useUser';
-import { useCurrentUser } from '#store/authStore';
 
 import styles from './UserProfile.module.css';
 

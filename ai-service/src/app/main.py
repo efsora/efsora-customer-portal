@@ -95,17 +95,32 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         logger.error("Failed to initialize RAG chain", error=str(e))
         raise
 
+    # Connect async Weaviate client at startup (used by embed_document endpoint)
+    async_client = container.weaviate_async_client()
+    try:
+        await async_client.connect()
+        logger.info("Weaviate async client connected successfully")
+    except Exception as e:
+        logger.error("Failed to connect Weaviate async client", error=str(e))
+        raise
+
     try:
         yield
     finally:
         logger.info("Shutting down application")
+        # Close async Weaviate client
+        try:
+            await async_client.close()
+            logger.debug("Weaviate async client closed successfully")
+        except Exception as e:
+            logger.error(f"Error closing Weaviate async client: {str(e)}", error=str(e))
         # Close sync Weaviate client
         try:
             sync_client = container.weaviate_sync_client()
             sync_client.close()
             logger.debug("Weaviate sync client closed successfully")
         except Exception as e:
-            logger.error(f"Error closing Weaviate client: {str(e)}", error=str(e))
+            logger.error(f"Error closing Weaviate sync client: {str(e)}", error=str(e))
         container.unwire()
 
 

@@ -16,13 +16,15 @@ export function updateProjectById(
   }, handleUpdateProjectResult);
 }
 
+type UpdateProjectCommandResult = {
+  projects: ProjectData[];
+  projectId: number;
+};
+
 export function handleUpdateProjectResult(
-  result: unknown,
+  result: UpdateProjectCommandResult,
 ): Result<ProjectData> {
-  const { projects, projectId } = result as {
-    projects: ProjectData[];
-    projectId: number;
-  };
+  const { projects, projectId } = result;
   const project = first(projects);
 
   if (!project) {

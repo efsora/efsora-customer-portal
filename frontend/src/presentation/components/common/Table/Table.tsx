@@ -19,8 +19,8 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-import Tag from '../Tag/Tag';
 import styles from './Table.module.css';
+import Tag from '../Tag/Tag';
 
 interface FileRow {
     id: string;
@@ -159,7 +159,6 @@ export function Table({
                                     className={styles.sortIcon}
                                 />
                             </div>
-                          
                         </th>
                         <th
                             className={`${styles.headerSortable} ${styles.hideOnMobile}`}
@@ -356,7 +355,10 @@ export function Table({
                         <DialogClose asChild>
                             <Button variant="outline">Cancel</Button>
                         </DialogClose>
-                        <Button variant="destructive" onClick={handleConfirmDelete}>
+                        <Button
+                            variant="destructive"
+                            onClick={handleConfirmDelete}
+                        >
                             Delete
                         </Button>
                     </DialogFooter>

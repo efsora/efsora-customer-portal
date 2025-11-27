@@ -1,3 +1,4 @@
+import type { Response } from "express";
 import {
   createSuccessResponse,
   createFailureResponse,
@@ -6,12 +7,17 @@ import {
 import { run, matchResponse } from "#lib/result";
 import type { ValidatedRequest } from "#middlewares/validate";
 import type { AuthenticatedRequest } from "#middlewares/auth";
-import type { GenerateUploadUrlBody, ListDocumentsQuery } from "./schemas";
+import type {
+  GenerateUploadUrlBody,
+  ListDocumentsQuery,
+  EmbedDocumentBody,
+} from "./schemas";
 import {
   generateUploadUrl,
   listDocuments,
   type GenerateUploadUrlResult,
   type ListDocumentsResult,
+  embedDocument,
 } from "#core/documents";
 
 /**
@@ -39,6 +45,7 @@ export async function handleGenerateUploadUrl(
     onSuccess: (data) =>
       createSuccessResponse({
         uploadUrl: data.uploadUrl,
+        s3Key: data.s3Key,
         expiresIn: data.expiresIn,
       }),
     onFailure: (error) => createFailureResponse(error),
@@ -65,4 +72,57 @@ export async function handleListDocuments(
     onSuccess: (data) => createSuccessResponse(data),
     onFailure: (error) => createFailureResponse(error),
   });
+}
+
+/**
+ * Result type for embed document streaming operation
+ * This is an async generator that yields string chunks (SSE data)
+ */
+export type EmbedDocumentStreamResult = AsyncGenerator<string, void, unknown>;
+
+/**
+ * Handler for POST /api/v1/documents/embed
+ * Proxy SSE stream from AI service for document embedding
+ *
+ * This handler does NOT return AppResponse - it streams directly to the response
+ */
+export async function handleEmbedDocument(
+  req: AuthenticatedRequest & ValidatedRequest<{ body: EmbedDocumentBody }>,
+  res: Response,
+): Promise<void> {
+  const body = req.validated.body;
+  const userId = req.userId ?? "";
+
+  // Set SSE headers
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("X-Accel-Buffering", "no");
+  res.flushHeaders();
+
+  try {
+    const stream = embedDocument({
+      s3Key: body.s3Key,
+      projectId: body.projectId,
+      userId,
+      collectionName: body.collectionName,
+    });
+
+    for await (const chunk of stream) {
+      res.write(chunk);
+    }
+
+    res.end();
+  } catch (error) {
+    // HTTP-level error handling - send error response to client
+    res.write(
+      `data: ${JSON.stringify({
+        stage: "error",
+        progress_percent: 0,
+        message: error instanceof Error ? error.message : "Unknown error",
+        error_code: "PROXY_ERROR",
+      })}\n\n`,
+    );
+    res.end();
+  }
 }

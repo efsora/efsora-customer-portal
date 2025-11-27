@@ -56,9 +56,13 @@ export function useDocumentUpload({
                 {
                     onSuccess: async (response) => {
                         try {
-                            if (!response.success || !response.data?.uploadUrl) {
+                            if (
+                                !response.success ||
+                                !response.data?.uploadUrl
+                            ) {
                                 throw new Error(
-                                    response.message || 'Failed to get upload URL'
+                                    response.message ||
+                                        'Failed to get upload URL',
                                 );
                             }
 
@@ -69,15 +73,16 @@ export function useDocumentUpload({
                                     body: file,
                                     headers: {
                                         'Content-Type':
-                                            file.type || 'application/octet-stream',
+                                            file.type ||
+                                            'application/octet-stream',
                                         'x-amz-meta-category': category,
                                     },
-                                }
+                                },
                             );
 
                             if (!uploadResponse.ok) {
                                 throw new Error(
-                                    `Upload failed: ${uploadResponse.statusText}`
+                                    `Upload failed: ${uploadResponse.statusText}`,
                                 );
                             }
 
@@ -121,10 +126,10 @@ export function useDocumentUpload({
                         setIsUploading(false);
                         onError?.(errorMessage);
                     },
-                }
+                },
             );
         },
-        [getUploadUrl, projectId, onSuccess, onError]
+        [getUploadUrl, projectId, onSuccess, onError],
     );
 
     return {

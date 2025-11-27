@@ -8,6 +8,7 @@
  */
 export type GenerateUploadUrlResult = {
   uploadUrl: string;
+  s3Key: string;
   expiresIn: number;
 };
 
@@ -56,3 +57,9 @@ export type DocumentRow = {
 export type ListDocumentsResult = {
   documents: DocumentRow[];
 };
+
+/**
+ * Result type for embed document streaming operation
+ * This is an async generator that yields string chunks (SSE data)
+ */
+export type EmbedDocumentStreamResult = AsyncGenerator<string, void, unknown>;

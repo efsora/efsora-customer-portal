@@ -24,3 +24,13 @@ export type ListDocumentsInput = {
   companyId: number;
   projectId: number;
 };
+
+/**
+ * Input for embedding a document
+ */
+export type EmbedDocumentInput = {
+  s3Key: string;
+  projectId: number;
+  userId: string;
+  collectionName?: string;
+};

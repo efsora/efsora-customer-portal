@@ -17,10 +17,10 @@ export function findEventById(input: EventIdInput): Result<EventData> {
 }
 
 export function handleFindEventByIdResult(
-  result: unknown,
+  result: EventData[],
   eventId: number,
 ): Result<EventData> {
-  const events = result as EventData[];
+  const events = result;
   const event = first(events);
 
   if (!event) {
@@ -45,8 +45,8 @@ export function findAllEvents(): Result<EventData[]> {
 }
 
 export function handleFindAllEventsResult(
-  result: unknown,
+  result: EventData[],
 ): Result<EventData[]> {
-  const events = result as EventData[];
+  const events = result;
   return success(events);
 }

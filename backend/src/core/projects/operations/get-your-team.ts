@@ -23,15 +23,19 @@ export function getUserCompanyIdWithInput(
   }, handleGetUserCompanyIdResult);
 }
 
-export function handleGetUserCompanyIdResult(result: unknown): Result<{
+type GetUserCompanyIdCommandResult = {
+  user: { companyId: number | null } | undefined;
+  userId: string;
+  projectId: number;
+};
+
+export function handleGetUserCompanyIdResult(
+  result: GetUserCompanyIdCommandResult,
+): Result<{
   projectId: number;
   userCompanyId: number;
 }> {
-  const { user, userId, projectId } = result as {
-    user: { companyId: number | null } | undefined;
-    userId: string;
-    projectId: number;
-  };
+  const { user, userId, projectId } = result;
 
   if (!user) {
     return fail({
@@ -73,13 +77,15 @@ export function fetchTeamMembers(data: {
   }, handleFetchTeamMembersResult);
 }
 
+type FetchTeamMembersCommandResult = {
+  customerTeam: ExtendedUserData[];
+  efsoraTeam: ExtendedUserData[];
+};
+
 export function handleFetchTeamMembersResult(
-  result: unknown,
+  result: FetchTeamMembersCommandResult,
 ): Result<GetYourTeamResult> {
-  const { customerTeam, efsoraTeam } = result as {
-    customerTeam: ExtendedUserData[];
-    efsoraTeam: ExtendedUserData[];
-  };
+  const { customerTeam, efsoraTeam } = result;
 
   return success({
     customerTeam,

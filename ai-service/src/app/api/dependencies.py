@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 import weaviate
 
 from app.core.context import Context
+from app.core.settings import Settings
 from app.dependency_injection.container import Container
 
 
@@ -33,6 +34,7 @@ async def get_weaviate_client(
         weaviate.WeaviateAsyncClient, Depends(Provide[Container.weaviate_async_client])
     ],
 ) -> weaviate.WeaviateAsyncClient:
+    # Client is connected at startup in lifespan, just return the singleton
     return weaviate_client
 
 
@@ -41,3 +43,10 @@ async def get_embeddings(
     embeddings: Annotated[BedrockEmbeddings, Depends(Provide[Container.embeddings])],
 ) -> BedrockEmbeddings:
     return embeddings
+
+
+@inject
+async def get_settings(
+    settings: Annotated[Settings, Depends(Provide[Container.settings])],
+) -> Settings:
+    return settings

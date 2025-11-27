@@ -1,12 +1,14 @@
 import { run } from "#lib/result/index";
-import type { ChatStreamInput } from "./types/inputs";
-import type { ChatStreamResult } from "./types/outputs";
-import { chatRepository } from "#infrastructure/repositories/drizzle";
+import { logger } from "#infrastructure/logger";
+import type { ChatStreamInput, GetChatHistoryInput } from "./types/inputs";
+import type { ChatStreamResult, GetChatHistoryResult } from "./types/outputs";
 import {
   validateSessionOwnership,
   ensureSessionExists,
   saveUserMessage,
   streamAndSaveResponse,
+  findSessionById,
+  getSessionMessages,
 } from "./chat-stream.operations";
 
 /**
@@ -17,6 +19,11 @@ import {
  * 4. Stream AI response and save
  */
 export async function* chatStream(input: ChatStreamInput): ChatStreamResult {
+  logger.info(
+    { sessionId: input.sessionId, userId: input.userId },
+    "Starting chat stream",
+  );
+
   // SECURITY: Validate session ownership first
   const ownershipResult = await run(validateSessionOwnership(input));
   if (ownershipResult.status === "Failure") {
@@ -34,6 +41,8 @@ export async function* chatStream(input: ChatStreamInput): ChatStreamResult {
 
   // Stream response and save
   yield* streamAndSaveResponse(input);
+
+  logger.info({ sessionId: input.sessionId }, "Chat stream workflow completed");
 }
 
 /**
@@ -41,23 +50,40 @@ export async function* chatStream(input: ChatStreamInput): ChatStreamResult {
  * 1. Validate session ownership
  * 2. Return messages if session exists
  */
-export async function getChatHistory(sessionId: string, userId: string) {
+export async function getChatHistory(
+  input: GetChatHistoryInput,
+): Promise<GetChatHistoryResult> {
+  logger.info(
+    { sessionId: input.sessionId, userId: input.userId },
+    "Getting chat history",
+  );
+
   // Validate ownership
   const ownershipResult = await run(
-    validateSessionOwnership({ sessionId, userId, message: "" }),
+    validateSessionOwnership({ ...input, message: "" }),
   );
   if (ownershipResult.status === "Failure") {
     throw new Error(ownershipResult.error.message);
   }
 
   // Check if session exists
-  const session = await chatRepository.findSessionById(sessionId);
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  const session = await findSessionById(input.sessionId);
   if (session === null) {
     // Return empty array for new sessions (not an error)
+    logger.info(
+      { sessionId: input.sessionId },
+      "Chat history: session not found, returning empty",
+    );
     return [];
   }
 
-  // Get messages
-  return await chatRepository.getSessionMessages(sessionId);
+  // Get messages via operation
+  const messages = await getSessionMessages(input);
+
+  logger.info(
+    { sessionId: input.sessionId, messageCount: messages.length },
+    "Chat history retrieved",
+  );
+
+  return messages;
 }

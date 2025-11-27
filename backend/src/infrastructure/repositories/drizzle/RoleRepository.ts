@@ -30,7 +30,7 @@ export function createRoleRepository(dbInstance: typeof db) {
       return dbInstance.select().from(roles);
     },
 
-    withTransaction: (tx: unknown) => createRoleRepository(tx as typeof db),
+    withTransaction: (tx: typeof db) => createRoleRepository(tx),
   };
 }
 

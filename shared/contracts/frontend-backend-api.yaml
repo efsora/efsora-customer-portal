@@ -21,6 +21,8 @@ tags:
     description: Chat endpoints
   - name: Uploads
     description: File upload endpoints
+  - name: Documents
+    description: Document management endpoints
 
 paths:
   /health:
@@ -163,13 +165,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
-  /uploads/get-upload-url:
+  /documents/get-upload-url:
     post:
       tags:
-        - Uploads
-      summary: Get upload URL
-      description: Generate a pre-signed upload URL for file uploads
-      operationId: getUploadUrl
+        - Documents
+      summary: Generate upload URL
+      description: Generate a pre-signed URL for uploading a document to S3
+      operationId: generateUploadUrl
       security:
         - bearerAuth: []
       requestBody:
@@ -177,49 +179,16 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - fileName
-                - fileSize
-                - fileType
-                - projectId
-              properties:
-                fileName:
-                  type: string
-                  description: Name of the file to be uploaded
-                  example: "document.pdf"
-                fileSize:
-                  type: integer
-                  description: Size of the file in bytes
-                  example: 1024000
-                fileType:
-                  type: string
-                  description: MIME type of the file
-                  example: "application/pdf"
-                projectId:
-                  type: string
-                  format: uuid
-                  description: Project ID associated with the upload
-                  example: "550e8400-e29b-41d4-a716-446655440000"
+              $ref: "#/components/schemas/GenerateUploadUrlRequest"
       responses:
         "200":
-          description: Upload URL generated successfully
+          description: Pre-signed URL generated successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  uploadUrl:
-                    type: string
-                    format: uri
-                    description: Pre-signed URL for uploading the file
-                    example: "https://s3.amazonaws.com/bucket/path?signature=..."
-                  expiresIn:
-                    type: integer
-                    description: URL expiration time in seconds
-                    example: 3600
+                $ref: "#/components/schemas/GenerateUploadUrlResponse"
         "400":
-          description: Invalid request parameters
+          description: Invalid request
           content:
             application/json:
               schema:
@@ -231,19 +200,54 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
         "403":
-          description: Forbidden - User does not have access to project
+          description: Forbidden - User does not have access to the project
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        "404":
-          description: Project not found
+
+  /documents/embed:
+    post:
+      tags:
+        - Documents
+      summary: Embed document
+      description: |
+        Embed a document from S3 into the vector database.
+        Returns progress updates via Server-Sent Events (SSE).
+      operationId: embedDocument
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmbedDocumentRequest"
+      responses:
+        "200":
+          description: SSE stream of embedding progress events
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: |
+                  Server-Sent Event data containing EmbedDocumentProgressEvent JSON.
+                  Each event is formatted as: data: {json}\n\n
+                example: 'data: {"stage":"embedding","progress_percent":45,"message":"Generating embeddings...","chunks_processed":5,"total_chunks":12}\n\n'
+        "400":
+          description: Invalid request
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-        "500":
-          description: Internal server error
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden - User does not have access to the project
           content:
             application/json:
               schema:
@@ -266,6 +270,132 @@ components:
         details:
           type: object
           description: Additional error details
+
+    GenerateUploadUrlRequest:
+      type: object
+      required:
+        - fileName
+        - fileSize
+        - fileType
+        - projectId
+      properties:
+        fileName:
+          type: string
+          description: Name of the file to upload
+          example: "project-proposal.pdf"
+          minLength: 1
+          maxLength: 255
+        fileSize:
+          type: integer
+          description: File size in bytes
+          example: 1048576
+          minimum: 1
+        fileType:
+          type: string
+          description: MIME type of the file
+          example: "application/pdf"
+          pattern: "^[a-z]+/[a-z0-9\\-+.]+$"
+        projectId:
+          type: integer
+          description: ID of the project
+          example: 1
+          minimum: 1
+
+    GenerateUploadUrlResponse:
+      type: object
+      required:
+        - uploadUrl
+        - s3Key
+        - expiresIn
+      properties:
+        uploadUrl:
+          type: string
+          format: uri
+          description: Pre-signed URL for uploading the file to S3
+          example: "https://bucket.s3.amazonaws.com/path/to/file?X-Amz-Algorithm=..."
+        s3Key:
+          type: string
+          description: S3 object key where the file will be stored
+          example: "documents/1/5/project-proposal.pdf"
+        expiresIn:
+          type: integer
+          description: Number of seconds until the URL expires
+          example: 900
+          minimum: 1
+
+    EmbedDocumentRequest:
+      type: object
+      required:
+        - s3Key
+        - projectId
+      properties:
+        s3Key:
+          type: string
+          description: S3 object key of the document to embed
+          example: "documents/1/5/quarterly_report.pdf"
+          minLength: 1
+          maxLength: 1024
+        projectId:
+          type: integer
+          description: Project ID for metadata tracking
+          example: 5
+          minimum: 1
+        collectionName:
+          type: string
+          description: Weaviate collection name (optional, uses default if not provided)
+          example: "EfsoraDocs"
+          maxLength: 100
+
+    EmbedDocumentProgressEvent:
+      type: object
+      required:
+        - stage
+        - progress_percent
+        - message
+      properties:
+        stage:
+          type: string
+          enum:
+            - downloading
+            - loading
+            - chunking
+            - embedding
+            - storing
+            - completed
+            - error
+          description: |
+            Current stage of the embedding process:
+            - downloading (0-10%): Downloading file from S3
+            - loading (10-20%): Loading and parsing document
+            - chunking (20-30%): Semantic chunking
+            - embedding (30-90%): Generating embeddings
+            - storing (90-100%): Storing in Weaviate
+            - completed (100%): Done
+            - error: Failed with error message
+        progress_percent:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Overall progress percentage
+        message:
+          type: string
+          description: Human-readable status message
+        chunks_processed:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Number of chunks processed so far
+        total_chunks:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Total number of chunks to process
+        document_id:
+          type: string
+          description: Document identifier (set on completion)
+        error_code:
+          type: string
+          description: Error code (set on error)
 
   securitySchemes:
     bearerAuth:

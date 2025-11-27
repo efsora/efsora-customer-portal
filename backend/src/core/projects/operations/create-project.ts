@@ -19,13 +19,15 @@ export function checkCompanyExists(
   }, handleCheckCompanyExistsResult);
 }
 
+type CheckCompanyExistsCommandResult = {
+  companyExists: boolean;
+  input: CreateProjectInput;
+};
+
 export function handleCheckCompanyExistsResult(
-  result: unknown,
+  result: CheckCompanyExistsCommandResult,
 ): Result<CreateProjectInput> {
-  const { companyExists, input } = result as {
-    companyExists: boolean;
-    input: CreateProjectInput;
-  };
+  const { companyExists, input } = result;
 
   if (!companyExists) {
     return fail({
@@ -54,13 +56,15 @@ export function checkProjectNameExists(
   }, handleCheckProjectNameExistsResult);
 }
 
+type CheckProjectNameExistsCommandResult = {
+  duplicate: boolean;
+  input: CreateProjectInput;
+};
+
 export function handleCheckProjectNameExistsResult(
-  result: unknown,
+  result: CheckProjectNameExistsCommandResult,
 ): Result<CreateProjectInput> {
-  const { duplicate, input } = result as {
-    duplicate: boolean;
-    input: CreateProjectInput;
-  };
+  const { duplicate, input } = result;
 
   if (duplicate) {
     return fail({
@@ -90,9 +94,9 @@ export function saveNewProject(
 }
 
 export function handleSaveNewProjectResult(
-  result: unknown,
+  result: CreateProjectResult[],
 ): Result<CreateProjectResult> {
-  const projects = result as CreateProjectResult[];
+  const projects = result;
   const project = first(projects);
 
   if (!project) {

@@ -36,3 +36,24 @@ class ChatRequest(BaseModel):
         default=None,
         description="Client-provided identifier used to persist chat history across requests.",
     )
+
+
+class EmbedDocumentRequest(BaseModel):
+    """Request to embed a document from S3 into the vector database."""
+
+    s3_key: str = Field(
+        ...,
+        min_length=1,
+        max_length=1024,
+        description="S3 object key of the document to embed",
+    )
+    collection_name: str | None = Field(
+        default=None,
+        max_length=100,
+        description="Weaviate collection name (defaults to settings if not provided)",
+    )
+    project_id: int = Field(
+        ...,
+        gt=0,
+        description="Project ID for metadata tracking",
+    )

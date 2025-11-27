@@ -46,7 +46,7 @@ export function createEventRepository(dbInstance: typeof db) {
       return dbInstance.delete(events).where(eq(events.id, id)).returning();
     },
 
-    withTransaction: (tx: unknown) => createEventRepository(tx as typeof db),
+    withTransaction: (tx: typeof db) => createEventRepository(tx),
   };
 }
 

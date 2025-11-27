@@ -17,13 +17,15 @@ export function findProjectById(input: ProjectIdInput): Result<ProjectData> {
   }, handleFindProjectByIdResult);
 }
 
+type FindProjectByIdCommandResult = {
+  projects: ProjectData[];
+  projectId: number;
+};
+
 export function handleFindProjectByIdResult(
-  result: unknown,
+  result: FindProjectByIdCommandResult,
 ): Result<ProjectData> {
-  const { projects, projectId } = result as {
-    projects: ProjectData[];
-    projectId: number;
-  };
+  const { projects, projectId } = result;
   const project = first(projects);
 
   if (!project) {
@@ -50,8 +52,8 @@ export function findAllProjects(
 }
 
 export function handleFindAllProjectsResult(
-  result: unknown,
+  result: ProjectData[],
 ): Result<ProjectData[]> {
-  const projects = result as ProjectData[];
+  const projects = result;
   return success(projects);
 }

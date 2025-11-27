@@ -120,7 +120,7 @@ export function createSessionRepository(dbInstance: typeof db) {
     /**
      * Transaction support
      */
-    withTransaction: (tx: unknown) => createSessionRepository(tx as typeof db),
+    withTransaction: (tx: typeof db) => createSessionRepository(tx),
   };
 }
 

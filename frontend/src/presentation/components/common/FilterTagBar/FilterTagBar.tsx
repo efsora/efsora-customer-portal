@@ -8,7 +8,11 @@ interface FilterTagBarProps {
     onTagClick: (tag: string | null) => void;
 }
 
-export function FilterTagBar({ tags, activeTag, onTagClick }: FilterTagBarProps) {
+export function FilterTagBar({
+    tags,
+    activeTag,
+    onTagClick,
+}: FilterTagBarProps) {
     return (
         <div className={styles.container}>
             {tags.map((tag) => (
@@ -20,7 +24,9 @@ export function FilterTagBar({ tags, activeTag, onTagClick }: FilterTagBarProps)
                     }
                 >
                     <img
-                        src={activeTag === tag.label ? tag.activeIcon : tag.icon}
+                        src={
+                            activeTag === tag.label ? tag.activeIcon : tag.icon
+                        }
                         alt={`${tag.label} icon`}
                         className={styles.icon}
                     />

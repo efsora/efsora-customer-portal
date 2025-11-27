@@ -19,10 +19,10 @@ export function deleteEventById(
 }
 
 export function handleDeleteEventResult(
-  result: unknown,
+  result: { id: number }[],
   eventId: number,
 ): Result<DeleteEventResult> {
-  const events = result as { id: number }[];
+  const events = result;
   const event = first(events);
 
   if (!event) {

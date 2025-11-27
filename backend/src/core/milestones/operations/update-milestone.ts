@@ -19,10 +19,10 @@ export function updateMilestoneById(
 }
 
 export function handleUpdateMilestoneResult(
-  result: unknown,
+  result: MilestoneData[],
   milestoneId: number,
 ): Result<MilestoneData> {
-  const milestones = result as MilestoneData[];
+  const milestones = result;
   const milestone = first(milestones);
 
   if (!milestone) {

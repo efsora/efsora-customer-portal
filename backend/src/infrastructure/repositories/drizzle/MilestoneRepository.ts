@@ -56,8 +56,7 @@ export function createMilestoneRepository(dbInstance: typeof db) {
         .returning();
     },
 
-    withTransaction: (tx: unknown) =>
-      createMilestoneRepository(tx as typeof db),
+    withTransaction: (tx: typeof db) => createMilestoneRepository(tx),
   };
 }
 

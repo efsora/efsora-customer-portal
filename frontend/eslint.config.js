@@ -38,6 +38,11 @@ export default defineConfig([
             'import/internal-regex': '^#',
         },
         rules: {
+            // Allow constant exports alongside components (for shadcn/ui)
+            'react-refresh/only-export-components': [
+                'warn',
+                { allowConstantExport: true },
+            ],
             // Import order
             'import/order': [
                 'error',

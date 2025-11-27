@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { LANGUAGES } from '#constants/languages';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { LANGUAGES } from '#constants/languages';
 
 /**
  * Language selector dropdown
@@ -28,7 +28,9 @@ export default function LanguageSelect() {
     return (
         <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
-                <span style={{ cursor: 'pointer' }}>{currentLanguageLabel}</span>
+                <span style={{ cursor: 'pointer' }}>
+                    {currentLanguageLabel}
+                </span>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
                 {LANGUAGES.map(({ code, label }) => (

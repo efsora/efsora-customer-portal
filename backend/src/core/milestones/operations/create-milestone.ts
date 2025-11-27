@@ -23,9 +23,9 @@ export function saveNewMilestone(
 }
 
 export function handleSaveNewMilestoneResult(
-  result: unknown,
+  result: MilestoneData[],
 ): Result<MilestoneData> {
-  const milestones = result as MilestoneData[];
+  const milestones = result;
   const milestone = first(milestones);
 
   if (!milestone) {
