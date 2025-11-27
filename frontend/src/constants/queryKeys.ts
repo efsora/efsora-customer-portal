@@ -12,7 +12,7 @@ export const QUERY_KEYS = {
         GET_UPLOAD_URL: 'get-upload-url',
     },
     DOCUMENTS: {
-        LIST: 'list-documents',
+        ALL: 'all-documents',
         EMBED: 'embed-document',
     },
 };

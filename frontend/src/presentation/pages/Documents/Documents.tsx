@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 
 import { useDocumentEmbed } from '#api/hooks/useDocumentEmbed';
 import { useDocumentFilters } from '#api/hooks/useDocumentFilters';
-import { useListDocuments } from '#api/hooks/useDocuments';
 import { useDocumentUpload } from '#api/hooks/useDocumentUpload';
 import { FILTER_TAGS, type FileRow } from '#api/mockData';
 import type { DocumentRow } from '#api/types/documents/response.types';
@@ -12,6 +11,7 @@ import { SearchInput } from '#components/common/SearchInput/SearchInput';
 import { UploadDocumentModal } from '#components/common/UploadDocumentModal/UploadDocumentModal';
 import PageTitle from '#presentation/components/common/PageTitle/PageTitle';
 import { Table } from '#presentation/components/common/Table/Table';
+import { useAllDocuments } from '@/api/hooks/useAllDocuments';
 
 import styles from './Documents.module.css';
 
@@ -86,7 +86,7 @@ export function Documents() {
 
     // Fetch documents from API
     const { data: documentsResponse, isLoading: isLoadingDocuments } =
-        useListDocuments({
+        useAllDocuments({
             companyId: COMPANY_ID,
             projectId: PROJECT_ID,
         });

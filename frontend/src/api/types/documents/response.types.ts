@@ -13,7 +13,7 @@ export interface DocumentUploader {
     icon: string;
 }
 
-export interface DocumentRow {
+export interface Document {
     id: string;
     fileName: DocumentFileName;
     uploader: DocumentUploader;
@@ -23,9 +23,9 @@ export interface DocumentRow {
     category: DocumentCategory;
 }
 
-export interface ListDocumentsResponse {
-    documents: DocumentRow[];
+export interface AllDocumentsResponse {
+    documents: Document[];
 }
 
-export type AppResponse_ListDocumentsResponse_ =
-    AppResponse<ListDocumentsResponse>;
+export type AppResponse_AllDocumentsResponse_ =
+    AppResponse<AllDocumentsResponse>;
