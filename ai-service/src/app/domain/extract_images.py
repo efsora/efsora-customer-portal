@@ -12,14 +12,7 @@ from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage
 
 from app.core.settings import Settings, get_settings
-
-
-def _ensure_pdf_path(pdf_path: str) -> Path:
-    """Normalize and validate the target PDF path."""
-    pdf_file = Path(pdf_path)
-    if not pdf_file.is_file():
-        raise FileNotFoundError(f"PDF not found at '{pdf_path}'")
-    return pdf_file
+from app.utils.file_utils import ensure_existing_file, save_binary_file
 
 
 def _convert_image_to_base64(image_bytes: bytes) -> str:
@@ -40,15 +33,22 @@ def _guess_media_type(image_ext: str | None) -> str:
 def resolve_image_output_dir(image_output_dir: str | Path | None) -> Path:
     """Resolve image output dir relative to repo root, ensure it exists."""
     settings = get_settings()
-    output_dir = (
+    chosen_dir = (
         Path(image_output_dir)
         if image_output_dir is not None
-        else Path(settings.OUTPUT_DIR) / "images"
+        else (
+            Path(settings.IMAGE_OUTPUT_DIR)
+            if settings.IMAGE_OUTPUT_DIR
+            else Path(settings.OUTPUT_DIR) / "images"
+        )
     )
 
+    output_dir = Path(chosen_dir)
     if not output_dir.is_absolute():
-        project_root = Path(__file__).resolve().parents[3]
-        output_dir = project_root / output_dir
+        raise ValueError(
+            f"image_output_dir must be an absolute path (got '{output_dir}'). "
+            "Set IMAGE_OUTPUT_DIR or OUTPUT_DIR to an absolute path, or pass an absolute path explicitly."
+        )
 
     try:
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -137,12 +137,6 @@ def _page_text_snippet(page: fitz.Page, limit: int | None = None) -> str:
     return text[:effective_limit] if text else ""
 
 
-def _save_image(image_bytes: bytes, destination: Path) -> Path:
-    with open(destination, "wb") as file:
-        file.write(image_bytes)
-    return destination
-
-
 def _image_name(pdf_path: str, page_index: int, image_index: int, image_ext: str | None) -> str:
     ext = image_ext or "png"
     pdf_name = os.path.splitext(os.path.basename(pdf_path))[0]
@@ -216,7 +210,7 @@ def build_image_docs_from_pdf_with_ai(
     """
     llm = llm or build_bedrock_vision_client()
 
-    pdf_file = _ensure_pdf_path(pdf_path)
+    pdf_file = ensure_existing_file(pdf_path, kind="PDF")
     output_dir = resolve_image_output_dir(image_output_dir)
     rag_docs: list[Document] = []
 
@@ -291,7 +285,7 @@ def _build_image_doc_from_pdf_image(
     )
 
     image_name = _image_name(pdf_path, page_index, image_index, image_ext)
-    image_path = _save_image(image_bytes, output_dir / image_name)
+    image_path = save_binary_file(image_bytes, output_dir / image_name)
 
     return Document(
         page_content=description,
