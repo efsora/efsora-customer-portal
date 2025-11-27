@@ -22,5 +22,6 @@ export const ENDPOINTS = {
     },
     DOCUMENTS: {
         LIST: '/api/v1/documents',
+        EMBED: '/api/v1/documents/embed',
     },
 };

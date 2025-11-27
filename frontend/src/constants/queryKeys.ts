@@ -13,5 +13,6 @@ export const QUERY_KEYS = {
     },
     DOCUMENTS: {
         LIST: 'list-documents',
+        EMBED: 'embed-document',
     },
 };

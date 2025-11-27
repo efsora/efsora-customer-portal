@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 
+import type { EmbedState } from '#api/types/documents/embed.types';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -19,6 +20,8 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
+
+import { EmbeddingProgress } from '../EmbeddingProgress';
 import styles from './Table.module.css';
 import Tag from '../Tag/Tag';
 
@@ -34,7 +37,15 @@ interface FileRow {
         icon: string;
     };
     lastUpdated: string;
-    status: 'signed' | 'inProgress' | 'paid' | 'sent';
+    status:
+        | 'signed'
+        | 'inProgress'
+        | 'paid'
+        | 'sent'
+        | 'embedding'
+        | 'embedded'
+        | 'embedError';
+    s3Key?: string;
 }
 
 interface TableProps {
@@ -43,6 +54,10 @@ interface TableProps {
     onSign?: (file: FileRow) => void;
     onReupload?: (file: FileRow) => void;
     onDelete?: (file: FileRow) => void;
+    /** Embedding states by s3Key */
+    embeddingStates?: Map<string, EmbedState>;
+    /** Handler to retry embedding for a file */
+    onRetryEmbed?: (s3Key: string) => void;
 }
 
 type SortKey = 'fileName' | 'uploader' | 'lastUpdated' | 'status';
@@ -54,10 +69,13 @@ interface SortConfig {
 }
 
 const STATUS_ORDER: Record<FileRow['status'], number> = {
-    inProgress: 0,
-    sent: 1,
-    signed: 2,
-    paid: 3,
+    embedding: 0,
+    embedError: 1,
+    inProgress: 2,
+    sent: 3,
+    signed: 4,
+    paid: 5,
+    embedded: 6,
 };
 
 export function Table({
@@ -66,6 +84,8 @@ export function Table({
     onSign,
     onReupload,
     onDelete,
+    embeddingStates,
+    onRetryEmbed,
 }: TableProps) {
     const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
     const [fileToDelete, setFileToDelete] = useState<FileRow | null>(null);
@@ -259,7 +279,27 @@ export function Table({
                             </td>
                             <td className={styles.hideOnMobile}>
                                 <div className={styles.status}>
-                                    <Tag status={file.status} />
+                                    {file.s3Key &&
+                                    embeddingStates?.has(file.s3Key) ? (
+                                        <EmbeddingProgress
+                                            state={
+                                                embeddingStates.get(
+                                                    file.s3Key,
+                                                )!
+                                            }
+                                            onRetry={
+                                                onRetryEmbed
+                                                    ? () =>
+                                                          onRetryEmbed(
+                                                              file.s3Key!,
+                                                          )
+                                                    : undefined
+                                            }
+                                            className="min-w-[140px]"
+                                        />
+                                    ) : (
+                                        <Tag status={file.status} />
+                                    )}
                                 </div>
                             </td>
                             <td>

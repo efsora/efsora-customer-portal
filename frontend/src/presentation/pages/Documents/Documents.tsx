@@ -1,3 +1,6 @@
+import { useCallback } from 'react';
+
+import { useDocumentEmbed } from '#api/hooks/useDocumentEmbed';
 import { useDocumentFilters } from '#api/hooks/useDocumentFilters';
 import { useListDocuments } from '#api/hooks/useDocuments';
 import { useDocumentUpload } from '#api/hooks/useDocumentUpload';
@@ -38,6 +41,35 @@ export function Documents() {
         filterFiles,
     } = useDocumentFilters();
 
+    // Embedding state and logic
+    const { embeddingStates, startEmbedding, retryEmbedding } =
+        useDocumentEmbed({
+            onComplete: (s3Key) => {
+                // Update file status to 'sent' when embedding completes
+                updateFileStatus(s3Key, 'sent');
+            },
+            onError: (s3Key) => {
+                // Update file status when embedding fails
+                updateFileStatus(s3Key, 'embedError');
+            },
+        });
+
+    // Handler to start embedding after upload
+    const handleUploadComplete = useCallback(
+        (s3Key: string) => {
+            startEmbedding(s3Key, PROJECT_ID);
+        },
+        [startEmbedding],
+    );
+
+    // Handler to retry embedding
+    const handleRetryEmbed = useCallback(
+        (s3Key: string) => {
+            retryEmbedding(s3Key, PROJECT_ID);
+        },
+        [retryEmbedding],
+    );
+
     // Upload state and logic
     const {
         uploadedFiles,
@@ -46,7 +78,11 @@ export function Documents() {
         isUploadModalOpen,
         setIsUploadModalOpen,
         handleUploadDocument,
-    } = useDocumentUpload({ projectId: PROJECT_ID });
+        updateFileStatus,
+    } = useDocumentUpload({
+        projectId: PROJECT_ID,
+        onUploadComplete: handleUploadComplete,
+    });
 
     // Fetch documents from API
     const { data: documentsResponse, isLoading: isLoadingDocuments } =
@@ -106,7 +142,11 @@ export function Documents() {
                     {isLoadingDocuments ? (
                         <LoadingState message="Loading documents..." />
                     ) : (
-                        <Table files={filteredFiles} />
+                        <Table
+                            files={filteredFiles}
+                            embeddingStates={embeddingStates}
+                            onRetryEmbed={handleRetryEmbed}
+                        />
                     )}
                 </div>
             </div>

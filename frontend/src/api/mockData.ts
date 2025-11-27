@@ -13,8 +13,17 @@ export interface FileRow {
     };
     lastUpdated: string;
     dateCreated: string;
-    status: 'signed' | 'inProgress' | 'paid' | 'sent';
+    status:
+        | 'signed'
+        | 'inProgress'
+        | 'paid'
+        | 'sent'
+        | 'embedding'
+        | 'embedded'
+        | 'embedError';
     category: 'SoW' | 'Legal' | 'Billing' | 'Assets';
+    /** S3 key for the uploaded file (used for embedding) */
+    s3Key?: string;
 }
 
 export interface FilterTag {
@@ -336,6 +345,16 @@ export const getCreatedMonths = () => {
     return Array.from(months).sort();
 };
 
+const STATUS_LABELS: Record<string, string> = {
+    signed: 'Signed',
+    inProgress: 'In Progress',
+    paid: 'Paid',
+    sent: 'Sent',
+    embedding: 'Embedding',
+    embedded: 'Embedded',
+    embedError: 'Embed Error',
+};
+
 export const getFilterOptions = (type: FilterType): string[] => {
     switch (type) {
         // case 'Version':
@@ -343,17 +362,7 @@ export const getFilterOptions = (type: FilterType): string[] => {
         case 'Uploader':
             return getUniqueUploaders();
         case 'Status':
-            return getUniqueStatuses().map((s) =>
-                s === 'signed'
-                    ? 'Signed'
-                    : s === 'inProgress'
-                      ? 'In Progress'
-                      : s === 'paid'
-                        ? 'Paid'
-                        : s === 'sent'
-                          ? 'Sent'
-                          : s,
-            );
+            return getUniqueStatuses().map((s) => STATUS_LABELS[s] || s);
         case 'Last Updated':
             return getLastUpdatedMonths();
         case 'Date Created':

@@ -9,6 +9,8 @@ interface UseDocumentUploadOptions {
     projectId: number;
     onSuccess?: (file: FileRow) => void;
     onError?: (error: string) => void;
+    /** Called after successful S3 upload with the s3Key for embedding */
+    onUploadComplete?: (s3Key: string, file: FileRow) => void;
 }
 
 interface UseDocumentUploadReturn {
@@ -19,6 +21,8 @@ interface UseDocumentUploadReturn {
     setIsUploadModalOpen: (isOpen: boolean) => void;
     handleUploadDocument: (file: File, category: string) => void;
     clearUploadError: () => void;
+    /** Update the status of a file by s3Key */
+    updateFileStatus: (s3Key: string, status: FileRow['status']) => void;
 }
 
 /**
@@ -28,6 +32,7 @@ export function useDocumentUpload({
     projectId,
     onSuccess,
     onError,
+    onUploadComplete,
 }: UseDocumentUploadOptions): UseDocumentUploadReturn {
     const [uploadedFiles, setUploadedFiles] = useState<FileRow[]>([]);
     const [isUploading, setIsUploading] = useState(false);
@@ -39,6 +44,17 @@ export function useDocumentUpload({
     const clearUploadError = useCallback(() => {
         setUploadError(null);
     }, []);
+
+    const updateFileStatus = useCallback(
+        (s3Key: string, status: FileRow['status']) => {
+            setUploadedFiles((prev) =>
+                prev.map((file) =>
+                    file.s3Key === s3Key ? { ...file, status } : file,
+                ),
+            );
+        },
+        [],
+    );
 
     const handleUploadDocument = useCallback(
         (file: File, category: string) => {
@@ -86,6 +102,7 @@ export function useDocumentUpload({
                                 );
                             }
 
+                            const s3Key = response.data.s3Key;
                             const newFile: FileRow = {
                                 id: Date.now().toString(),
                                 fileName: {
@@ -99,14 +116,18 @@ export function useDocumentUpload({
                                 },
                                 lastUpdated: new Date().toISOString(),
                                 dateCreated: new Date().toISOString(),
-                                status: 'inProgress',
+                                status: 'embedding', // Start in embedding status
                                 category: category as DocumentCategory,
+                                s3Key,
                             };
 
                             setUploadedFiles((prev) => [newFile, ...prev]);
                             setIsUploading(false);
                             setIsUploadModalOpen(false);
                             onSuccess?.(newFile);
+
+                            // Trigger embedding process
+                            onUploadComplete?.(s3Key, newFile);
                         } catch (error) {
                             const errorMessage =
                                 error instanceof Error
@@ -129,7 +150,7 @@ export function useDocumentUpload({
                 },
             );
         },
-        [getUploadUrl, projectId, onSuccess, onError],
+        [getUploadUrl, projectId, onSuccess, onError, onUploadComplete],
     );
 
     return {
@@ -140,5 +161,6 @@ export function useDocumentUpload({
         setIsUploadModalOpen,
         handleUploadDocument,
         clearUploadError,
+        updateFileStatus,
     };
 }

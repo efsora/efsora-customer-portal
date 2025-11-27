@@ -17,7 +17,10 @@ type TagStatus =
     | 'testing'
     | 'signed'
     | 'sent'
-    | 'paid';
+    | 'paid'
+    | 'embedding'
+    | 'embedded'
+    | 'embedError';
 
 interface TagProps {
     status: TagStatus;
@@ -41,6 +44,9 @@ const LABELS: Record<TagStatus, string> = {
     signed: 'Signed',
     sent: 'Sent',
     paid: 'Paid',
+    embedding: 'Embedding',
+    embedded: 'Embedded',
+    embedError: 'Error',
 };
 
 export default function Tag({ status }: TagProps) {
@@ -62,6 +68,9 @@ export default function Tag({ status }: TagProps) {
         signed: styles.signed,
         sent: styles.sent,
         paid: styles.paid,
+        embedding: styles.inProgress, // Use same style as inProgress
+        embedded: styles.completed, // Use same style as completed
+        embedError: styles.blocked, // Use same style as blocked for errors
     }[status];
 
     return (

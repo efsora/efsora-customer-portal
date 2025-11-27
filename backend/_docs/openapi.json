@@ -83,10 +83,15 @@
               },
               "code": {
                 "type": "string",
-                "enum": ["COMMAND_EXECUTION_ERROR"]
+                "enum": [
+                  "COMMAND_EXECUTION_ERROR"
+                ]
               }
             },
-            "required": ["message", "code"]
+            "required": [
+              "message",
+              "code"
+            ]
           },
           {
             "type": "object",
@@ -110,17 +115,25 @@
               },
               "code": {
                 "type": "string",
-                "enum": ["CONFLICT"]
+                "enum": [
+                  "CONFLICT"
+                ]
               },
               "conflictType": {
                 "type": "string",
-                "enum": ["email"]
+                "enum": [
+                  "email"
+                ]
               },
               "email": {
                 "type": "string"
               }
             },
-            "required": ["message", "code", "conflictType"]
+            "required": [
+              "message",
+              "code",
+              "conflictType"
+            ]
           },
           {
             "type": "object",
@@ -144,14 +157,26 @@
               },
               "code": {
                 "type": "string",
-                "enum": ["FORBIDDEN"]
+                "enum": [
+                  "FORBIDDEN"
+                ]
               },
               "resourceType": {
                 "type": "string",
-                "enum": ["auth", "comment", "post", "user"]
+                "enum": [
+                  "auth",
+                  "comment",
+                  "post",
+                  "user"
+                ]
               }
             },
-            "required": ["message", "resourceId", "code", "resourceType"]
+            "required": [
+              "message",
+              "resourceId",
+              "code",
+              "resourceType"
+            ]
           },
           {
             "type": "object",
@@ -175,10 +200,15 @@
               },
               "code": {
                 "type": "string",
-                "enum": ["INTERNAL_ERROR"]
+                "enum": [
+                  "INTERNAL_ERROR"
+                ]
               }
             },
-            "required": ["message", "code"]
+            "required": [
+              "message",
+              "code"
+            ]
           },
           {
             "type": "object",
@@ -202,14 +232,26 @@
               },
               "code": {
                 "type": "string",
-                "enum": ["NOT_FOUND"]
+                "enum": [
+                  "NOT_FOUND"
+                ]
               },
               "resourceType": {
                 "type": "string",
-                "enum": ["auth", "comment", "post", "user"]
+                "enum": [
+                  "auth",
+                  "comment",
+                  "post",
+                  "user"
+                ]
               }
             },
-            "required": ["message", "resourceId", "code", "resourceType"]
+            "required": [
+              "message",
+              "resourceId",
+              "code",
+              "resourceType"
+            ]
           },
           {
             "type": "object",
@@ -233,10 +275,15 @@
               },
               "code": {
                 "type": "string",
-                "enum": ["UNAUTHORIZED"]
+                "enum": [
+                  "UNAUTHORIZED"
+                ]
               }
             },
-            "required": ["message", "code"]
+            "required": [
+              "message",
+              "code"
+            ]
           },
           {
             "type": "object",
@@ -260,13 +307,19 @@
               },
               "code": {
                 "type": "string",
-                "enum": ["VALIDATION_ERROR"]
+                "enum": [
+                  "VALIDATION_ERROR"
+                ]
               },
               "field": {
                 "type": "string"
               }
             },
-            "required": ["message", "code", "field"]
+            "required": [
+              "message",
+              "code",
+              "field"
+            ]
           }
         ]
       },
@@ -288,14 +341,21 @@
           },
           "success": {
             "type": "boolean",
-            "enum": [false]
+            "enum": [
+              false
+            ]
           },
           "traceId": {
             "type": "string",
             "example": "00-1234567890abcdef-1234567890abcdef-01"
           }
         },
-        "required": ["error", "message", "success", "traceId"]
+        "required": [
+          "error",
+          "message",
+          "success",
+          "traceId"
+        ]
       },
       "PaginationMeta": {
         "type": "object",
@@ -316,17 +376,27 @@
             "example": 100
           }
         },
-        "required": ["page", "size", "total"]
+        "required": [
+          "page",
+          "size",
+          "total"
+        ]
       },
       "CursorMeta": {
         "type": "object",
         "properties": {
           "next_cursor": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "abc123"
           },
           "previous_cursor": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "def456"
           }
         }
@@ -340,7 +410,10 @@
                 "$ref": "#/components/schemas/CursorMeta"
               },
               {
-                "type": ["object", "null"]
+                "type": [
+                  "object",
+                  "null"
+                ]
               }
             ]
           },
@@ -350,7 +423,10 @@
                 "$ref": "#/components/schemas/PaginationMeta"
               },
               {
-                "type": ["object", "null"]
+                "type": [
+                  "object",
+                  "null"
+                ]
               }
             ]
           }
@@ -364,7 +440,9 @@
             "example": "Hello from API"
           }
         },
-        "required": ["message"]
+        "required": [
+          "message"
+        ]
       },
       "RegisterUserData": {
         "type": "object",
@@ -380,15 +458,26 @@
             "example": "550e8400-e29b-41d4-a716-446655440000"
           },
           "name": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "Jane"
           },
           "surname": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "Doe"
           }
         },
-        "required": ["email", "id", "name", "surname"]
+        "required": [
+          "email",
+          "id",
+          "name",
+          "surname"
+        ]
       },
       "RegisterResponse": {
         "type": "object",
@@ -401,7 +490,10 @@
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
           }
         },
-        "required": ["user", "token"]
+        "required": [
+          "user",
+          "token"
+        ]
       },
       "RegisterBody": {
         "type": "object",
@@ -427,13 +519,21 @@
             "example": "securePassword123"
           }
         },
-        "required": ["email", "name", "surname", "password"]
+        "required": [
+          "email",
+          "name",
+          "surname",
+          "password"
+        ]
       },
       "UserData": {
         "type": "object",
         "properties": {
           "createdAt": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "date",
             "example": "2025-10-29T10:30:00.000Z"
           },
@@ -448,20 +548,36 @@
             "example": "550e8400-e29b-41d4-a716-446655440000"
           },
           "name": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "Jane"
           },
           "surname": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "Doe"
           },
           "updatedAt": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "date",
             "example": "2025-10-29T10:30:00.000Z"
           }
         },
-        "required": ["createdAt", "email", "id", "name", "surname", "updatedAt"]
+        "required": [
+          "createdAt",
+          "email",
+          "id",
+          "name",
+          "surname",
+          "updatedAt"
+        ]
       },
       "LoginResponse": {
         "type": "object",
@@ -474,7 +590,10 @@
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
           }
         },
-        "required": ["user", "token"]
+        "required": [
+          "user",
+          "token"
+        ]
       },
       "LoginBody": {
         "type": "object",
@@ -489,7 +608,10 @@
             "example": "securePassword123"
           }
         },
-        "required": ["email", "password"]
+        "required": [
+          "email",
+          "password"
+        ]
       },
       "LogoutResponse": {
         "type": "object",
@@ -499,7 +621,9 @@
             "example": "Logged out successfully"
           }
         },
-        "required": ["message"]
+        "required": [
+          "message"
+        ]
       },
       "ExtendedUserData": {
         "type": "object",
@@ -515,36 +639,60 @@
             "example": "jane.doe@example.com"
           },
           "name": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "Jane Doe"
           },
           "surname": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "Smith"
           },
           "bio": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "Senior developer with 10 years experience"
           },
           "companyId": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "example": 1
           },
           "roleId": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "example": 3
           },
           "projectId": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "example": 5
           },
           "createdAt": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "date",
             "example": "2025-10-29T10:30:00.000Z"
           },
           "updatedAt": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "date",
             "example": "2025-10-29T10:30:00.000Z"
           }
@@ -576,7 +724,10 @@
             "example": 1
           }
         },
-        "required": ["userId", "companyId"]
+        "required": [
+          "userId",
+          "companyId"
+        ]
       },
       "AssignToProjectBody": {
         "type": "object",
@@ -592,7 +743,10 @@
             "example": 5
           }
         },
-        "required": ["userId", "projectId"]
+        "required": [
+          "userId",
+          "projectId"
+        ]
       },
       "AssignRoleBody": {
         "type": "object",
@@ -608,7 +762,10 @@
             "example": 3
           }
         },
-        "required": ["userId", "roleId"]
+        "required": [
+          "userId",
+          "roleId"
+        ]
       },
       "UpdateProfileBody": {
         "type": "object",
@@ -631,7 +788,9 @@
             "example": "Senior developer with 10 years experience"
           }
         },
-        "required": ["userId"]
+        "required": [
+          "userId"
+        ]
       },
       "UpdatePasswordBody": {
         "type": "object",
@@ -652,7 +811,11 @@
             "example": "newPassword123"
           }
         },
-        "required": ["userId", "currentPassword", "newPassword"]
+        "required": [
+          "userId",
+          "currentPassword",
+          "newPassword"
+        ]
       },
       "CompanyResponse": {
         "type": "object",
@@ -667,12 +830,18 @@
             "example": "Acme Corporation"
           },
           "logoUrl": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uri",
             "example": "https://example.com/logo.png"
           },
           "adminUserId": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uuid",
             "example": "123e4567-e89b-12d3-a456-426614174000"
           },
@@ -706,17 +875,25 @@
             "example": "Acme Corporation"
           },
           "logoUrl": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uri",
             "example": "https://example.com/logo.png"
           },
           "adminUserId": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uuid",
             "example": "123e4567-e89b-12d3-a456-426614174000"
           }
         },
-        "required": ["name"]
+        "required": [
+          "name"
+        ]
       },
       "UpdateCompanyBody": {
         "type": "object",
@@ -728,12 +905,18 @@
             "example": "Updated Company Name"
           },
           "logoUrl": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uri",
             "example": "https://example.com/new-logo.png"
           },
           "adminUserId": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uuid",
             "example": "123e4567-e89b-12d3-a456-426614174000"
           }
@@ -752,12 +935,18 @@
             "example": "Website Redesign"
           },
           "companyId": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "exclusiveMinimum": 0,
             "example": 1
           },
           "status": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "exclusiveMinimum": 0,
             "example": 1
           },
@@ -796,12 +985,18 @@
             "example": 1
           },
           "status": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "exclusiveMinimum": 0,
             "example": 1
           }
         },
-        "required": ["name", "companyId"]
+        "required": [
+          "name",
+          "companyId"
+        ]
       },
       "TeamMember": {
         "type": "object",
@@ -817,29 +1012,47 @@
             "example": "john.doe@example.com"
           },
           "name": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "John"
           },
           "surname": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "Doe"
           },
           "bio": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "Senior developer"
           },
           "companyId": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "exclusiveMinimum": 0,
             "example": 1
           },
           "roleId": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "exclusiveMinimum": 0,
             "example": 1
           },
           "projectId": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "exclusiveMinimum": 0,
             "example": 1
           },
@@ -911,7 +1124,10 @@
             ]
           }
         },
-        "required": ["customerTeam", "efsoraTeam"]
+        "required": [
+          "customerTeam",
+          "efsoraTeam"
+        ]
       },
       "UpdateProjectBody": {
         "type": "object",
@@ -923,7 +1139,10 @@
             "example": "Updated Project Name"
           },
           "status": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "exclusiveMinimum": 0,
             "example": 2
           }
@@ -943,28 +1162,43 @@
             "description": "Milestone title"
           },
           "projectId": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "exclusiveMinimum": 0,
             "example": 1
           },
           "assigneeUserId": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uuid",
             "example": "123e4567-e89b-12d3-a456-426614174000"
           },
           "status": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "exclusiveMinimum": 0,
             "example": 1,
             "description": "Progress status ID"
           },
           "dueDate": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "date",
             "example": "2025-03-01T00:00:00Z"
           },
           "description": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "Complete initial design phase"
           },
           "createdAt": {
@@ -1001,33 +1235,50 @@
             "description": "Milestone title"
           },
           "projectId": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "exclusiveMinimum": 0,
             "example": 1
           },
           "assigneeUserId": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uuid",
             "example": "123e4567-e89b-12d3-a456-426614174000"
           },
           "status": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "exclusiveMinimum": 0,
             "example": 1,
             "description": "Progress status ID"
           },
           "dueDate": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "date",
             "example": "2025-03-01T00:00:00Z"
           },
           "description": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "maxLength": 1000,
             "example": "Complete initial design phase"
           }
         },
-        "required": ["title"]
+        "required": [
+          "title"
+        ]
       },
       "UpdateMilestoneBody": {
         "type": "object",
@@ -1040,28 +1291,43 @@
             "description": "Milestone title"
           },
           "projectId": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "exclusiveMinimum": 0,
             "example": 1
           },
           "assigneeUserId": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uuid",
             "example": "123e4567-e89b-12d3-a456-426614174000"
           },
           "status": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "exclusiveMinimum": 0,
             "example": 1,
             "description": "Progress status ID"
           },
           "dueDate": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "date",
             "example": "2025-03-15T00:00:00Z"
           },
           "description": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "maxLength": 1000,
             "example": "Updated milestone description"
           }
@@ -1086,21 +1352,33 @@
             "example": "2025-01-15T10:00:00Z"
           },
           "description": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "Kickoff meeting completed"
           },
           "ownerUserId": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uuid",
             "example": "123e4567-e89b-12d3-a456-426614174000"
           },
           "milestoneId": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "exclusiveMinimum": 0,
             "example": 1
           },
           "status": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "exclusiveMinimum": 0,
             "example": 2
           },
@@ -1138,31 +1416,49 @@
             "description": "Event title"
           },
           "eventDatetime": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "date",
             "example": "2025-01-15T10:00:00Z"
           },
           "description": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "Kickoff meeting completed"
           },
           "ownerUserId": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uuid",
             "example": "123e4567-e89b-12d3-a456-426614174000"
           },
           "milestoneId": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "exclusiveMinimum": 0,
             "example": 1
           },
           "status": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "exclusiveMinimum": 0,
             "example": 2
           }
         },
-        "required": ["title", "eventDatetime"]
+        "required": [
+          "title",
+          "eventDatetime"
+        ]
       },
       "UpdateEventBody": {
         "type": "object",
@@ -1175,26 +1471,41 @@
             "description": "Event title"
           },
           "eventDatetime": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "date",
             "example": "2025-01-20T14:00:00Z"
           },
           "description": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "Updated event description"
           },
           "ownerUserId": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uuid",
             "example": "123e4567-e89b-12d3-a456-426614174000"
           },
           "milestoneId": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "exclusiveMinimum": 0,
             "example": 1
           },
           "status": {
-            "type": ["integer", "null"],
+            "type": [
+              "integer",
+              "null"
+            ],
             "exclusiveMinimum": 0,
             "example": 3
           }
@@ -1209,6 +1520,11 @@
             "example": "https://bucket.s3.amazonaws.com/path/to/file?X-Amz-Algorithm=...",
             "description": "Pre-signed URL for uploading the file to S3"
           },
+          "s3Key": {
+            "type": "string",
+            "example": "documents/1/5/project-proposal.pdf",
+            "description": "S3 object key where the file will be stored"
+          },
           "expiresIn": {
             "type": "integer",
             "exclusiveMinimum": 0,
@@ -1216,7 +1532,11 @@
             "description": "Number of seconds until the URL expires"
           }
         },
-        "required": ["uploadUrl", "expiresIn"]
+        "required": [
+          "uploadUrl",
+          "s3Key",
+          "expiresIn"
+        ]
       },
       "GenerateUploadUrlBody": {
         "type": "object",
@@ -1245,9 +1565,26 @@
             "exclusiveMinimum": 0,
             "example": 1,
             "description": "ID of the project"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "SoW",
+              "Legal",
+              "Billing",
+              "Assets"
+            ],
+            "example": "SoW",
+            "description": "Document category"
           }
         },
-        "required": ["fileName", "fileSize", "fileType", "projectId"]
+        "required": [
+          "fileName",
+          "fileSize",
+          "fileType",
+          "projectId",
+          "category"
+        ]
       }
     },
     "parameters": {}
@@ -1257,7 +1594,9 @@
       "get": {
         "description": "Check if the server is running and healthy",
         "summary": "Health check",
-        "tags": ["System"],
+        "tags": [
+          "System"
+        ],
         "responses": {
           "200": {
             "description": "Server is healthy",
@@ -1272,7 +1611,9 @@
                     },
                     "status": {
                       "type": "string",
-                      "enum": ["ok"],
+                      "enum": [
+                        "ok"
+                      ],
                       "example": "ok"
                     },
                     "timestamp": {
@@ -1280,7 +1621,11 @@
                       "example": "2025-10-31T10:30:00.000Z"
                     }
                   },
-                  "required": ["message", "status", "timestamp"]
+                  "required": [
+                    "message",
+                    "status",
+                    "timestamp"
+                  ]
                 }
               }
             }
@@ -1292,7 +1637,9 @@
       "get": {
         "description": "Simple health/test endpoint that returns a greeting message",
         "summary": "Hello endpoint",
-        "tags": ["Hello"],
+        "tags": [
+          "Hello"
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -1316,20 +1663,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -1341,7 +1697,9 @@
       "post": {
         "description": "Register a new user account with email, name, and password. Creates a session in the database for immediate authentication. The returned JWT token is tied to an active session that can be invalidated on logout.",
         "summary": "Register user",
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -1374,20 +1732,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -1429,7 +1796,9 @@
       "post": {
         "description": "Login with email and password to receive JWT authentication token. Creates a new session in the database that ties the token to an active session. Each login creates a unique session that can be independently invalidated.",
         "summary": "Login user",
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -1462,20 +1831,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -1522,7 +1900,9 @@
           }
         ],
         "summary": "Logout user",
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "requestBody": {
           "content": {}
         },
@@ -1549,20 +1929,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -1599,7 +1988,9 @@
           }
         ],
         "summary": "Get all users",
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "responses": {
           "200": {
             "description": "List of users",
@@ -1618,7 +2009,10 @@
                           {
                             "properties": {
                               "createdAt": {
-                                "type": ["string", "null"],
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
                                 "format": "date",
                                 "example": "2025-10-29T10:30:00.000Z"
                               },
@@ -1633,11 +2027,17 @@
                                 "example": "550e8400-e29b-41d4-a716-446655440000"
                               },
                               "name": {
-                                "type": ["string", "null"],
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
                                 "example": "Jane Doe"
                               },
                               "updatedAt": {
-                                "type": ["string", "null"],
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
                                 "format": "date",
                                 "example": "2025-10-29T10:30:00.000Z"
                               }
@@ -1665,20 +2065,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -1715,7 +2124,9 @@
           }
         ],
         "summary": "Get user by ID",
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "parameters": [
           {
             "schema": {
@@ -1744,7 +2155,10 @@
                         {
                           "properties": {
                             "createdAt": {
-                              "type": ["string", "null"],
+                              "type": [
+                                "string",
+                                "null"
+                              ],
                               "format": "date",
                               "example": "2025-10-29T10:30:00.000Z"
                             },
@@ -1759,11 +2173,17 @@
                               "example": "550e8400-e29b-41d4-a716-446655440000"
                             },
                             "name": {
-                              "type": ["string", "null"],
+                              "type": [
+                                "string",
+                                "null"
+                              ],
                               "example": "Jane Doe"
                             },
                             "updatedAt": {
-                              "type": ["string", "null"],
+                              "type": [
+                                "string",
+                                "null"
+                              ],
                               "format": "date",
                               "example": "2025-10-29T10:30:00.000Z"
                             }
@@ -1790,20 +2210,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -1860,7 +2289,9 @@
           }
         ],
         "summary": "Assign user to company",
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -1893,20 +2324,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -1963,7 +2403,9 @@
           }
         ],
         "summary": "Assign user to project",
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -1996,20 +2438,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -2066,7 +2517,9 @@
           }
         ],
         "summary": "Assign role to user",
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -2099,20 +2552,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -2169,7 +2631,9 @@
           }
         ],
         "summary": "Update user profile",
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -2202,20 +2666,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -2272,7 +2745,9 @@
           }
         ],
         "summary": "Update user password",
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -2305,20 +2780,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -2370,7 +2854,9 @@
       "post": {
         "summary": "Create company",
         "description": "Create a new company with the provided data",
-        "tags": ["Companies"],
+        "tags": [
+          "Companies"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -2408,20 +2894,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -2471,7 +2966,9 @@
       "get": {
         "summary": "Get all companies",
         "description": "Retrieve all companies",
-        "tags": ["Companies"],
+        "tags": [
+          "Companies"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -2503,20 +3000,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -2548,7 +3054,9 @@
       "get": {
         "summary": "Get company by ID",
         "description": "Retrieve company information by ID",
-        "tags": ["Companies"],
+        "tags": [
+          "Companies"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -2589,20 +3097,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -2642,7 +3159,9 @@
       "put": {
         "summary": "Update company",
         "description": "Update company information",
-        "tags": ["Companies"],
+        "tags": [
+          "Companies"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -2692,20 +3211,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -2755,7 +3283,9 @@
       "delete": {
         "summary": "Delete company",
         "description": "Delete a company by ID",
-        "tags": ["Companies"],
+        "tags": [
+          "Companies"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -2790,7 +3320,9 @@
                           "example": 1
                         }
                       },
-                      "required": ["id"]
+                      "required": [
+                        "id"
+                      ]
                     },
                     "error": {
                       "type": "null"
@@ -2804,20 +3336,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -2859,7 +3400,9 @@
       "post": {
         "summary": "Create project",
         "description": "Create a new project within a company",
-        "tags": ["Projects"],
+        "tags": [
+          "Projects"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -2897,20 +3440,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -2970,7 +3522,9 @@
       "get": {
         "summary": "Get all projects",
         "description": "Retrieve all projects, optionally filtered by company ID",
-        "tags": ["Projects"],
+        "tags": [
+          "Projects"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -3016,20 +3570,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -3061,7 +3624,9 @@
       "get": {
         "summary": "Get project by ID",
         "description": "Retrieve project information by ID",
-        "tags": ["Projects"],
+        "tags": [
+          "Projects"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -3102,20 +3667,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -3155,7 +3729,9 @@
       "patch": {
         "summary": "Update project",
         "description": "Update project information (partial update)",
-        "tags": ["Projects"],
+        "tags": [
+          "Projects"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -3205,20 +3781,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -3268,7 +3853,9 @@
       "delete": {
         "summary": "Delete project",
         "description": "Delete a project by ID",
-        "tags": ["Projects"],
+        "tags": [
+          "Projects"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -3303,7 +3890,9 @@
                           "example": 1
                         }
                       },
-                      "required": ["id"]
+                      "required": [
+                        "id"
+                      ]
                     },
                     "error": {
                       "type": "null"
@@ -3317,20 +3906,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -3372,7 +3970,9 @@
       "get": {
         "summary": "Get project team members",
         "description": "Retrieve team members for a project, split into customer team and efsora team. Automatically uses the authenticated user's company ID.",
-        "tags": ["Projects"],
+        "tags": [
+          "Projects"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -3415,20 +4015,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -3480,7 +4089,9 @@
       "post": {
         "summary": "Create milestone",
         "description": "Create a new milestone with the provided data",
-        "tags": ["Milestones"],
+        "tags": [
+          "Milestones"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -3518,20 +4129,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -3571,7 +4191,9 @@
       "get": {
         "summary": "Get all milestones",
         "description": "Retrieve all milestones",
-        "tags": ["Milestones"],
+        "tags": [
+          "Milestones"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -3603,20 +4225,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -3648,7 +4279,9 @@
       "get": {
         "summary": "Get milestone by ID",
         "description": "Retrieve milestone information by ID",
-        "tags": ["Milestones"],
+        "tags": [
+          "Milestones"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -3689,20 +4322,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -3742,7 +4384,9 @@
       "put": {
         "summary": "Update milestone",
         "description": "Update milestone information",
-        "tags": ["Milestones"],
+        "tags": [
+          "Milestones"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -3792,20 +4436,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -3855,7 +4508,9 @@
       "delete": {
         "summary": "Delete milestone",
         "description": "Delete a milestone by ID",
-        "tags": ["Milestones"],
+        "tags": [
+          "Milestones"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -3890,7 +4545,9 @@
                           "example": 1
                         }
                       },
-                      "required": ["id"]
+                      "required": [
+                        "id"
+                      ]
                     },
                     "error": {
                       "type": "null"
@@ -3904,20 +4561,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -3959,7 +4625,9 @@
       "post": {
         "summary": "Create event",
         "description": "Create a new event",
-        "tags": ["Events"],
+        "tags": [
+          "Events"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -3997,20 +4665,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -4050,7 +4727,9 @@
       "get": {
         "summary": "Get all events",
         "description": "Retrieve all events",
-        "tags": ["Events"],
+        "tags": [
+          "Events"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -4082,20 +4761,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -4127,7 +4815,9 @@
       "get": {
         "summary": "Get event by ID",
         "description": "Retrieve a specific event by ID",
-        "tags": ["Events"],
+        "tags": [
+          "Events"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -4168,20 +4858,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -4221,7 +4920,9 @@
       "put": {
         "summary": "Update event",
         "description": "Update an existing event",
-        "tags": ["Events"],
+        "tags": [
+          "Events"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -4271,20 +4972,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -4334,7 +5044,9 @@
       "delete": {
         "summary": "Delete event",
         "description": "Delete an event",
-        "tags": ["Events"],
+        "tags": [
+          "Events"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -4370,7 +5082,10 @@
                           "type": "string"
                         }
                       },
-                      "required": ["id", "message"]
+                      "required": [
+                        "id",
+                        "message"
+                      ]
                     },
                     "error": {
                       "type": "null"
@@ -4384,20 +5099,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }
@@ -4439,7 +5163,9 @@
       "post": {
         "summary": "Generate pre-signed upload URL",
         "description": "Generate a pre-signed S3 URL for uploading a document. The URL expires in 15 minutes. User must have access to the project (same company).",
-        "tags": ["Documents"],
+        "tags": [
+          "Documents"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -4477,20 +5203,29 @@
                           "$ref": "#/components/schemas/Meta"
                         },
                         {
-                          "type": ["object", "null"]
+                          "type": [
+                            "object",
+                            "null"
+                          ]
                         }
                       ]
                     },
                     "success": {
                       "type": "boolean",
-                      "enum": [true]
+                      "enum": [
+                        true
+                      ]
                     },
                     "traceId": {
                       "type": "string",
                       "example": "00-1234567890abcdef-1234567890abcdef-01"
                     }
                   },
-                  "required": ["data", "success", "traceId"]
+                  "required": [
+                    "data",
+                    "success",
+                    "traceId"
+                  ]
                 }
               }
             }

@@ -3180,6 +3180,11 @@ export interface components {
              */
             uploadUrl: string;
             /**
+             * @description S3 object key where the file will be stored
+             * @example documents/1/5/project-proposal.pdf
+             */
+            s3Key: string;
+            /**
              * @description Number of seconds until the URL expires
              * @example 900
              */
@@ -3203,6 +3208,12 @@ export interface components {
              * @example 1
              */
             projectId: number;
+            /**
+             * @description Document category
+             * @example SoW
+             * @enum {string}
+             */
+            category: "SoW" | "Legal" | "Billing" | "Assets";
         };
     };
     responses: never;
