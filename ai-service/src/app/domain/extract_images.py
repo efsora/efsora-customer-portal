@@ -1,4 +1,5 @@
 import base64
+from collections.abc import Iterable, Mapping
 import hashlib
 import mimetypes
 import os
@@ -10,24 +11,30 @@ from langchain_aws import ChatBedrock
 from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage
 
-from app.core.settings import get_settings
-
-PAGE_TEXT_SNIPPET_LIMIT = 800
-DEFAULT_MEDIA_TYPE = "image/png"
+from app.core.settings import Settings, get_settings
 
 
-def _encode_image_to_base64(image_bytes: bytes) -> str:
+def _ensure_pdf_path(pdf_path: str) -> Path:
+    """Normalize and validate the target PDF path."""
+    pdf_file = Path(pdf_path)
+    if not pdf_file.is_file():
+        raise FileNotFoundError(f"PDF not found at '{pdf_path}'")
+    return pdf_file
+
+
+def _convert_image_to_base64(image_bytes: bytes) -> str:
     """Image bytes -> base64 string."""
     return base64.b64encode(image_bytes).decode("utf-8")
 
 
 def _guess_media_type(image_ext: str | None) -> str:
     """Best-effort MIME guess for Bedrock vision payloads."""
+    default_media_type = get_settings().DEFAULT_IMAGE_MEDIA_TYPE
     if image_ext:
         media_type, _ = mimetypes.guess_type(f"file.{image_ext}")
         if media_type:
             return media_type
-    return DEFAULT_MEDIA_TYPE
+    return default_media_type
 
 
 def resolve_image_output_dir(image_output_dir: str | Path | None) -> Path:
@@ -54,20 +61,32 @@ def resolve_image_output_dir(image_output_dir: str | Path | None) -> Path:
     return output_dir
 
 
+def _block_to_text(block: Any) -> str | None:
+    """Extract a text string from a single block object."""
+    if block is None:
+        return None
+
+    if isinstance(block, str):
+        return block
+
+    if isinstance(block, Mapping) and block.get("type") == "text":
+        value = block.get("text")
+        return None if value is None else str(value)
+
+    text_attr = getattr(block, "text", None)
+    if text_attr is not None:
+        return str(text_attr)
+
+    return None
+
+
 def _extract_response_text(content: Any) -> str:
-    """LangChain Bedrock responses may be str or a list of content blocks."""
+    """Flatten LangChain/Bedrock content into a clean text string."""
     if isinstance(content, str):
         return content
 
-    if isinstance(content, list):
-        parts: list[str] = []
-        for block in content:
-            if isinstance(block, str):
-                parts.append(block)
-            elif isinstance(block, dict) and block.get("type") == "text" and "text" in block:
-                parts.append(str(block["text"]))
-            elif hasattr(block, "text"):
-                parts.append(str(block.text))
+    if isinstance(content, Iterable) and not isinstance(content, str | bytes):
+        parts = filter(None, (_block_to_text(block) for block in content))
         return "\n".join(parts)
 
     return str(content)
@@ -105,16 +124,17 @@ def _describe_image_bytes_with_llm(
     llm: ChatBedrock,
 ) -> str:
     """Give Raw images to the bedrock and get explanation back."""
-    image_b64 = _encode_image_to_base64(image_bytes)
+    image_b64 = _convert_image_to_base64(image_bytes)
     media_type = _guess_media_type(image_ext)
 
     response = llm.invoke([_build_vision_prompt(image_b64, media_type)])
     return _extract_response_text(getattr(response, "content", response)).strip()
 
 
-def _page_text_snippet(page: fitz.Page, limit: int = PAGE_TEXT_SNIPPET_LIMIT) -> str:
+def _page_text_snippet(page: fitz.Page, limit: int | None = None) -> str:
+    effective_limit = limit or get_settings().PAGE_TEXT_SNIPPET_LIMIT
     text = page.get_text("text").strip()
-    return text[:limit] if text else ""
+    return text[:effective_limit] if text else ""
 
 
 def _save_image(image_bytes: bytes, destination: Path) -> Path:
@@ -129,9 +149,38 @@ def _image_name(pdf_path: str, page_index: int, image_index: int, image_ext: str
     return f"{pdf_name}_p{page_index + 1}_img{image_index + 1}.{ext}"
 
 
+def _bedrock_credentials_kwargs(settings: Settings) -> dict[str, Any]:
+    """
+    Build Bedrock credential-related kwargs.
+
+    Priority:
+    - Explicit access key + secret key → use those, ignore profile.
+    - Otherwise → let default AWS resolution happen (env vars, role, profile).
+    """
+    has_access_key = bool(settings.AWS_ACCESS_KEY_ID)
+    has_secret_key = bool(settings.AWS_SECRET_ACCESS_KEY)
+
+    if has_access_key and has_secret_key:
+        return {
+            "credentials_profile_name": None,  # avoid mixing profiles with explicit keys
+            "aws_access_key_id": settings.AWS_ACCESS_KEY_ID,
+            "aws_secret_access_key": settings.AWS_SECRET_ACCESS_KEY,
+        }
+
+    # No explicit pair of credentials → rely on default provider chain
+    return {}
+
+
 def build_bedrock_vision_client() -> ChatBedrock:
-    """Create a non-streaming Bedrock client suitable for vision prompts (matches other configs)."""
+    """
+    Create a non-streaming Bedrock client suitable for vision prompts.
+
+    Notes:
+    - Uses a deterministic configuration (temperature=0).
+    - Keeps token budget reasonable for captioning / vision tasks.
+    """
     settings = get_settings()
+
     kwargs: dict[str, Any] = {
         "model_id": settings.LLM_MODEL,
         "region_name": settings.BEDROCK_REGION,
@@ -143,11 +192,7 @@ def build_bedrock_vision_client() -> ChatBedrock:
         "streaming": False,
     }
 
-    if settings.AWS_ACCESS_KEY_ID:
-        kwargs["credentials_profile_name"] = None
-        kwargs["aws_access_key_id"] = settings.AWS_ACCESS_KEY_ID
-    if settings.AWS_SECRET_ACCESS_KEY:
-        kwargs["aws_secret_access_key"] = settings.AWS_SECRET_ACCESS_KEY
+    kwargs.update(_bedrock_credentials_kwargs(settings))
 
     return ChatBedrock(**kwargs)
 
@@ -162,66 +207,103 @@ def build_image_docs_from_pdf_with_ai(
     image_output_dir: str | Path | None = None,
     llm: ChatBedrock | None = None,
 ) -> list[Document]:
-    """Extract unique images from PDF, caption with Claude, and build RAG-ready docs."""
-    if llm is None:
-        llm = build_bedrock_vision_client()
+    """
+    Extract unique images from a PDF, caption them with an LLM, and produce RAG-ready Documents.
 
+    - Deduplicates images per-PDF using a hash of the raw bytes.
+    - Skips corrupted/empty image streams.
+    - Adds basic page + image metadata for downstream retrieval.
+    """
+    llm = llm or build_bedrock_vision_client()
+
+    pdf_file = _ensure_pdf_path(pdf_path)
     output_dir = resolve_image_output_dir(image_output_dir)
     rag_docs: list[Document] = []
 
-    # 🔁 hash -> cached info (aynı image için ikinci kez AI çağrısı veya disk yazımı yok)
-    seen_images: dict[str, dict[str, Any]] = {}
+    # Avoid redundant disk writes or LLM calls for repeated images within the same PDF
+    seen_hashes: set[str] = set()
 
-    with fitz.open(pdf_path) as pdf_doc:
+    with fitz.open(pdf_file) as pdf_doc:
         for page_index, page in enumerate(pdf_doc):
             page_text_snippet = _page_text_snippet(page)
 
-            for image_index, img in enumerate(page.get_images(full=True)):
-                xref = img[0]
-                base_image = pdf_doc.extract_image(xref)
-
-                image_bytes = base_image["image"]
-                image_ext = base_image.get("ext", "png")
-                width = base_image.get("width")
-                height = base_image.get("height")
-
-                img_hash = _image_hash(image_bytes)
-
-                # Skip duplicates completely (no extra disk writes or docs)
-                if img_hash in seen_images:
-                    continue
-
-                description = _describe_image_bytes_with_llm(
-                    image_bytes=image_bytes,
-                    image_ext=image_ext,
+            for image_index, image_info in enumerate(page.get_images(full=True)):
+                doc = _build_image_doc_from_pdf_image(
+                    pdf_doc=pdf_doc,
+                    pdf_file=pdf_file,
+                    pdf_path=pdf_path,
+                    page_index=page_index,
+                    image_index=image_index,
+                    page_text_snippet=page_text_snippet,
+                    image_info=image_info,
+                    output_dir=output_dir,
+                    seen_hashes=seen_hashes,
                     llm=llm,
                 )
-
-                image_name = _image_name(pdf_path, page_index, image_index, image_ext)
-                image_path = _save_image(image_bytes, output_dir / image_name)
-
-                seen_images[img_hash] = {
-                    "description": description,
-                    "image_path": image_path,
-                    "width": width,
-                    "height": height,
-                }
-
-                rag_docs.append(
-                    Document(
-                        page_content=description,
-                        metadata={
-                            "type": "image",
-                            "source_pdf": pdf_path,
-                            "source": pdf_path,
-                            "page": page_index + 1,
-                            "image_path": str(image_path),
-                            "page_text_snippet": page_text_snippet,
-                            "image_width": width,
-                            "image_height": height,
-                            "image_hash": img_hash,
-                        },
-                    )
-                )
+                if doc is not None:
+                    rag_docs.append(doc)
 
     return rag_docs
+
+
+def _build_image_doc_from_pdf_image(
+    *,
+    pdf_doc: Any,
+    pdf_file: Path,
+    pdf_path: str,
+    page_index: int,
+    image_index: int,
+    page_text_snippet: str,
+    image_info: Any,
+    output_dir: Path,
+    seen_hashes: set[str],
+    llm: ChatBedrock,
+) -> Document | None:
+    """
+    Build a single RAG Document from one PDF image entry.
+
+    Returns:
+        Document if the image is valid and unique, otherwise None.
+    """
+    # `image_info` is the tuple returned by page.get_images(full=True)
+    xref = image_info[0]
+    base_image = pdf_doc.extract_image(xref)
+
+    image_bytes = base_image.get("image") or b""
+    if not image_bytes:
+        # Corrupted or empty stream → skip silently
+        return None
+
+    img_hash = _image_hash(image_bytes)
+    if img_hash in seen_hashes:
+        # Duplicate image within this PDF → skip
+        return None
+    seen_hashes.add(img_hash)
+
+    image_ext = base_image.get("ext", "png")
+    width = base_image.get("width")
+    height = base_image.get("height")
+
+    description = _describe_image_bytes_with_llm(
+        image_bytes=image_bytes,
+        image_ext=image_ext,
+        llm=llm,
+    )
+
+    image_name = _image_name(pdf_path, page_index, image_index, image_ext)
+    image_path = _save_image(image_bytes, output_dir / image_name)
+
+    return Document(
+        page_content=description,
+        metadata={
+            "type": "image",
+            "source_pdf": str(pdf_file),
+            "source": str(pdf_file),
+            "page": page_index + 1,
+            "image_path": str(image_path),
+            "page_text_snippet": page_text_snippet,
+            "image_width": width,
+            "image_height": height,
+            "image_hash": img_hash,
+        },
+    )

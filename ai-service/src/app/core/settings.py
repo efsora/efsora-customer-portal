@@ -29,6 +29,8 @@ class Settings(BaseSettings):
     WEAVIATE_COLLECTION_NAME: str = Field(default="EfsoraDocs")
     DATA_DIR: str = Field(default="/app/data/")
     OUTPUT_DIR: str = Field(default="/app/output/")
+    PAGE_TEXT_SNIPPET_LIMIT: int = Field(default=800)
+    DEFAULT_IMAGE_MEDIA_TYPE: str = Field(default="image/png")
     SEMANTIC_MAX_TOKENS: int = Field(default=512)
     EMBED_MODEL: str = Field(default="amazon.titan-embed-text-v2:0")
     BEDROCK_REGION: str = Field(default="us-east-1")
