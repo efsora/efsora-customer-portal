@@ -60,6 +60,7 @@ export function mapErrorCodeToStatus(error: AppError): number {
   // Domain-specific error codes (pattern matching)
   if (code.endsWith("_NOT_FOUND")) return 404;
   if (code.endsWith("_FORBIDDEN")) return 403;
+  if (code.includes("_UNAUTHORIZED_")) return 403; // e.g., DOCUMENT_UNAUTHORIZED_PROJECT_ACCESS
   if (code.includes("_INVALID_")) return 400;
   if (code.endsWith("_ALREADY_EXISTS")) return 409;
 
