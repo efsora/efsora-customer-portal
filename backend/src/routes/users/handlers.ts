@@ -48,6 +48,8 @@ export async function handleGetUserById(
         surname: user.surname,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
+        projectId: user.projectId,
+        companyId: user.companyId,
       }),
     onFailure: (error) => createFailureResponse(error),
   });
@@ -70,6 +72,8 @@ export async function handleGetAllUsers(): Promise<AppResponse<UserData[]>> {
           surname: user.surname,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
+          projectId: user.projectId,
+          companyId: user.companyId,
         })),
       ),
     onFailure: (error) => createFailureResponse(error),

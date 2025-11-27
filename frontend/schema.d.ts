@@ -361,24 +361,30 @@ export interface paths {
                                  * Format: date
                                  * @example 2025-10-29T10:30:00.000Z
                                  */
-                                createdAt: string | null;
+                                createdAt?: string | null;
                                 /**
                                  * Format: email
                                  * @example jane.doe@example.com
                                  */
-                                email: string;
+                                email?: string;
                                 /**
                                  * Format: uuid
                                  * @example 550e8400-e29b-41d4-a716-446655440000
                                  */
-                                id: string;
+                                id?: string;
                                 /** @example Jane Doe */
-                                name: string | null;
+                                name?: string | null;
+                                /** @example Doe */
+                                surname?: string | null;
                                 /**
                                  * Format: date
                                  * @example 2025-10-29T10:30:00.000Z
                                  */
-                                updatedAt: string | null;
+                                updatedAt?: string | null;
+                                /** @example 1 */
+                                projectId?: number | null;
+                                /** @example 1 */
+                                companyId?: number | null;
                             })[];
                             error?: null;
                             message?: null;
@@ -452,24 +458,30 @@ export interface paths {
                                  * Format: date
                                  * @example 2025-10-29T10:30:00.000Z
                                  */
-                                createdAt: string | null;
+                                createdAt?: string | null;
                                 /**
                                  * Format: email
                                  * @example jane.doe@example.com
                                  */
-                                email: string;
+                                email?: string;
                                 /**
                                  * Format: uuid
                                  * @example 550e8400-e29b-41d4-a716-446655440000
                                  */
-                                id: string;
+                                id?: string;
                                 /** @example Jane Doe */
-                                name: string | null;
+                                name?: string | null;
+                                /** @example Doe */
+                                surname?: string | null;
                                 /**
                                  * Format: date
                                  * @example 2025-10-29T10:30:00.000Z
                                  */
-                                updatedAt: string | null;
+                                updatedAt?: string | null;
+                                /** @example 1 */
+                                projectId?: number | null;
+                                /** @example 1 */
+                                companyId?: number | null;
                             };
                             error?: null;
                             message?: null;
@@ -2739,6 +2751,10 @@ export interface components {
              * @example 2025-10-29T10:30:00.000Z
              */
             updatedAt: string | null;
+            /** @example 1 */
+            projectId: number | null;
+            /** @example 1 */
+            companyId: number | null;
         };
         LoginResponse: {
             user: components["schemas"]["UserData"];

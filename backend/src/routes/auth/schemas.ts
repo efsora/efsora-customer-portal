@@ -46,6 +46,8 @@ export const userDataSchema = z
     name: z.string().nullable().openapi({ example: "Jane" }),
     surname: z.string().nullable().openapi({ example: "Doe" }),
     updatedAt: z.coerce.date().openapi({ example: "2025-10-29T10:30:00.000Z" }),
+    projectId: z.number().nullable().openapi({ example: 1 }),
+    companyId: z.number().nullable().openapi({ example: 1 }),
   })
   .openapi("UserData");
 

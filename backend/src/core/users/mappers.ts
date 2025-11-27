@@ -15,6 +15,8 @@ export function mapUserToUserData(user: User): UserData {
     name: user.name,
     surname: user.surname,
     updatedAt: user.updatedAt,
+    projectId: user.projectId,
+    companyId: user.companyId,
   };
 }
 

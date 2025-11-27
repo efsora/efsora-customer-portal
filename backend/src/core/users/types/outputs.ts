@@ -56,6 +56,8 @@ export type UserData = {
   name: string | null;
   surname: string | null;
   updatedAt: Date;
+  projectId: number | null;
+  companyId: number | null;
 };
 
 /**
@@ -69,6 +71,8 @@ export type LoginResult = {
     name: string | null;
     surname: string | null;
     updatedAt: Date;
+    projectId: number | null;
+    companyId: number | null;
   };
   token: string;
 };

@@ -74,6 +74,8 @@ export async function handleLogin(
           surname: data.user.surname,
           createdAt: data.user.createdAt,
           updatedAt: data.user.updatedAt,
+          projectId: data.user.projectId,
+          companyId: data.user.companyId,
         },
         token: data.token,
       }),

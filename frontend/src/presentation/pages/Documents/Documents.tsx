@@ -4,19 +4,19 @@ import { useDocumentEmbed } from '#api/hooks/useDocumentEmbed';
 import { useDocumentFilters } from '#api/hooks/useDocumentFilters';
 import { useDocumentUpload } from '#api/hooks/useDocumentUpload';
 import { FILTER_TAGS, type FileRow } from '#api/mockData';
-import type { DocumentRow } from '#api/types/documents/response.types';
+import type { Document } from '#api/types/documents/response.types';
 import { FilterTagBar } from '#components/common/FilterTagBar/FilterTagBar';
 import { LoadingState } from '#components/common/LoadingState/LoadingState';
 import { SearchInput } from '#components/common/SearchInput/SearchInput';
 import { UploadDocumentModal } from '#components/common/UploadDocumentModal/UploadDocumentModal';
 import PageTitle from '#presentation/components/common/PageTitle/PageTitle';
 import { Table } from '#presentation/components/common/Table/Table';
+import { useCurrentUser } from '#store/authStore';
 import { useAllDocuments } from '@/api/hooks/useAllDocuments';
 
 import styles from './Documents.module.css';
 
-// Convert DocumentRow from API to FileRow for the Table component
-const toFileRow = (doc: DocumentRow): FileRow => ({
+const toFileRow = (doc: Document): FileRow => ({
     id: doc.id,
     fileName: doc.fileName,
     version: '',
@@ -27,11 +27,14 @@ const toFileRow = (doc: DocumentRow): FileRow => ({
     category: doc.category,
 });
 
-// TODO: Get actual companyId and projectId from context/params
-const COMPANY_ID = 1;
-const PROJECT_ID = 1;
-
 export function Documents() {
+    const user = useCurrentUser();
+
+    const projectId = user?.projectId;
+    const companyId = user?.companyId;
+
+    const hasRequiredAccess = projectId != null && companyId != null;
+
     // Filter state and logic
     const {
         activeTag,
@@ -57,17 +60,21 @@ export function Documents() {
     // Handler to start embedding after upload
     const handleUploadComplete = useCallback(
         (s3Key: string) => {
-            startEmbedding(s3Key, PROJECT_ID);
+            if (projectId != null) {
+                startEmbedding(s3Key, projectId);
+            }
         },
-        [startEmbedding],
+        [startEmbedding, projectId],
     );
 
     // Handler to retry embedding
     const handleRetryEmbed = useCallback(
         (s3Key: string) => {
-            retryEmbedding(s3Key, PROJECT_ID);
+            if (projectId != null) {
+                retryEmbedding(s3Key, projectId);
+            }
         },
-        [retryEmbedding],
+        [retryEmbedding, projectId],
     );
 
     // Upload state and logic
@@ -80,15 +87,15 @@ export function Documents() {
         handleUploadDocument,
         updateFileStatus,
     } = useDocumentUpload({
-        projectId: PROJECT_ID,
+        projectId: projectId ?? 0,
         onUploadComplete: handleUploadComplete,
     });
 
     // Fetch documents from API
     const { data: documentsResponse, isLoading: isLoadingDocuments } =
         useAllDocuments({
-            companyId: COMPANY_ID,
-            projectId: PROJECT_ID,
+            companyId: companyId ?? 0,
+            projectId: projectId ?? 0,
         });
 
     // Get documents from API response and convert to FileRow format
@@ -100,6 +107,24 @@ export function Documents() {
     // Combine API documents with locally uploaded files (uploaded files appear first)
     const allFiles = [...uploadedFiles, ...apiDocuments];
     const filteredFiles = filterFiles(allFiles);
+
+    // Show message if user doesn't have required access
+    if (!hasRequiredAccess) {
+        return (
+            <div>
+                <PageTitle
+                    title="Documents"
+                    description="Access and manage project documents."
+                />
+                <div className={styles.pageContainer}>
+                    <p>
+                        You are not assigned to a project or company. Please
+                        contact your administrator.
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div>

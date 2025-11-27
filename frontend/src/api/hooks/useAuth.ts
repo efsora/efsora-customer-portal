@@ -10,9 +10,9 @@ import type {
     RegisterRequest,
 } from '#api/types/auth/request.types';
 import type {
-    AppResponse_RegisterResponse_,
     AppResponse_LoginResponse_,
     AppResponse_LogoutResponse_,
+    AppResponse_RegisterResponse_,
 } from '#api/types/auth/response.types';
 import { useAuthStore } from '#store/authStore';
 
@@ -51,6 +51,8 @@ export const useRegister = () => {
                         email: string;
                         name?: string;
                         surname?: string;
+                        projectId?: number | null;
+                        companyId?: number | null;
                     };
                 };
                 setAuth(
@@ -61,6 +63,8 @@ export const useRegister = () => {
                         surname: typedData.user.surname || null,
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString(),
+                        projectId: typedData.user.projectId ?? null,
+                        companyId: typedData.user.companyId ?? null,
                     },
                     typedData.token,
                 );
@@ -96,6 +100,8 @@ export const useLogin = () => {
                         surname: data.user.surname || null,
                         createdAt: data.user.createdAt || '',
                         updatedAt: data.user.updatedAt || '',
+                        projectId: data.user.projectId ?? null,
+                        companyId: data.user.companyId ?? null,
                     },
                     data.token,
                 );

@@ -20,8 +20,11 @@ export const userDataSchema = z
     createdAt: z.coerce.date().openapi({ example: "2025-10-29T10:30:00.000Z" }),
     email: z.email().openapi({ example: "jane.doe@example.com" }),
     id: z.uuid().openapi({ example: "550e8400-e29b-41d4-a716-446655440000" }),
-    name: z.string().nullable().openapi({ example: "Jane Doe" }),
+    name: z.string().nullable().openapi({ example: "Jane" }),
+    surname: z.string().nullable().openapi({ example: "Doe" }),
     updatedAt: z.coerce.date().openapi({ example: "2025-10-29T10:30:00.000Z" }),
+    projectId: z.number().nullable().openapi({ example: 1 }),
+    companyId: z.number().nullable().openapi({ example: 1 }),
   })
   .openapi("UserData");
 

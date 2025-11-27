@@ -13,6 +13,8 @@ export interface AuthUser {
     surname: string | null;
     createdAt: string;
     updatedAt: string;
+    projectId: number | null;
+    companyId: number | null;
 }
 
 /**

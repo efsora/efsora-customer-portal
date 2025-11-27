@@ -568,6 +568,20 @@
             ],
             "format": "date",
             "example": "2025-10-29T10:30:00.000Z"
+          },
+          "projectId": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "example": 1
+          },
+          "companyId": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "example": 1
           }
         },
         "required": [
@@ -576,7 +590,9 @@
           "id",
           "name",
           "surname",
-          "updatedAt"
+          "updatedAt",
+          "projectId",
+          "companyId"
         ]
       },
       "LoginResponse": {
@@ -2033,6 +2049,13 @@
                                 ],
                                 "example": "Jane Doe"
                               },
+                              "surname": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "example": "Doe"
+                              },
                               "updatedAt": {
                                 "type": [
                                   "string",
@@ -2040,15 +2063,22 @@
                                 ],
                                 "format": "date",
                                 "example": "2025-10-29T10:30:00.000Z"
+                              },
+                              "projectId": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ],
+                                "example": 1
+                              },
+                              "companyId": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ],
+                                "example": 1
                               }
-                            },
-                            "required": [
-                              "createdAt",
-                              "email",
-                              "id",
-                              "name",
-                              "updatedAt"
-                            ]
+                            }
                           }
                         ]
                       }
@@ -2179,6 +2209,13 @@
                               ],
                               "example": "Jane Doe"
                             },
+                            "surname": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "example": "Doe"
+                            },
                             "updatedAt": {
                               "type": [
                                 "string",
@@ -2186,15 +2223,22 @@
                               ],
                               "format": "date",
                               "example": "2025-10-29T10:30:00.000Z"
+                            },
+                            "projectId": {
+                              "type": [
+                                "number",
+                                "null"
+                              ],
+                              "example": 1
+                            },
+                            "companyId": {
+                              "type": [
+                                "number",
+                                "null"
+                              ],
+                              "example": 1
                             }
-                          },
-                          "required": [
-                            "createdAt",
-                            "email",
-                            "id",
-                            "name",
-                            "updatedAt"
-                          ]
+                          }
                         }
                       ]
                     },
