@@ -14,6 +14,57 @@ from ragas.dataset_schema import SingleTurnSample
 from ragas.metrics import BleuScore, RougeScore
 
 
+def _truncate(text: str, max_len: int = 80) -> str:
+    """Truncate text for display, adding ellipsis if needed."""
+    if max_len == 0 or len(text) <= max_len:
+        return text
+    return text[: max_len - 3] + "..."
+
+
+def _wrap_text(text: str, width: int = 70, indent: str = "             ") -> str:
+    """Wrap text to multiple lines with indentation for readability."""
+    if len(text) <= width:
+        return text
+
+    lines = []
+    current_line = ""
+    words = text.split()
+
+    for word in words:
+        if len(current_line) + len(word) + 1 <= width:
+            current_line += (" " if current_line else "") + word
+        else:
+            if current_line:
+                lines.append(current_line)
+            current_line = word
+
+    if current_line:
+        lines.append(current_line)
+
+    return ("\n" + indent).join(lines)
+
+
+def _print_question_result(
+    idx: int,
+    total: int,
+    question: str,
+    score: float,
+    threshold: float,
+    reference: str | None = None,
+    response: str | None = None,
+) -> None:
+    """Print per-question result with details for failing questions."""
+    passed = score >= threshold
+    status = "✓" if passed else "✗"
+    print(f"\n  {status} Q{idx}/{total}: {_truncate(question, 70)}")
+    print(f"       Score: {score:.3f} (threshold: {threshold})")
+
+    # Show reference and response for failing questions to help AI team debug
+    if not passed and reference and response:
+        print(f"       Expected: {_truncate(reference, 60)}")
+        print(f"       Got:      {_truncate(response, 60)}")
+
+
 @pytest.mark.asyncio
 @pytest.mark.integration
 async def test_bleu_score(
@@ -23,15 +74,8 @@ async def test_bleu_score(
 ) -> None:
     """
     Test BLEU score for n-gram overlap from RAG system.
-
-    Good for testing responses that should be similar but allow
-    some variation in wording. BLEU measures precision of n-grams.
-
-    Only applies to answer-type questions (not entities or boolean).
-
-    Note: Uses lexical_test_responses to avoid redundant API calls.
+    Only applies to answer-type questions.
     """
-    # Filter for answer-type questions only
     answer_responses = [
         item for item in lexical_test_responses if item.get("test_type") == "answer"
     ]
@@ -39,7 +83,8 @@ async def test_bleu_score(
     if not answer_responses:
         pytest.skip("No answer-type questions in test data")
 
-    scores = []
+    threshold = lexical_config["bleu_threshold"]
+    scores: list[tuple[dict[str, Any], float]] = []
 
     for item in answer_responses:
         sample = SingleTurnSample(
@@ -47,25 +92,38 @@ async def test_bleu_score(
             response=item["response"],
             reference=item["reference"],
         )
-
         score = await bleu_scorer.single_turn_ascore(sample)
-        scores.append(score)
+        scores.append((item, score))
 
-    avg_score = sum(scores) / len(scores)
-
+    # Print results
     print(f"\n{'='*60}")
-    print("RAG LEXICAL EVALUATION - BLEU SCORE")
+    print("BLEU SCORE (n-gram precision)")
     print(f"{'='*60}")
-    print(f"Test cases: {len(scores)} (answer-type only)")
-    print(f"Average BLEU: {avg_score:.3f}")
-    print(f"Min BLEU: {min(scores):.3f}")
-    print(f"Max BLEU: {max(scores):.3f}")
-    print(f"{'='*60}\n")
 
-    threshold = lexical_config["bleu_threshold"]
+    failed_questions = []
+    for idx, (item, score) in enumerate(scores, 1):
+        passed = score >= threshold
+        if not passed:
+            failed_questions.append((item, score))
+        _print_question_result(
+            idx,
+            len(scores),
+            item["user_input"],
+            score,
+            threshold,
+            item["reference"] if not passed else None,
+            item["response"] if not passed else None,
+        )
+
+    avg_score = sum(s for _, s in scores) / len(scores)
+    print(
+        f"\n  Average: {avg_score:.3f} | Passed: {len(scores) - len(failed_questions)}/{len(scores)}"
+    )
+    print(f"{'='*60}")
+
     assert avg_score >= threshold, (
-        f"BLEU score {avg_score:.3f} below threshold {threshold}. "
-        "Responses have insufficient n-gram overlap with references."
+        f"BLEU avg {avg_score:.3f} < {threshold}. "
+        f"Failed questions: {[q['user_input'][:50] for q, _ in failed_questions]}"
     )
 
 
@@ -78,15 +136,8 @@ async def test_rouge_score(
 ) -> None:
     """
     Test ROUGE score for recall-oriented overlap from RAG system.
-
-    ROUGE-L measures longest common subsequence F-measure.
-    Good for checking if key information is present in response.
-
-    Only applies to answer-type questions (not entities or boolean).
-
-    Note: Uses lexical_test_responses to avoid redundant API calls.
+    Only applies to answer-type questions.
     """
-    # Filter for answer-type questions only
     answer_responses = [
         item for item in lexical_test_responses if item.get("test_type") == "answer"
     ]
@@ -94,7 +145,8 @@ async def test_rouge_score(
     if not answer_responses:
         pytest.skip("No answer-type questions in test data")
 
-    scores = []
+    threshold = lexical_config["rouge_threshold"]
+    scores: list[tuple[dict[str, Any], float]] = []
 
     for item in answer_responses:
         sample = SingleTurnSample(
@@ -102,25 +154,38 @@ async def test_rouge_score(
             response=item["response"],
             reference=item["reference"],
         )
-
         score = await rouge_scorer.single_turn_ascore(sample)
-        scores.append(score)
+        scores.append((item, score))
 
-    avg_score = sum(scores) / len(scores)
-
+    # Print results
     print(f"\n{'='*60}")
-    print("RAG LEXICAL EVALUATION - ROUGE SCORE (ROUGE-L)")
+    print("ROUGE-L SCORE (recall-oriented overlap)")
     print(f"{'='*60}")
-    print(f"Test cases: {len(scores)} (answer-type only)")
-    print(f"Average ROUGE: {avg_score:.3f}")
-    print(f"Min ROUGE: {min(scores):.3f}")
-    print(f"Max ROUGE: {max(scores):.3f}")
-    print(f"{'='*60}\n")
 
-    threshold = lexical_config["rouge_threshold"]
+    failed_questions = []
+    for idx, (item, score) in enumerate(scores, 1):
+        passed = score >= threshold
+        if not passed:
+            failed_questions.append((item, score))
+        _print_question_result(
+            idx,
+            len(scores),
+            item["user_input"],
+            score,
+            threshold,
+            item["reference"] if not passed else None,
+            item["response"] if not passed else None,
+        )
+
+    avg_score = sum(s for _, s in scores) / len(scores)
+    print(
+        f"\n  Average: {avg_score:.3f} | Passed: {len(scores) - len(failed_questions)}/{len(scores)}"
+    )
+    print(f"{'='*60}")
+
     assert avg_score >= threshold, (
-        f"ROUGE score {avg_score:.3f} below threshold {threshold}. "
-        "Responses may be missing key information from references."
+        f"ROUGE avg {avg_score:.3f} < {threshold}. "
+        f"Failed questions: {[q['user_input'][:50] for q, _ in failed_questions]}"
     )
 
 
@@ -132,15 +197,8 @@ async def test_boolean_answer(
 ) -> None:
     """
     Test boolean answer accuracy using exact match.
-
-    For yes/no questions, checks if the RAG system correctly returns
-    "yes" or "no" in the boolean_answer field.
-
-    Exact match: score = 1.0 if response == reference, else 0.0
-
-    Note: Uses lexical_test_responses to avoid redundant API calls.
+    For yes/no questions only.
     """
-    # Filter for boolean-type questions only
     boolean_responses = [
         item for item in lexical_test_responses if item.get("test_type") == "boolean"
     ]
@@ -148,31 +206,44 @@ async def test_boolean_answer(
     if not boolean_responses:
         pytest.skip("No boolean-type questions in test data")
 
-    scores = []
+    threshold = lexical_config.get("boolean_match_threshold", 1.0)
+    scores: list[tuple[dict[str, Any], float]] = []
 
     for item in boolean_responses:
         reference = item["reference"].strip().lower()
         response = item["response"].strip().lower()
-
-        # Exact match for boolean answers
         score = 1.0 if reference == response else 0.0
-        scores.append(score)
+        scores.append((item, score))
 
-    avg_score = sum(scores) / len(scores)
-
+    # Print results
     print(f"\n{'='*60}")
-    print("RAG LEXICAL EVALUATION - BOOLEAN ANSWER")
+    print("BOOLEAN MATCH (exact yes/no)")
     print(f"{'='*60}")
-    print(f"Test cases: {len(scores)}")
-    print(f"Average boolean match: {avg_score:.3f}")
-    print(f"Min boolean match: {min(scores):.3f}")
-    print(f"Max boolean match: {max(scores):.3f}")
-    print(f"{'='*60}\n")
 
-    threshold = lexical_config.get("boolean_match_threshold", 1.0)
+    failed_questions = []
+    for idx, (item, score) in enumerate(scores, 1):
+        passed = score >= threshold
+        if not passed:
+            failed_questions.append((item, score))
+        _print_question_result(
+            idx,
+            len(scores),
+            item["user_input"],
+            score,
+            threshold,
+            f"Expected: {item['reference']}" if not passed else None,
+            f"Got: {item['response']}" if not passed else None,
+        )
+
+    avg_score = sum(s for _, s in scores) / len(scores)
+    print(
+        f"\n  Average: {avg_score:.3f} | Passed: {len(scores) - len(failed_questions)}/{len(scores)}"
+    )
+    print(f"{'='*60}")
+
     assert avg_score >= threshold, (
-        f"Boolean match score {avg_score:.3f} below threshold {threshold}. "
-        "Some yes/no questions are answered incorrectly."
+        f"Boolean avg {avg_score:.3f} < {threshold}. "
+        f"Failed questions: {[q['user_input'][:50] for q, _ in failed_questions]}"
     )
 
 
@@ -184,18 +255,8 @@ async def test_entity_extraction(
 ) -> None:
     """
     Test entity extraction accuracy using subset matching.
-
-    For entity-based questions, checks if all expected entities are present
-    in the response (doesn't penalize extra entities).
-
-    Subset matching: score = found_count / expected_count
-    - Reference: {"15 days", "Deliverable"}
-    - Response: {"15 days", "Deliverable", "Client"}
-    - Score: 2/2 = 1.0 ✅ (all expected entities found)
-
-    Note: Uses lexical_test_responses to avoid redundant API calls.
+    For entity-type questions only.
     """
-    # Filter for entity-type questions only
     entity_responses = [
         item for item in lexical_test_responses if item.get("test_type") == "entities"
     ]
@@ -203,41 +264,52 @@ async def test_entity_extraction(
     if not entity_responses:
         pytest.skip("No entity-type questions in test data")
 
-    scores = []
+    threshold = lexical_config.get("entity_match_threshold", 1.0)
+    scores: list[tuple[dict[str, Any], float, set[str], set[str]]] = []
 
     for item in entity_responses:
-        # Parse reference entities (comma-separated)
         reference_text = item["reference"]
         response_text = item["response"]
 
-        # Convert to sets (lowercase, trimmed)
         ref_entities = {e.strip().lower() for e in reference_text.split(",") if e.strip()}
         resp_entities = {e.strip().lower() for e in response_text.split(",") if e.strip()}
 
-        # Subset matching: how many reference entities were found?
         found_entities = ref_entities & resp_entities
         expected_count = len(ref_entities)
         found_count = len(found_entities)
 
-        # Score: ratio of found entities to expected entities
         score = found_count / expected_count if expected_count > 0 else 0.0
-        scores.append(score)
+        scores.append((item, score, ref_entities, resp_entities))
 
-    avg_score = sum(scores) / len(scores)
-
+    # Print results
     print(f"\n{'='*60}")
-    print("RAG LEXICAL EVALUATION - ENTITY EXTRACTION")
+    print("ENTITY EXTRACTION (subset matching)")
     print(f"{'='*60}")
-    print(f"Test cases: {len(scores)}")
-    print(f"Average entity match: {avg_score:.3f}")
-    print(f"Min entity match: {min(scores):.3f}")
-    print(f"Max entity match: {max(scores):.3f}")
-    print(f"{'='*60}\n")
 
-    threshold = lexical_config.get("entity_match_threshold", 1.0)
+    failed_questions = []
+    for idx, (item, score, ref_ent, resp_ent) in enumerate(scores, 1):
+        passed = score >= threshold
+        if not passed:
+            failed_questions.append((item, score))
+            missing = ref_ent - resp_ent
+            print(f"\n  ✗ Q{idx}/{len(scores)}: {_truncate(item['user_input'], 70)}")
+            print(f"       Score: {score:.3f} (threshold: {threshold})")
+            print(f"       Expected: {ref_ent}")
+            print(f"       Got:      {resp_ent}")
+            print(f"       Missing:  {missing}")
+        else:
+            print(f"\n  ✓ Q{idx}/{len(scores)}: {_truncate(item['user_input'], 70)}")
+            print(f"       Score: {score:.3f} (threshold: {threshold})")
+
+    avg_score = sum(s for _, s, _, _ in scores) / len(scores)
+    print(
+        f"\n  Average: {avg_score:.3f} | Passed: {len(scores) - len(failed_questions)}/{len(scores)}"
+    )
+    print(f"{'='*60}")
+
     assert avg_score >= threshold, (
-        f"Entity match score {avg_score:.3f} below threshold {threshold}. "
-        "Some expected entities are missing from responses."
+        f"Entity avg {avg_score:.3f} < {threshold}. "
+        f"Failed questions: {[q['user_input'][:50] for q, _ in failed_questions]}"
     )
 
 
@@ -250,23 +322,11 @@ async def test_comprehensive_evaluation(
     lexical_config: dict[str, Any],
 ) -> None:
     """
-    Comprehensive lexical evaluation of RAG system using all metrics.
-
-    Applies the appropriate metric based on test_type:
-    - "answer" → BLEU and ROUGE (n-gram overlap)
-    - "entities" → Entity subset matching
-    - "boolean" → Exact match
-
-    Fast (seconds), free ($0), no LLM required.
-
-    Note: Uses lexical_test_responses to avoid redundant API calls.
+    Comprehensive lexical evaluation with per-question failure details.
+    Shows which specific questions failed for AI team debugging.
     """
-    results: dict[str, list[float]] = {
-        "bleu": [],
-        "rouge": [],
-        "entity_match": [],
-        "boolean_match": [],
-    }
+    # Store per-question results for detailed output
+    question_results: list[dict[str, Any]] = []
 
     # Filter responses by test type
     answer_responses = [
@@ -279,84 +339,122 @@ async def test_comprehensive_evaluation(
         item for item in lexical_test_responses if item.get("test_type") == "boolean"
     ]
 
-    # Calculate BLEU/ROUGE for answer-type questions only
+    # Evaluate answer-type questions (BLEU + ROUGE)
     for item in answer_responses:
         sample = SingleTurnSample(
             user_input=item["user_input"],
             response=item["response"],
             reference=item["reference"],
         )
-        results["bleu"].append(await bleu_scorer.single_turn_ascore(sample))
-        results["rouge"].append(await rouge_scorer.single_turn_ascore(sample))
+        bleu = await bleu_scorer.single_turn_ascore(sample)
+        rouge = await rouge_scorer.single_turn_ascore(sample)
 
-    # Calculate entity matching for entity-type questions only
+        bleu_pass = bleu >= lexical_config["bleu_threshold"]
+        rouge_pass = rouge >= lexical_config["rouge_threshold"]
+
+        question_results.append(
+            {
+                "question": item["user_input"],
+                "type": "answer",
+                "reference": item["reference"],
+                "response": item["response"],
+                "scores": {"bleu": bleu, "rouge": rouge},
+                "passed": bleu_pass and rouge_pass,
+                "failures": [
+                    (
+                        f"BLEU {bleu:.3f} < {lexical_config['bleu_threshold']}"
+                        if not bleu_pass
+                        else None
+                    ),
+                    (
+                        f"ROUGE {rouge:.3f} < {lexical_config['rouge_threshold']}"
+                        if not rouge_pass
+                        else None
+                    ),
+                ],
+            }
+        )
+
+    # Evaluate entity-type questions
     for item in entity_responses:
-        reference_text = item["reference"]
-        response_text = item["response"]
+        ref_entities = {e.strip().lower() for e in item["reference"].split(",") if e.strip()}
+        resp_entities = {e.strip().lower() for e in item["response"].split(",") if e.strip()}
+        found = ref_entities & resp_entities
+        score = len(found) / len(ref_entities) if ref_entities else 0.0
+        threshold = lexical_config.get("entity_match_threshold", 1.0)
+        passed = score >= threshold
 
-        # Convert to sets (lowercase, trimmed)
-        ref_entities = {e.strip().lower() for e in reference_text.split(",") if e.strip()}
-        resp_entities = {e.strip().lower() for e in response_text.split(",") if e.strip()}
+        question_results.append(
+            {
+                "question": item["user_input"],
+                "type": "entities",
+                "reference": ref_entities,
+                "response": resp_entities,
+                "missing": ref_entities - resp_entities,
+                "scores": {"entity": score},
+                "passed": passed,
+                "failures": [f"Entity {score:.3f} < {threshold}"] if not passed else [],
+            }
+        )
 
-        # Subset matching
-        found_entities = ref_entities & resp_entities
-        expected_count = len(ref_entities)
-        found_count = len(found_entities)
-
-        score = found_count / expected_count if expected_count > 0 else 0.0
-        results["entity_match"].append(score)
-
-    # Calculate boolean matching for boolean-type questions only
+    # Evaluate boolean-type questions
     for item in boolean_responses:
-        reference = item["reference"].strip().lower()
-        response = item["response"].strip().lower()
+        ref = item["reference"].strip().lower()
+        resp = item["response"].strip().lower()
+        score = 1.0 if ref == resp else 0.0
+        threshold = lexical_config.get("boolean_match_threshold", 1.0)
+        passed = score >= threshold
 
-        # Exact match for boolean answers
-        score = 1.0 if reference == response else 0.0
-        results["boolean_match"].append(score)
+        question_results.append(
+            {
+                "question": item["user_input"],
+                "type": "boolean",
+                "reference": ref,
+                "response": resp,
+                "scores": {"boolean": score},
+                "passed": passed,
+                "failures": [f"Expected '{ref}', got '{resp}'"] if not passed else [],
+            }
+        )
 
-    # Calculate averages (only for metrics that have data)
-    avg_results = {
-        metric: sum(scores) / len(scores) for metric, scores in results.items() if scores
-    }
+    # Print summary
+    failed = [q for q in question_results if not q["passed"]]
+    passed_count = len(question_results) - len(failed)
 
-    # Print comprehensive results
     print(f"\n{'='*60}")
-    print("RAG COMPREHENSIVE LEXICAL EVALUATION")
+    print("LEXICAL EVALUATION SUMMARY")
     print(f"{'='*60}")
-    print(f"Answer-type questions: {len(answer_responses)}")
-    print(f"Entity-type questions: {len(entity_responses)}")
-    print(f"Boolean-type questions: {len(boolean_responses)}")
-    print(f"Total test cases: {len(lexical_test_responses)}")
-    print(f"{'='*60}")
+    print(f"  Total: {len(question_results)} | Passed: {passed_count} | Failed: {len(failed)}")
 
-    all_passed = True
-    metric_configs = {
-        "bleu": "bleu_threshold",
-        "rouge": "rouge_threshold",
-        "entity_match": "entity_match_threshold",
-        "boolean_match": "boolean_match_threshold",
-    }
+    # Only show detailed output for failures
+    if failed:
+        print(f"\n{'─'*70}")
+        print("FAILED QUESTIONS (for fine-tuning)")
+        print(f"{'─'*70}")
 
-    for metric_name, score in avg_results.items():
-        threshold_key = metric_configs.get(metric_name)
-        if threshold_key and threshold_key in lexical_config:
-            threshold = lexical_config[threshold_key]
-            passed = score >= threshold
-            status = "✓" if passed else "✗"
-            all_passed = all_passed and passed
+        for idx, q in enumerate(failed, 1):
+            print(f"\n  [{idx}] {q['type'].upper()}: {q['question']}")
+            for failure in q["failures"]:
+                if failure:
+                    print(f"      ✗ {failure}")
 
-            print(
-                f"{status} {metric_name.upper():<25} " f"Score: {score:.3f}  Threshold: {threshold}"
-            )
+            if q["type"] == "answer":
+                print("\n      Reference:")
+                print(f"        {_wrap_text(str(q['reference']), 65, '        ')}")
+                print("\n      Got:")
+                print(f"        {_wrap_text(str(q['response']), 65, '        ')}")
+            elif q["type"] == "entities":
+                print(f"      Expected: {q['reference']}")
+                print(f"      Got:      {q['response']}")
+                print(f"      Missing:  {q['missing']}")
+            elif q["type"] == "boolean":
+                print(f"      Expected: '{q['reference']}'")
+                print(f"      Got:      '{q['response']}'")
 
-            # Assert individual metrics
-            assert (
-                score >= threshold
-            ), f"{metric_name} score {score:.3f} below threshold {threshold}"
+    print(f"\n{'='*70}")
 
-    print(f"{'='*60}")
-    print(f"Overall: {'✓ ALL TESTS PASSED' if all_passed else '✗ SOME TESTS FAILED'}")
-    print("Execution: Fast (seconds)")
-    print("Cost: $0.00")
-    print(f"{'='*60}\n")
+    # Assert all passed
+    assert not failed, (
+        f"{len(failed)} question(s) failed. "
+        f"Questions: {[_truncate(q['question'], 40) for q in failed]}"
+    )

@@ -87,6 +87,76 @@ def extract_json(response_text: str) -> dict[str, Any] | None:
     return None
 
 
+def extract_fields_from_malformed_json(response_text: str) -> dict[str, Any]:
+    """
+    Extract fields from malformed JSON where keys might be missing.
+
+    The model sometimes outputs JSON without proper keys, like:
+    { "The answer text", ["entity1", "entity2"], "yes", "high" }
+
+    This function tries to extract values by pattern matching.
+
+    Args:
+        response_text: Raw response text (possibly malformed JSON)
+
+    Returns:
+        Dict with extracted fields (may be partial)
+    """
+    result: dict[str, Any] = {}
+    text = response_text.strip().lower()
+
+    # Extract boolean_answer: look for standalone "yes" or "no"
+    # Pattern: ", "yes"," or '"yes"' or just 'yes' near the end
+    if '"yes"' in text or ", yes," in text or text.endswith('yes"') or ', "yes"' in text:
+        result["boolean_answer"] = "yes"
+    elif '"no"' in text or ", no," in text or text.endswith('no"') or ', "no"' in text:
+        result["boolean_answer"] = "no"
+
+    # Extract entities: look for array patterns [...]
+    entities_match = re.search(r"\[([^\]]+)\]", response_text)
+    if entities_match:
+        # Try to parse the array content
+        try:
+            entities_str = f"[{entities_match.group(1)}]"
+            entities = json.loads(entities_str)
+            if isinstance(entities, list):
+                result["entities"] = entities
+        except json.JSONDecodeError:
+            # Try splitting by comma and cleaning up
+            raw_entities = entities_match.group(1)
+            entities = [
+                e.strip().strip('"').strip("'") for e in raw_entities.split(",") if e.strip()
+            ]
+            result["entities"] = entities
+
+    # Extract answer: first quoted string after opening brace
+    # Try pattern with quotes first
+    answer_match = re.search(r'\{\s*"([^"]+)"', response_text)
+    if answer_match:
+        result["answer"] = answer_match.group(1)
+    else:
+        # Try pattern without quotes (model sometimes omits opening quote)
+        # e.g., { Stories & Acceptance Criteria deliverable contains...
+        answer_match = re.search(r'\{\s*([A-Z][^,\[\]"]+)', response_text)
+        if answer_match:
+            # Clean up and take until we hit array or other JSON structure
+            answer_text = answer_match.group(1).strip()
+            # Remove trailing punctuation that might be part of JSON
+            answer_text = re.sub(r'[,"\]\}]+$', "", answer_text).strip()
+            if len(answer_text) > 10:  # Only if we got meaningful content
+                result["answer"] = answer_text
+
+    # Extract confidence: look for high/medium/low near the end
+    if '"high"' in text or ", high" in text:
+        result["confidence"] = "high"
+    elif '"medium"' in text or ", medium" in text:
+        result["confidence"] = "medium"
+    elif '"low"' in text or ", low" in text:
+        result["confidence"] = "low"
+
+    return result
+
+
 def validate_json_schema(response_json: dict[str, Any]) -> bool:
     """
     Validate that response JSON has the expected structure.
@@ -434,6 +504,37 @@ def parse_sse_stream(response_text: str) -> str:
     return "".join(cleaned_chunks)
 
 
+async def collect_sse_stream(client: AsyncClient, url: str, json_data: dict[str, Any]) -> str:
+    """
+    Collect full SSE stream response from a streaming endpoint.
+
+    httpx requires explicit streaming handling - regular .post() may not
+    wait for the full stream. This function properly iterates through
+    all SSE chunks and combines them.
+
+    Args:
+        client: AsyncClient instance
+        url: Endpoint URL
+        json_data: Request body
+
+    Returns:
+        Combined response text from all SSE chunks
+    """
+    chunks: list[str] = []
+
+    async with client.stream("POST", url, json=json_data) as response:
+        if response.status_code != 200:
+            await response.aread()
+            raise Exception(f"RAG endpoint returned status {response.status_code}: {response.text}")
+
+        async for line in response.aiter_lines():
+            line = line.strip()
+            if line.startswith("data: "):
+                chunks.append(line[6:])  # Remove "data: " prefix
+
+    return "".join(chunks)
+
+
 @pytest_asyncio.fixture(scope="module")
 async def rag_client() -> AsyncGenerator[AsyncClient, None]:
     """
@@ -504,17 +605,12 @@ async def rag_system(rag_client: AsyncClient) -> Any:
                     # Log but don't fail if retrieval fails
                     print(f"Warning: Context retrieval failed: {e}")
 
-            # Call the streaming chat endpoint (production code path)
-            response = await self.client.post("/api/v1/chat/stream", json={"message": query})
-
-            # Check if request was successful
-            if response.status_code != 200:
-                raise Exception(
-                    f"RAG endpoint returned status {response.status_code}: {response.text}"
-                )
-
-            # Parse SSE response to extract clean text
-            response_text = parse_sse_stream(response.text)
+            # Collect full SSE stream (proper streaming handling)
+            response_text = await collect_sse_stream(
+                self.client,
+                "/api/v1/chat/stream",
+                {"message": query},
+            )
 
             return {
                 "query": query,
@@ -568,15 +664,12 @@ async def rag_system_with_retriever(
             docs = self.retriever.invoke(query)
             retrieved_contexts = [doc.page_content for doc in docs]
 
-            # Call the streaming chat endpoint
-            response = await self.client.post("/api/v1/chat/stream", json={"message": query})
-
-            if response.status_code != 200:
-                raise Exception(
-                    f"RAG endpoint returned status {response.status_code}: {response.text}"
-                )
-
-            response_text = parse_sse_stream(response.text)
+            # Collect full SSE stream (proper streaming handling)
+            response_text = await collect_sse_stream(
+                self.client,
+                "/api/v1/chat/stream",
+                {"message": query},
+            )
 
             return {
                 "query": query,
@@ -618,24 +711,45 @@ async def lexical_test_responses(rag_system: Any) -> list[dict[str, Any]]:
 
         # Extract appropriate field based on test_type
         response_text = rag_output["response"]
-        response_json = extract_json(response_text)
         test_type = item.get("test_type", "answer")  # Default to "answer"
 
+        response_json = extract_json(response_text)
+
         if response_json:
-            # RAG returned JSON - extract the appropriate field
+            # RAG returned valid JSON - extract the appropriate field
             if test_type == "boolean":
-                # Extract boolean_answer field
                 final_response = response_json.get("boolean_answer", "")
             elif test_type == "entities":
-                # Extract entities field and join as comma-separated string
                 entities = response_json.get("entities", [])
                 final_response = ", ".join(entities) if entities else ""
             else:  # "answer" (default)
-                # Extract answer field
                 final_response = response_json.get("answer", "")
         else:
-            # RAG returned plain text - use as is
-            final_response = response_text
+            # JSON parsing failed - try fallback extraction from malformed JSON
+            fallback = extract_fields_from_malformed_json(response_text)
+
+            if fallback:
+                # Extracted some fields from malformed JSON
+                print("\n[WARNING] Malformed JSON from model (extracted via fallback)")
+                print(f"[WARNING] Question: {item['user_input'][:50]}...")
+                print(f"[WARNING] Extracted: {fallback}")
+
+                if test_type == "boolean":
+                    final_response = fallback.get("boolean_answer", "")
+                elif test_type == "entities":
+                    entities = fallback.get("entities", [])
+                    final_response = ", ".join(entities) if isinstance(entities, list) else ""
+                else:  # "answer"
+                    final_response = fallback.get("answer", "")
+
+                # If still empty, use raw text
+                if not final_response:
+                    final_response = response_text
+            else:
+                # Complete extraction failure
+                print(f"\n[ERROR] Cannot parse model output for: {item['user_input'][:50]}...")
+                print(f"[ERROR] Raw output: {response_text[:150]}...")
+                final_response = response_text
 
         # Cache the result
         cached_responses.append(
@@ -684,20 +798,31 @@ async def llm_judged_test_responses(rag_system_with_retriever: Any) -> list[dict
         test_type = item.get("test_type", "answer")  # Default to "answer"
 
         if response_json:
-            # RAG returned JSON - extract the appropriate field
+            # RAG returned valid JSON - extract the appropriate field
             if test_type == "boolean":
-                # Extract boolean_answer field
                 final_response = response_json.get("boolean_answer", "")
             elif test_type == "entities":
-                # Extract entities field and join as comma-separated string
                 entities = response_json.get("entities", [])
                 final_response = ", ".join(entities) if entities else ""
             else:  # "answer" (default)
-                # Extract answer field
                 final_response = response_json.get("answer", "")
         else:
-            # RAG returned plain text - use as is
-            final_response = response_text
+            # JSON parsing failed - try fallback extraction from malformed JSON
+            fallback = extract_fields_from_malformed_json(response_text)
+
+            if fallback:
+                if test_type == "boolean":
+                    final_response = fallback.get("boolean_answer", "")
+                elif test_type == "entities":
+                    entities = fallback.get("entities", [])
+                    final_response = ", ".join(entities) if isinstance(entities, list) else ""
+                else:  # "answer"
+                    final_response = fallback.get("answer", "")
+
+                if not final_response:
+                    final_response = response_text
+            else:
+                final_response = response_text
 
         # Cache the result
         cached_responses.append(
