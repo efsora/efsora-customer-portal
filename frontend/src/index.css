@@ -55,7 +55,7 @@
     --chart-5: var(--color-info-500);
 
     /* Sidebar */
-    --sidebar: var(--color-neutral-grey-50);
+    --sidebar: #ffffff;
     --sidebar-foreground: var(--color-neutral-grey-900);
     --sidebar-primary: var(--color-primary-500);
     --sidebar-primary-foreground: #ffffff;
