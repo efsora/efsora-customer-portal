@@ -17,6 +17,7 @@ export default function SlidePanel() {
                 <div
                     className={styles.backdrop}
                     onClick={handleBackdropClick}
+                    data-testid="slide-panel-backdrop"
                 />
             )}
 
@@ -25,6 +26,8 @@ export default function SlidePanel() {
                 className={`${styles.panel} ${
                     isSlidePanelOpen ? styles.open : styles.closed
                 }`}
+                data-testid="slide-panel"
+                data-open={isSlidePanelOpen}
             >
                 {/* Add your panel content here */}
                 <div className={styles.content}>
@@ -32,6 +35,7 @@ export default function SlidePanel() {
                         className={styles.closeButton}
                         onClick={handleBackdropClick}
                         aria-label="Close panel"
+                        data-testid="slide-panel-close-button"
                     >
                         ✕
                     </button>

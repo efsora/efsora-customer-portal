@@ -14,6 +14,7 @@ export default function FloatingCircle() {
             className={styles.circle}
             onClick={handleClick}
             aria-label="Open side panel"
+            data-testid="floating-chat-button"
         >
             <img src="chat.svg" alt="chat" />
         </button>

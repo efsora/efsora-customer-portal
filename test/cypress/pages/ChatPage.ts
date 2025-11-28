@@ -11,10 +11,18 @@ import { BasePage } from './BasePage';
 export class ChatPage extends BasePage {
   // Selectors using data-testid attributes
   // These correspond to elements in:
+  //   - frontend/src/presentation/components/common/FloatingCircle/FloatingCircle.tsx
+  //   - frontend/src/presentation/components/common/SlidePanel/SlidePanel.tsx
   //   - frontend/src/presentation/components/chat/ChatInput/ChatInput.tsx
   //   - frontend/src/presentation/components/chat/Message/Message.tsx
   //   - frontend/src/presentation/components/chat/MessageList/MessageList.tsx
   private readonly selectors = {
+    // Floating chat button and slide panel
+    floatingChatButton: '[data-testid="floating-chat-button"]',
+    slidePanel: '[data-testid="slide-panel"]',
+    slidePanelBackdrop: '[data-testid="slide-panel-backdrop"]',
+    slidePanelCloseButton: '[data-testid="slide-panel-close-button"]',
+
     // Chat Input container
     inputContainer: '[data-testid="chat-input-container"]',
     inputWrapper: '[data-testid="chat-input-wrapper"]',
@@ -38,6 +46,50 @@ export class ChatPage extends BasePage {
 
   constructor() {
     super('/');
+  }
+
+  /**
+   * Click the floating chat button to open the chat panel
+   */
+  openChatPanel(): this {
+    this.click(this.selectors.floatingChatButton);
+    // Wait for the slide panel to be open
+    this.getElement(this.selectors.slidePanel).should('have.attr', 'data-open', 'true');
+    return this;
+  }
+
+  /**
+   * Close the chat panel
+   */
+  closeChatPanel(): this {
+    this.click(this.selectors.slidePanelCloseButton);
+    // Wait for the slide panel to be closed
+    this.getElement(this.selectors.slidePanel).should('have.attr', 'data-open', 'false');
+    return this;
+  }
+
+  /**
+   * Verify the floating chat button is visible
+   */
+  verifyFloatingButtonVisible(): this {
+    this.waitForElement(this.selectors.floatingChatButton);
+    return this;
+  }
+
+  /**
+   * Verify the chat panel is open
+   */
+  verifyChatPanelOpen(): this {
+    this.getElement(this.selectors.slidePanel).should('have.attr', 'data-open', 'true');
+    return this;
+  }
+
+  /**
+   * Verify the chat panel is closed
+   */
+  verifyChatPanelClosed(): this {
+    this.getElement(this.selectors.slidePanel).should('have.attr', 'data-open', 'false');
+    return this;
   }
 
   /**
@@ -126,15 +178,16 @@ export class ChatPage extends BasePage {
    * Get number of messages in list
    */
   getMessageCount(): Cypress.Chainable<number> {
-    return this.getElement(`${this.selectors.messageListContainer} [data-testid^="chat-message-item-"]`)
+    return this.getElement(`${this.selectors.messageListContainer} ${this.selectors.messageUserBubble}, ${this.selectors.messageListContainer} ${this.selectors.messageBotBubble}`)
       .then(($elements) => $elements.length);
   }
 
   /**
-   * Get specific message text by index
+   * Get the last message text
    */
-  getMessageText(index: number): Cypress.Chainable<string> {
-    return this.getElement(`[data-testid="chat-message-item-${index}"] ${this.selectors.messageBubble}`)
+  getLastMessageText(): Cypress.Chainable<string> {
+    return this.getElement(`${this.selectors.messageListContainer} ${this.selectors.messageBubble}`)
+      .last()
       .invoke('text');
   }
 
@@ -185,10 +238,11 @@ export class ChatPage extends BasePage {
   }
 
   /**
-   * Wait for new message to appear
+   * Wait for new message to appear (either user or bot)
    */
   waitForNewMessage(timeoutMs: number = 10000): this {
-    this.waitForElement(`${this.selectors.messageListContainer} [data-testid^="chat-message-item-"]`, timeoutMs);
+    cy.get(`${this.selectors.messageUserBubble}, ${this.selectors.messageBotBubble}`, { timeout: timeoutMs })
+      .should('exist');
     return this;
   }
 

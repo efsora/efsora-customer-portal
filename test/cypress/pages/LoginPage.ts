@@ -75,6 +75,23 @@ export class LoginPage extends BasePage {
   }
 
   /**
+   * Wait for login to complete (URL changes from /login)
+   */
+  waitForLoginSuccess(timeout: number = 10000): this {
+    cy.url().should('not.include', '/login', { timeout });
+    return this;
+  }
+
+  /**
+   * Perform complete login flow and wait for success
+   */
+  loginAndWait(email: string, password: string, timeout: number = 10000): this {
+    this.login(email, password);
+    this.waitForLoginSuccess(timeout);
+    return this;
+  }
+
+  /**
    * Get error message text
    */
   getErrorMessage(): Cypress.Chainable<string> {
