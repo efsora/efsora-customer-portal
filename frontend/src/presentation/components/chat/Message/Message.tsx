@@ -100,10 +100,14 @@ const Message: React.FC<Props> = ({ msg }) => {
     };
 
     return (
-        <div className={`${styles.message} ${styles[isUser ? 'user' : 'bot']}`}>
-            <div className={styles.messageWrapper}>
+        <div
+            className={`${styles.message} ${styles[isUser ? 'user' : 'bot']}`}
+            data-testid={isUser ? 'chat-message-user' : 'chat-message-bot'}
+        >
+            <div className={styles.messageWrapper} data-testid="chat-message-wrapper">
                 <div
                     className={`${styles.messageBubble} ${styles[isUser ? 'userMessage' : 'botMessage']}${msg.error ? ` ${styles.errorMessage}` : ''}`}
+                    data-testid="chat-message-bubble"
                 >
                     <Markdown
                         remarkPlugins={[remarkGfm]}
@@ -112,7 +116,7 @@ const Message: React.FC<Props> = ({ msg }) => {
                         {sanitizedContent}
                     </Markdown>
                 </div>
-                <small className={styles.timestamp}>
+                <small className={styles.timestamp} data-testid="chat-message-timestamp">
                     {msg.timestamp?.toLocaleTimeString([], {
                         hour: '2-digit',
                         minute: '2-digit',
