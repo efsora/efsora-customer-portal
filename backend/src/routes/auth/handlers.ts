@@ -6,6 +6,11 @@ import {
   login,
   sendInvitation,
 } from "#core/users/index";
+import {
+  AUTH_COOKIE_NAME,
+  clearAuthCookie,
+  setAuthCookie,
+} from "#infrastructure/auth/index";
 import { getRequestId } from "#infrastructure/logger/context";
 import { logger } from "#infrastructure/logger/index";
 import { sessionRepository } from "#infrastructure/repositories/drizzle";
@@ -18,6 +23,7 @@ import {
 } from "#lib/types/response";
 import type { AuthenticatedRequest } from "#middlewares/auth";
 import type { ValidatedRequest } from "#middlewares/validate";
+import type { Response } from "express";
 
 import type {
   LoginBody,
@@ -26,60 +32,93 @@ import type {
   SendInvitationBody,
 } from "./schemas";
 
+/** Response type for register (user only, no token) */
+type RegisterResponse = { user: CreateUserResult["user"] };
+
 /**
  * POST /auth/register
  * Register a new user
  *
- * Returns nested structure following best practices:
- * { user: { id, email, name }, token: "..." }
+ * Sets JWT in httpOnly cookie for security (XSS protection).
+ * Returns user data only - token is not exposed in response body.
  */
 export async function handleRegister(
   req: ValidatedRequest<{ body: RegisterBody }>,
-): Promise<AppResponse<CreateUserResult>> {
+  res: Response,
+): Promise<AppResponse<RegisterResponse>> {
   const body = req.validated.body;
   const result = await run(createUser(body));
 
-  return matchResponse(result, {
-    onSuccess: (data) =>
-      createSuccessResponse({
-        user: {
-          id: data.user.id,
-          email: data.user.email,
-          name: data.user.name,
-          surname: data.user.surname,
-        },
-        token: data.token,
-      }),
-    onFailure: (error) => createFailureResponse(error),
+  if (result.status === "Failure") {
+    return createFailureResponse(result.error);
+  }
+
+  if (result.status !== "Success") {
+    // This should never happen after run(), but TypeScript needs it
+    return createFailureResponse({
+      code: "INTERNAL_ERROR",
+      message: "Unexpected result state",
+    });
+  }
+
+  // Set JWT in httpOnly cookie
+  setAuthCookie(res, result.value.token);
+
+  // Return user data only (token is in cookie)
+  return createSuccessResponse({
+    user: {
+      id: result.value.user.id,
+      email: result.value.user.email,
+      name: result.value.user.name,
+      surname: result.value.user.surname,
+    },
   });
 }
+
+/** Response type for login (user only, no token) */
+type LoginResponse = { user: LoginResult["user"] };
 
 /**
  * POST /auth/login
  * Login an existing user
+ *
+ * Sets JWT in httpOnly cookie for security (XSS protection).
+ * Returns user data only - token is not exposed in response body.
  */
 export async function handleLogin(
   req: ValidatedRequest<{ body: LoginBody }>,
-): Promise<AppResponse<LoginResult>> {
+  res: Response,
+): Promise<AppResponse<LoginResponse>> {
   const body = req.validated.body;
   const result = await run(login(body));
 
-  return matchResponse(result, {
-    onSuccess: (data) =>
-      createSuccessResponse({
-        user: {
-          id: data.user.id,
-          email: data.user.email,
-          name: data.user.name,
-          surname: data.user.surname,
-          createdAt: data.user.createdAt,
-          updatedAt: data.user.updatedAt,
-          projectId: data.user.projectId,
-          companyId: data.user.companyId,
-        },
-        token: data.token,
-      }),
-    onFailure: (error) => createFailureResponse(error),
+  if (result.status === "Failure") {
+    return createFailureResponse(result.error);
+  }
+
+  if (result.status !== "Success") {
+    // This should never happen after run(), but TypeScript needs it
+    return createFailureResponse({
+      code: "INTERNAL_ERROR",
+      message: "Unexpected result state",
+    });
+  }
+
+  // Set JWT in httpOnly cookie
+  setAuthCookie(res, result.value.token);
+
+  // Return user data only (token is in cookie)
+  return createSuccessResponse({
+    user: {
+      id: result.value.user.id,
+      email: result.value.user.email,
+      name: result.value.user.name,
+      surname: result.value.user.surname,
+      createdAt: result.value.user.createdAt,
+      updatedAt: result.value.user.updatedAt,
+      projectId: result.value.user.projectId,
+      companyId: result.value.user.companyId,
+    },
   });
 }
 
@@ -89,22 +128,25 @@ export async function handleLogin(
  *
  * This endpoint validates that the user has a valid token (via auth middleware)
  * and deletes the session from the database, immediately invalidating the token.
+ * Also clears the httpOnly auth cookie.
  *
  * Session-based token management ensures:
  * - Immediate token invalidation on logout
  * - No need for Redis or token blacklist
  * - Production-ready security
  *
- * @param req - Authenticated request with userId from JWT and Bearer token
+ * @param req - Authenticated request with userId from JWT
+ * @param res - Express response for clearing cookie
  * @returns Success response confirming logout
  */
 export async function handleLogout(
   req: AuthenticatedRequest,
+  res: Response,
 ): Promise<AppResponse<LogoutResponse>> {
   try {
-    // Extract token from Authorization header
-    const authHeader = req.headers.authorization;
-    const token = authHeader?.split(" ")[1];
+    // Get token from cookie (primary) or Authorization header (fallback for backwards compat)
+    const token =
+      req.cookies?.[AUTH_COOKIE_NAME] || req.headers.authorization?.split(" ")[1];
 
     if (!token) {
       logger.warn(
@@ -122,6 +164,9 @@ export async function handleLogout(
 
     // Delete session from database
     const deletedSessions = await sessionRepository.deleteByToken(token);
+
+    // Clear the auth cookie
+    clearAuthCookie(res);
 
     if (deletedSessions.length === 0) {
       logger.warn(

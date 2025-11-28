@@ -19,9 +19,12 @@ import { useAuthStore } from '#store/authStore';
 /**
  * Hook for user registration
  * Handles register mutation and updates auth store on success
+ *
+ * Note: JWT token is set via httpOnly cookie by backend.
+ * Only user data is stored in frontend state.
  */
 export const useRegister = () => {
-    const { setAuth } = useAuthStore();
+    const { setUser } = useAuthStore();
 
     return useMutation({
         mutationFn: async (data: RegisterRequest) => {
@@ -38,14 +41,8 @@ export const useRegister = () => {
             return response.data;
         },
         onSuccess: (data) => {
-            if (
-                data &&
-                typeof data === 'object' &&
-                'token' in data &&
-                'user' in data
-            ) {
+            if (data && typeof data === 'object' && 'user' in data) {
                 const typedData = data as {
-                    token: string;
                     user: {
                         id: string;
                         email: string;
@@ -55,19 +52,17 @@ export const useRegister = () => {
                         companyId?: number | null;
                     };
                 };
-                setAuth(
-                    {
-                        id: typedData.user.id,
-                        email: typedData.user.email,
-                        name: typedData.user.name || null,
-                        surname: typedData.user.surname || null,
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString(),
-                        projectId: typedData.user.projectId ?? null,
-                        companyId: typedData.user.companyId ?? null,
-                    },
-                    typedData.token,
-                );
+                // Only store user data - token is in httpOnly cookie
+                setUser({
+                    id: typedData.user.id,
+                    email: typedData.user.email,
+                    name: typedData.user.name || null,
+                    surname: typedData.user.surname || null,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    projectId: typedData.user.projectId ?? null,
+                    companyId: typedData.user.companyId ?? null,
+                });
             }
         },
     });
@@ -76,9 +71,12 @@ export const useRegister = () => {
 /**
  * Hook for user login
  * Handles login mutation and updates auth store on success
+ *
+ * Note: JWT token is set via httpOnly cookie by backend.
+ * Only user data is stored in frontend state.
  */
 export const useLogin = () => {
-    const { setAuth } = useAuthStore();
+    const { setUser } = useAuthStore();
 
     return useMutation({
         mutationFn: async (data: LoginRequest) => {
@@ -91,20 +89,18 @@ export const useLogin = () => {
             return response.data;
         },
         onSuccess: (data) => {
-            if (data && data.token && data.user) {
-                setAuth(
-                    {
-                        id: data.user.id,
-                        email: data.user.email,
-                        name: data.user.name || null,
-                        surname: data.user.surname || null,
-                        createdAt: data.user.createdAt || '',
-                        updatedAt: data.user.updatedAt || '',
-                        projectId: data.user.projectId ?? null,
-                        companyId: data.user.companyId ?? null,
-                    },
-                    data.token,
-                );
+            if (data && data.user) {
+                // Only store user data - token is in httpOnly cookie
+                setUser({
+                    id: data.user.id,
+                    email: data.user.email,
+                    name: data.user.name || null,
+                    surname: data.user.surname || null,
+                    createdAt: data.user.createdAt || '',
+                    updatedAt: data.user.updatedAt || '',
+                    projectId: data.user.projectId ?? null,
+                    companyId: data.user.companyId ?? null,
+                });
             }
         },
     });

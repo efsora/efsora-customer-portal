@@ -4,9 +4,20 @@ import type { AppResponse } from "#lib/types/response";
 import type { AuthenticatedRequest } from "#middlewares/auth";
 import { handleLogout } from "#routes/auth/handlers";
 import type { LogoutResponse } from "#routes/auth/schemas";
-import { describe, expect, it, beforeEach } from "vitest";
+import type { Response } from "express";
+import { describe, expect, it, beforeEach, vi } from "vitest";
 import { cleanupDatabase } from "../helpers/database";
 import { createTestInvitation } from "../helpers/invitation";
+
+/**
+ * Create a mock Express response object for testing
+ */
+function createMockResponse(): Response {
+  return {
+    cookie: vi.fn(),
+    clearCookie: vi.fn(),
+  } as unknown as Response;
+}
 
 describe("Logout Endpoint Integration Tests", () => {
   beforeEach(async () => {
@@ -46,9 +57,10 @@ describe("Logout Endpoint Integration Tests", () => {
         },
       } as AuthenticatedRequest;
 
-      // Call logout handler
+      // Call logout handler with mock response
+      const mockRes = createMockResponse();
       const response: AppResponse<LogoutResponse> =
-        await handleLogout(mockRequest);
+        await handleLogout(mockRequest, mockRes);
 
       // Verify response
       expect(response.success).toBe(true);
@@ -90,8 +102,9 @@ describe("Logout Endpoint Integration Tests", () => {
         },
       } as AuthenticatedRequest;
 
-      // Call logout
-      const response = await handleLogout(mockRequest);
+      // Call logout with mock response
+      const mockRes = createMockResponse();
+      const response = await handleLogout(mockRequest, mockRes);
 
       // Verify AppResponse structure
       expect(response).toHaveProperty("success");
@@ -153,7 +166,8 @@ describe("Logout Endpoint Integration Tests", () => {
         },
       } as AuthenticatedRequest;
 
-      const response1 = await handleLogout(req1);
+      const mockRes1 = createMockResponse();
+      const response1 = await handleLogout(req1, mockRes1);
       expect(response1.success).toBe(true);
 
       // Logout user 2
@@ -165,7 +179,8 @@ describe("Logout Endpoint Integration Tests", () => {
         },
       } as AuthenticatedRequest;
 
-      const response2 = await handleLogout(req2);
+      const mockRes2 = createMockResponse();
+      const response2 = await handleLogout(req2, mockRes2);
       expect(response2.success).toBe(true);
 
       // Both should succeed independently

@@ -45,4 +45,42 @@ export default defineConfig({
             '#icons/*': path.resolve(__dirname, 'src/icons/*'),
         },
     },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    // Core React ecosystem
+                    'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+                    // Data fetching & state management
+                    'vendor-state': [
+                        '@tanstack/react-query',
+                        'zustand',
+                        'axios',
+                    ],
+                    // Forms & validation
+                    'vendor-forms': [
+                        'react-hook-form',
+                        '@hookform/resolvers',
+                        'zod',
+                    ],
+                    // UI components (Radix)
+                    'vendor-ui': [
+                        '@radix-ui/react-dialog',
+                        '@radix-ui/react-dropdown-menu',
+                        '@radix-ui/react-progress',
+                        '@radix-ui/react-slot',
+                        'lucide-react',
+                    ],
+                    // Markdown rendering
+                    'vendor-markdown': [
+                        'react-markdown',
+                        'rehype-raw',
+                        'remark-gfm',
+                    ],
+                },
+            },
+        },
+        chunkSizeWarningLimit: 1000,
+        sourcemap: false,
+    },
 });

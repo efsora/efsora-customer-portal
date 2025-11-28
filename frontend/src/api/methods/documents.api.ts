@@ -8,15 +8,15 @@ import type {
     EmbedProgressEvent,
 } from '../types/documents/embed.types';
 import type { ListDocumentsRequest } from '../types/documents/request.types';
-import type { AppResponse_ListDocumentsResponse_ } from '../types/documents/response.types';
+import type { AppResponse_AllDocumentsResponse_ } from '../types/documents/response.types';
 
 /**
  * List documents from S3 for a given company and project
  */
 export const listDocuments = async (
     request: ListDocumentsRequest,
-): Promise<AppResponse_ListDocumentsResponse_> => {
-    const response = await api.get<AppResponse_ListDocumentsResponse_>(
+): Promise<AppResponse_AllDocumentsResponse_> => {
+    const response = await api.get<AppResponse_AllDocumentsResponse_>(
         ENDPOINTS.DOCUMENTS.LIST,
         {
             companyId: request.companyId,
@@ -32,7 +32,7 @@ export const listDocuments = async (
         throw new Error(`HTTP ${response?.status}: Failed to list documents`);
     }
 
-    return response?.data as AppResponse_ListDocumentsResponse_;
+    return response?.data as AppResponse_AllDocumentsResponse_;
 };
 
 /**

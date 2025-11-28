@@ -1,3 +1,4 @@
+import { AUTH_COOKIE_NAME } from "#infrastructure/auth/index";
 import { env } from "#infrastructure/config/env";
 import { getRequestId } from "#infrastructure/logger/context";
 import { logger } from "#infrastructure/logger/index";
@@ -28,7 +29,9 @@ export type AuthenticatedRequest = Request & {
 /**
  * Authentication middleware that verifies JWT tokens and validates sessions
  *
- * Expected header format: `Authorization: Bearer <token>`
+ * Token extraction priority:
+ * 1. httpOnly cookie (preferred, XSS-safe)
+ * 2. Authorization header (fallback for backwards compatibility)
  *
  * Validates:
  * 1. JWT signature and expiration
@@ -62,55 +65,30 @@ export async function auth(
   next: NextFunction,
 ): Promise<void> {
   try {
-    // Extract Authorization header
-    const authHeader = req.headers.authorization;
+    // Try to get token from cookie first (preferred, XSS-safe)
+    // Fall back to Authorization header for backwards compatibility
+    const token = extractToken(req);
 
-    if (!authHeader) {
+    if (!token) {
       logger.warn(
         {
           path: req.path,
           method: req.method,
           requestId: getRequestId(),
         },
-        "Authorization header missing",
+        "No authentication token found",
       );
 
       res
         .status(401)
         .json(
           errorResponse(
-            "Authorization header missing. Please provide a valid JWT token.",
-            "MISSING_AUTH_HEADER",
+            "Authentication required. Please login.",
+            "MISSING_TOKEN",
           ),
         );
       return;
     }
-
-    // Extract Bearer token from "Bearer <token>" format
-    const tokenParts = authHeader.split(" ");
-
-    if (tokenParts.length !== 2 || tokenParts[0] !== "Bearer") {
-      logger.warn(
-        {
-          path: req.path,
-          method: req.method,
-          requestId: getRequestId(),
-        },
-        "Invalid Authorization header format",
-      );
-
-      res
-        .status(401)
-        .json(
-          errorResponse(
-            "Invalid Authorization header format. Expected 'Bearer <token>'.",
-            "INVALID_AUTH_HEADER_FORMAT",
-          ),
-        );
-      return;
-    }
-
-    const token = tokenParts[1];
 
     // Verify and decode JWT token
     const payload = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
@@ -208,4 +186,35 @@ export async function auth(
 
     res.status(401).json(errorResponse(message, errorCode));
   }
+}
+
+/**
+ * Extract JWT token from request
+ *
+ * Priority:
+ * 1. httpOnly cookie (preferred, XSS-safe)
+ * 2. Authorization header (fallback for backwards compatibility)
+ *
+ * @param req - Express request object
+ * @returns Token string or null if not found
+ */
+function extractToken(req: Request): string | null {
+  // Try cookie first (preferred)
+  const cookieToken = req.cookies?.[AUTH_COOKIE_NAME];
+  if (cookieToken) {
+    return cookieToken;
+  }
+
+  // Fall back to Authorization header
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return null;
+  }
+
+  const tokenParts = authHeader.split(" ");
+  if (tokenParts.length !== 2 || tokenParts[0] !== "Bearer") {
+    return null;
+  }
+
+  return tokenParts[1];
 }

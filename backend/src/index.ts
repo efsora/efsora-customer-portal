@@ -10,6 +10,7 @@ import { metricsRegistry } from "#infrastructure/metrics/index";
 import { errorHandler } from "#middlewares/errorHandler";
 import { metricsMiddleware } from "#middlewares/metrics";
 import { requestLogger } from "#middlewares/requestLogger";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import fs from "node:fs";
@@ -39,6 +40,7 @@ app.use(metricsMiddleware);
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Metrics endpoint (for Prometheus scraping)
 app.get("/metrics", async (_req, res) => {

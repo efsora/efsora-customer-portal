@@ -1,10 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import { isTokenValid } from '../utils/jwt';
-
 /**
- * Auth user data from JWT token or API response
+ * Auth user data from API response
  */
 export interface AuthUser {
     id: string;
@@ -19,103 +17,70 @@ export interface AuthUser {
 
 /**
  * Auth store state and actions
+ *
+ * Note: JWT token is now stored in httpOnly cookie (not accessible from JS).
+ * Only user data is stored in this store.
  */
 export interface AuthState {
     // State
     user: AuthUser | null;
-    token: string | null;
 
     // Actions
-    setAuth: (user: AuthUser, token: string) => void;
     setUser: (user: AuthUser) => void;
-    setToken: (token: string) => void;
     clearAuth: () => void;
 
-    // Computed
+    // Loading state
     isLoading: boolean;
     setIsLoading: (isLoading: boolean) => void;
-    getIsAuthenticated: () => boolean;
 }
 
 /**
  * Zustand auth store with persistence
- * Stores user data and JWT token in localStorage
+ * Stores user data in localStorage (token is in httpOnly cookie)
  */
 export const useAuthStore = create<AuthState>()(
     persist(
-        (set, get) => ({
+        (set) => ({
             user: null,
-            token: null,
             isLoading: false,
-
-            setAuth: (user: AuthUser, token: string) => {
-                set({
-                    user,
-                    token,
-                });
-            },
 
             setUser: (user: AuthUser) => {
                 set({ user });
             },
 
-            setToken: (token: string) => {
-                set({ token });
-            },
-
             clearAuth: () => {
-                set({
-                    user: null,
-                    token: null,
-                });
+                set({ user: null });
             },
 
             setIsLoading: (isLoading: boolean) => {
                 set({ isLoading });
-            },
-
-            /**
-             * Get authentication status by validating token validity
-             * Returns true only if token exists and is valid (not expired)
-             */
-            getIsAuthenticated: () => {
-                const { token } = get();
-                return isTokenValid(token);
             },
         }),
         {
             name: 'auth-store', // Key in localStorage
             partialize: (state) => ({
                 user: state.user,
-                token: state.token,
-            }), // Only persist these fields
+                // Token is in httpOnly cookie, not stored here
+            }),
         },
     ),
 );
 
 /**
  * Convenience hook to check if user is authenticated
- * Validates token expiration dynamically
+ * Returns true if user data exists in store
+ *
+ * Note: Token validity is now managed by httpOnly cookie expiration
+ * and backend session validation
  */
 export const useIsAuthenticated = () => {
-    const getIsAuthenticated = useAuthStore(
-        (state) => state.getIsAuthenticated,
-    );
-    return getIsAuthenticated();
+    const user = useAuthStore((state) => state.user);
+    return user !== null;
 };
 
 /**
  * Convenience hook to get current user
  */
 export const useCurrentUser = () => {
-    const { user } = useAuthStore();
-    return user;
-};
-
-/**
- * Convenience hook to get auth token
- */
-export const useAuthToken = () => {
-    const { token } = useAuthStore();
-    return token;
+    return useAuthStore((state) => state.user);
 };

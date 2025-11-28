@@ -356,36 +356,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            data: (components["schemas"]["UserData"] & {
-                                /**
-                                 * Format: date
-                                 * @example 2025-10-29T10:30:00.000Z
-                                 */
-                                createdAt?: string | null;
-                                /**
-                                 * Format: email
-                                 * @example jane.doe@example.com
-                                 */
-                                email?: string;
-                                /**
-                                 * Format: uuid
-                                 * @example 550e8400-e29b-41d4-a716-446655440000
-                                 */
-                                id?: string;
-                                /** @example Jane Doe */
-                                name?: string | null;
-                                /** @example Doe */
-                                surname?: string | null;
-                                /**
-                                 * Format: date
-                                 * @example 2025-10-29T10:30:00.000Z
-                                 */
-                                updatedAt?: string | null;
-                                /** @example 1 */
-                                projectId?: number | null;
-                                /** @example 1 */
-                                companyId?: number | null;
-                            })[];
+                            data: components["schemas"]["UserData"][];
                             error?: null;
                             message?: null;
                             meta?: components["schemas"]["Meta"] & (Record<string, never> | null);
@@ -453,36 +424,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            data: components["schemas"]["UserData"] & {
-                                /**
-                                 * Format: date
-                                 * @example 2025-10-29T10:30:00.000Z
-                                 */
-                                createdAt?: string | null;
-                                /**
-                                 * Format: email
-                                 * @example jane.doe@example.com
-                                 */
-                                email?: string;
-                                /**
-                                 * Format: uuid
-                                 * @example 550e8400-e29b-41d4-a716-446655440000
-                                 */
-                                id?: string;
-                                /** @example Jane Doe */
-                                name?: string | null;
-                                /** @example Doe */
-                                surname?: string | null;
-                                /**
-                                 * Format: date
-                                 * @example 2025-10-29T10:30:00.000Z
-                                 */
-                                updatedAt?: string | null;
-                                /** @example 1 */
-                                projectId?: number | null;
-                                /** @example 1 */
-                                companyId?: number | null;
-                            };
+                            data: components["schemas"]["UserData"];
                             error?: null;
                             message?: null;
                             meta?: components["schemas"]["Meta"] & (Record<string, never> | null);
@@ -3230,6 +3172,11 @@ export interface components {
              * @enum {string}
              */
             category: "SoW" | "Legal" | "Billing" | "Assets";
+            /**
+             * @description Name of the user uploading the document
+             * @example Ceren Çınar
+             */
+            uploaderName: string;
         };
     };
     responses: never;
