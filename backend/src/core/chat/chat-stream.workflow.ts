@@ -1,89 +1,75 @@
-import { run } from "#lib/result/index";
-import { logger } from "#infrastructure/logger";
+import { pipe, type Result } from "#lib/result/index";
 import type { ChatStreamInput, GetChatHistoryInput } from "./types/inputs";
-import type { ChatStreamResult, GetChatHistoryResult } from "./types/outputs";
+import type {
+  ValidateChatSessionResult,
+  GetChatHistoryResult,
+} from "./types/outputs";
 import {
   validateSessionOwnership,
   ensureSessionExists,
-  saveUserMessage,
-  streamAndSaveResponse,
-  findSessionById,
-  getSessionMessages,
+  mapToValidatedSession,
+  getChatHistoryMessages,
 } from "./chat-stream.operations";
 
 /**
- * Main chat stream workflow
- * 1. Validate session ownership (security)
- * 2. Ensure session exists
- * 3. Save user message
- * 4. Stream AI response and save
+ * Validate and prepare chat session workflow
+ *
+ * FCIS COMPLIANT: Returns Result<T>, no run() calls
+ * Handler is responsible for calling run() and handling streaming I/O
+ *
+ * Flow:
+ * 1. Validate session ownership (security check)
+ * 2. Ensure session exists (create if needed)
+ * 3. Return validated session info for handler to use
+ *
+ * @param input - ChatStreamInput with message, sessionId, and userId
+ * @returns Result<ValidateChatSessionResult> - Validated session info
+ *
+ * @example
+ * ```typescript
+ * // In handler (imperative shell):
+ * const result = await run(validateChatSession(input));
+ * if (result.status === "Success") {
+ *   // Proceed with streaming I/O
+ * }
+ * ```
  */
-export async function* chatStream(input: ChatStreamInput): ChatStreamResult {
-  logger.info(
-    { sessionId: input.sessionId, userId: input.userId },
-    "Starting chat stream",
+export function validateChatSession(
+  input: ChatStreamInput,
+): Result<ValidateChatSessionResult> {
+  return pipe(
+    validateSessionOwnership(input),
+    ensureSessionExists,
+    mapToValidatedSession,
   );
-
-  // SECURITY: Validate session ownership first
-  const ownershipResult = await run(validateSessionOwnership(input));
-  if (ownershipResult.status === "Failure") {
-    throw new Error(ownershipResult.error.message);
-  }
-
-  // Ensure session exists (create if needed)
-  const sessionResult = await run(ensureSessionExists(input));
-  if (sessionResult.status === "Failure") {
-    throw new Error(sessionResult.error.message);
-  }
-
-  // Save user message
-  await saveUserMessage(input);
-
-  // Stream response and save
-  yield* streamAndSaveResponse(input);
-
-  logger.info({ sessionId: input.sessionId }, "Chat stream workflow completed");
 }
 
 /**
  * Get chat history workflow
+ *
+ * FCIS COMPLIANT: Returns Result<T>, no run() calls
+ *
+ * Flow:
  * 1. Validate session ownership
- * 2. Return messages if session exists
+ * 2. Fetch messages from database (returns empty array if session doesn't exist)
+ *
+ * @param input - GetChatHistoryInput with sessionId and userId
+ * @returns Result<GetChatHistoryResult> - Array of chat messages
+ *
+ * @example
+ * ```typescript
+ * // In handler (imperative shell):
+ * const result = await run(getChatHistory(input));
+ * if (result.status === "Success") {
+ *   return createSuccessResponse({ messages: result.value });
+ * }
+ * ```
  */
-export async function getChatHistory(
+export function getChatHistory(
   input: GetChatHistoryInput,
-): Promise<GetChatHistoryResult> {
-  logger.info(
-    { sessionId: input.sessionId, userId: input.userId },
-    "Getting chat history",
-  );
-
-  // Validate ownership
-  const ownershipResult = await run(
+): Result<GetChatHistoryResult> {
+  return pipe(
     validateSessionOwnership({ ...input, message: "" }),
+    getChatHistoryMessages,
   );
-  if (ownershipResult.status === "Failure") {
-    throw new Error(ownershipResult.error.message);
-  }
-
-  // Check if session exists
-  const session = await findSessionById(input.sessionId);
-  if (session === null) {
-    // Return empty array for new sessions (not an error)
-    logger.info(
-      { sessionId: input.sessionId },
-      "Chat history: session not found, returning empty",
-    );
-    return [];
-  }
-
-  // Get messages via operation
-  const messages = await getSessionMessages(input);
-
-  logger.info(
-    { sessionId: input.sessionId, messageCount: messages.length },
-    "Chat history retrieved",
-  );
-
-  return messages;
 }
